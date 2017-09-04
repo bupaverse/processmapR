@@ -21,90 +21,93 @@
 
 process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 
+	if(n_traces(eventlog) > 750) {
+		message("You are about to draw a process map with a lot of traces.
+				This might take a long time. Try to filter your event log. Are you sure you want to proceed?")
+		answer <- readline("Y/N: ")
 
-	log <- eventlog
-
-	colnames(log)[colnames(log) == case_id(eventlog)] <- "case"
-	colnames(log)[colnames(log) == activity_id(eventlog)] <- "event"
-	colnames(log)[colnames(log) == timestamp(eventlog)] <- "timestamp_classifier"
-	colnames(log)[colnames(log) == activity_instance_id(eventlog)] <- "aid"
+		if(answer != "Y")
+			break()
+	}
 
 
+	log <- droplevels(eventlog)
 
+	log <- as.data.frame(log)
 
 	log %>%
-		mutate(node_id = as.numeric(as.factor(event))) -> log
+		mutate(node_id = as.numeric(as.factor(!!as.symbol(activity_id(eventlog))))) -> log
 
 	log %>%
-		group_by(case) %>%
-		arrange(timestamp_classifier) %>%
+		group_by(!!as.symbol(case_id(eventlog))) %>%
+		arrange(!!as.symbol(timestamp(eventlog))) %>%
 		slice(1:1) %>%
-		mutate(timestamp_classifier = timestamp_classifier - 1,
-			   event = "Start",
+		mutate(timestamp_classifier = (!!as.symbol(timestamp(eventlog))) - 1,
+			   event_classifier = "Start",
 			   node_id = 0) -> start_points
 
 	log %>%
-		group_by(case) %>%
-		arrange(desc(timestamp_classifier)) %>%
+		group_by(!!as.symbol(case_id(eventlog))) %>%
+		arrange(desc(!!as.symbol(timestamp(eventlog)))) %>%
 		slice(1:1) %>%
-		mutate(timestamp_classifier = timestamp_classifier + 1,
-			   event = "End",
+		mutate(timestamp_classifier = (!!as.symbol(timestamp(eventlog))) + 1,
+			   event_classifier = "End",
 			   node_id = n_activities(eventlog)+1) -> end_points
 
-	log %>%
+	suppressWarnings(log %>%
+		rename(event_classifier = !!as.symbol(activity_id(eventlog)),
+			   timestamp_classifier = !!as.symbol(timestamp(eventlog))) %>%
 		bind_rows(start_points) %>%
 		bind_rows(end_points) %>%
-		group_by(aid, event, node_id, case) %>%
+		group_by(!!as.symbol(activity_instance_id(eventlog)), event_classifier, node_id, !!as.symbol(case_id(eventlog))) %>%
 		summarize(ts = min(timestamp_classifier)) %>%
-		group_by(case) %>%
-		arrange(ts) %>%
-		mutate(next_event = lead(event),
+		group_by(!!as.symbol(case_id(eventlog))) %>%
+		arrange(ts, event_classifier) %>%
+		mutate(next_event = lead(event_classifier),
 			   next_node_id = lead(node_id)) %>%
-		na.omit() -> precedences
+		na.omit() -> precedences)
 
 	precedences %>%
-		group_by(event, node_id, next_event, next_node_id) %>%
+		group_by(event_classifier, node_id, next_event, next_node_id) %>%
 		summarize(n = n()) %>%
-		group_by(event, node_id) %>%
+		group_by(event_classifier, node_id) %>%
 		mutate(rel_n = n/(sum(n))) -> edges
 
 	if(attr(type, "perspective") == "frequency") {
 		if(type == "absolute") {
 			edges %>%
 				ungroup() %>%
-				mutate(penwidth = 1 + 3*(n - min(n))/(max(n) - min(n))) -> edges
+				mutate(penwidth = 1 + 5*(n - min(n))/(max(n) - min(n))) -> edges
 		}
 		else {
 			edges %>%
 				ungroup() %>%
 				mutate(n = round(rel_n*100, 2)) %>%
-				mutate(penwidth = 1 + 3*(n - min(n))/(max(n) - min(n))) -> edges
+				mutate(penwidth = 1 + 5*(n - min(n))/(max(n) - min(n))) -> edges
 		}
 
-	}
-	else {
+	} else {
 		edges %>%
 			ungroup() %>%
-			mutate(penwidth = 1 + 3*(n - min(n))/(max(n) - min(n))) -> edges
+			mutate(penwidth = 1 + 5*(n - min(n))/(max(n) - min(n))) -> edges
 	}
 
 	if(attr(type, "perspective") == "frequency") {
 		eventlog %>%
 			activities() %>%
 			arrange_(activity_id(eventlog)) -> nodes
-	}
-	else {
+	} else {
 		eventlog %>%
 			processing_time("activity", units = attr(type, "units")) %>%
 			attr("raw") %>%
-			group_by_(activity_id(eventlog)) %>%
+			group_by(!!as.symbol(activity_id(eventlog))) %>%
 			summarize(absolute_frequency = type(processing_time)) %>%
-			arrange_(activity_id(eventlog)) -> nodes
+			arrange(!!as.symbol(activity_id(eventlog))) -> nodes
 	}
 
 
 
-	colnames(nodes)[colnames(nodes) == activity_id(eventlog)] <- "event"
+	colnames(nodes)[colnames(nodes) == activity_id(eventlog)] <- "event_classifier"
 
 	# nodes_df <- create_nodes(nodes = c(nodes$event, "Start","End"),
 	# 						 label = c(paste0(nodes$event, " (",nodes$absolute_frequency, ")"), "Start","End"),
@@ -119,7 +122,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 	if(attr(type, "perspective") == "performance") {
 		nodes_df <- create_node_df(n = nrow(nodes) + 2,
 								   nodes = 0:(n_activities(eventlog) + 1),
-								   label = c("Start", c(paste0(nodes$event, " (",round(nodes$absolute_frequency, 3), ")")),"End"),
+								   label = c("Start", c(paste0(nodes$event_classifier, " (",round(nodes$absolute_frequency, 3), ")")),"End"),
 								   shape = c("circle",rep("rectangle", nrow(nodes)), "circle"),
 								   style = "rounded,filled",
 								   fontcolor = c("green",rep("white", nrow(nodes)),"red"),
@@ -128,13 +131,12 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 								   frequency = c( -Inf, nodes$absolute_frequency, max(nodes$absolute_frequency)+2),
 								   fillcolor = c("green",rep("dodgerblue4", nrow(nodes)),"red"),
 								   fontname = "Arial",
-								   tooltip = c(paste0(nodes$event, "\n (",nodes$absolute_frequency, ")"), "Start","End"))
-	}
-	else if(type == "absolute") {
+								   tooltip = c(paste0(nodes$event_classifier, "\n (",nodes$absolute_frequency, ")"), "Start","End"))
+	} else if(type == "absolute") {
 
 		nodes_df <- create_node_df(n = nrow(nodes) + 2,
 								   nodes = 0:(n_activities(eventlog) + 1),
-								   label = c("Start", c(paste0(nodes$event, " (",nodes$absolute_frequency, ")")),"End"),
+								   label = c("Start", c(paste0(nodes$event_classifier, " (",nodes$absolute_frequency, ")")),"End"),
 								   shape = c("circle",rep("rectangle", nrow(nodes)), "circle"),
 								   style = "rounded,filled",
 								   fontcolor = c("green",rep("white", nrow(nodes)),"red"),
@@ -143,13 +145,12 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 								   frequency = c( -Inf, nodes$absolute_frequency, max(nodes$absolute_frequency)+2),
 								   fillcolor = c("green",rep("dodgerblue4", nrow(nodes)),"red"),
 								   fontname = "Arial",
-								   tooltip = c(paste0(nodes$event, "\n (",nodes$absolute_frequency, ")"), "Start","End"))
+								   tooltip = c(paste0(nodes$event_classifier, "\n (",nodes$absolute_frequency, ")"), "Start","End"))
 
-	}
-	else {
+	} else {
 		nodes_df <- create_node_df(n = nrow(nodes) + 2,
 								   nodes = 0:(n_activities(eventlog) + 1),
-								   label = c("Start", c(paste0(nodes$event, " (",round(100*nodes$relative_frequency,2), ")")),"End"),
+								   label = c("Start", c(paste0(nodes$event_classifier, " (",round(100*nodes$relative_frequency,2), ")")),"End"),
 								   shape = c("circle",rep("rectangle", nrow(nodes)), "circle"),
 								   style = "rounded,filled",
 								   fontcolor = c("green",rep("white", nrow(nodes)),"red"),
@@ -158,7 +159,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 								   frequency = c( -Inf, nodes$absolute_frequency, max(nodes$absolute_frequency)+2),
 								   fillcolor = c("green",rep("dodgerblue4", nrow(nodes)),"red"),
 								   fontname = "Arial",
-								   tooltip = c("Start",paste0(nodes$event, "\n (",nodes$absolute_frequency, ")"), "End"))
+								   tooltip = c("Start",paste0(nodes$event_classifier, "\n (",nodes$absolute_frequency, ")"), "End"))
 	}
 
 	edges_df <- create_edge_df(from = edges$node_id +1,
@@ -190,8 +191,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 								cut_points = seq(min(nodes$absolute_frequency) - 1 - 0.0001*(0.01+diff(range(nodes$absolute_frequency))),
 												 max(nodes$absolute_frequency)  + 0.0001*(0.01+diff(range(nodes$absolute_frequency))),
 												 length.out = 9)) -> graph
-	}
-	else {
+	} else {
 		graph	%>%
 			colorize_node_attrs(node_attr_from = "frequency",
 								node_attr_to = "fillcolor",
@@ -204,9 +204,9 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 
 	}
 
-	if(render == T)
+	if(render == T) {
 		graph %>% render_graph() %>% return()
-	else
+	} else
 		graph %>% return()
 
 }

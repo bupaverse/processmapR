@@ -1,20 +1,20 @@
 Package: processmapR
 Type: Package
 Title: Construct Process Maps Using Event Data
-Version: 0.1.0
-Date: 2017-06-18
+Version: 0.2.0
+Date: 2017-09-04
 Author: Gert Janssenswillen
 Maintainer: Gert Janssenswillen <gert.janssenswillen@uhasselt.be>
 Description: Visualize of process maps based on
     event logs, in the form of directed graphs. Part of the 'bupaR' framework.
 License: MIT + file LICENSE
 Imports:
-    dplyr,bupaR, edeaR, DiagrammeR, ggplot2, ggthemes
+    dplyr,bupaR, edeaR, DiagrammeR, ggplot2, ggthemes, stringr, purrr, data.table, shiny, miniUI, glue, forcats
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
-URL: http://www.bupar.net
+URL: https://www.bupar.net
 
 
