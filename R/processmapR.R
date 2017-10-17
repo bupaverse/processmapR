@@ -16,6 +16,7 @@
 #' @import miniUI
 #' @import forcats
 #' @importFrom glue glue
+#' @importFrom hms as.hms
 #' @importFrom data.table data.table
 #' @importFrom data.table :=
 #' @importFrom data.table as.data.table

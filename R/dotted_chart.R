@@ -9,7 +9,7 @@
 #' @export dotted_chart
 dotted_chart <- function(eventlog,
 						 x = c("absolute","relative","relative_week","relative_day"),
-						 y = c("start","end","duration"),
+						 y = c("start","end","duration", "start_week","start_day"),
 						 color = NULL,
 						 units = c("weeks","days","hours","mins","secs")) {
 
@@ -93,54 +93,29 @@ dotted_chart <- function(eventlog,
 				   end_relative = end - start_case) -> data
 	}
 
-	if(x == "absolute") {
-		if(y == "start") {
-			data %>%
-				ggplot(aes(x = start, y = reorder(case_classifier, desc(start_case)))) -> p
-		} else if (y == "end") {
-			data %>%
-				ggplot(aes(x = start, y = reorder(case_classifier, desc(end_case))))  -> p
-		} else if (y == "duration") {
-			data %>%
-				ggplot(aes(x = start, y = reorder(case_classifier, desc(dur))))  -> p
-		}
-	} else if(x == "relative") {
-		if(y == "start") {
-			data %>%
-				ggplot(aes(x = start_relative, y = reorder(case_classifier, desc(start_case)))) -> p
-		} else if (y == "end") {
-			data %>%
-				ggplot(aes(x = start_relative, y = reorder(case_classifier, desc(end_case))))  -> p
-		} else if (y == "duration") {
-			data %>%
-				ggplot(aes(x = start_relative, y = reorder(case_classifier, desc(dur)))) -> p
-		}
-	} else if (x == "relative_week") {
-		if(y == "start") {
-			data %>%
-				ggplot(aes(x = start_week, y = reorder(case_classifier, desc(start_case_week)))) -> p
-		} else if (y == "end") {
-			data %>%
-				ggplot(aes(x = start_week, y = reorder(case_classifier, desc(end_case_week))))  -> p
-		} else if (y == "duration") {
-			data %>%
-				ggplot(aes(x = start_week, y = reorder(case_classifier, desc(dur)))) -> p
-		}
-	} else if (x == "relative_day") {
-		if(y == "start") {
-			data %>%
-				ggplot(aes(x = start_day, y = reorder(case_classifier, desc(start_case_day)))) -> p
-		} else if (y == "end") {
-			data %>%
-				ggplot(aes(x = start_day, y = reorder(case_classifier, desc(end_case_day))))  -> p
-		} else if (y == "duration") {
-			data %>%
-				ggplot(aes(x = start_day, y = reorder(case_classifier, desc(dur)))) -> p
-		}
-	}
 
-	p + scale_y_discrete(breaks = NULL) -> p
+	x_aes <- case_when(x == "absolute" ~ "start",
+					   x == "relative" ~ "start_relative",
+					   x == "relative_week" ~ "start_week",
+					   x == "relative_day" ~ "start_day")
 
+	y_aes <- case_when(y == "start" ~ "start_case",
+					   y == "end" ~ "end_case",
+					   y == "duration" ~ "dur",
+					   y == "start_week" ~ "start_case_week",
+					   y == "start_day" ~ "start_case_day")
+
+
+	x_labs <- case_when(x == "relative" ~ as.character(glue("Time since start case (in {units})")),
+						x == "relative_week" ~ as.character(glue("Time since start of week (monday) (in {units})")),
+						x == "relative_day" ~ as.character(glue("Time since start of day (in {units})")),
+						x == "absolute" ~ "Time")
+
+	data %>%
+		ggplot(aes_string(x = x_aes, y = glue("reorder(case_classifier, desc({y_aes}))"))) +
+		scale_y_discrete(breaks = NULL) +
+		labs(x = x_labs,y = "Cases") +
+		theme_light() -> p
 
 	if(color_flag) {
 		p + geom_point(aes(color = color)) + scale_color_brewer(name = color, palette = "Spectral") -> p
@@ -153,32 +128,19 @@ dotted_chart <- function(eventlog,
 		substr(format(as.hms(as.double(time, units = "secs") %% (24 * 60 * 60))),0,5)
 	}
 
-	if(x == "relative") {
-		p + scale_x_continuous() + labs(x = glue::glue("Time since start case (in {units})")) -> p
-	} else if (x == "relative_week") {
-		if (units == "secs") {
+	if(x == "relative_week" && units == "secs") {
 			p + scale_x_time(breaks = as.hms(seq(0, 7 * 86400, by = 8 * 3600)), labels = timeFormat) +
-				geom_vline(xintercept = seq(0, 7 * 86400, by = 86400), colour="black") +
-				labs(x = glue::glue("Time since start of week/monday")) -> p
-		} else {
-			p + scale_x_continuous() + labs(x = glue::glue("Time since start of week/monday (in {units})")) -> p
-		}
-	} else if (x == "relative_day") {
-		if (units == "secs") {
-			p + scale_x_time(breaks = as.hms(seq(0, 86400, by = 2 * 3600))) + labs(x = glue::glue("Time since start of day")) -> p
-		} else {
-			p + scale_x_continuous() + labs(x = glue::glue("Time since start of day (in {units})")) -> p
-		}
-	} else {
-		p + labs(x = "Time") -> p
+				geom_vline(xintercept = seq(0, 7 * 86400, by = 86400), colour="black")-> p
+	} else if(x == "relative_day" && units == "secs") {
+		p + scale_x_time(breaks = as.hms(seq(0, 86400, by = 2 * 3600))) -> p
+
 	}
 
 	if(!is.null(groups)) {
 		p <- p + facet_grid(as.formula(paste(c(paste(groups, collapse = "+"), "~." ), collapse = "")), scales = "free_y", space = "free")
 	}
 
-	p + labs(y = "Cases") +
-		theme_light()
+	return(p)
 }
 
 
@@ -192,9 +154,9 @@ idotted_chart <- function(eventlog) {
 		miniContentPanel(
 			column(width = 2,
 				   selectizeInput("x", "x-axis:", choices = c("relative","relative_week","relative_day","absolute"), selected = "absolute"),
-				   selectizeInput("y", "y-axis order:", choices = c("start","end","duration"), selected = "start"),
+				   selectizeInput("y", "y-axis order:", choices = c("start","end","duration", "start_day","start_weekid"), selected = "start"),
 				   selectizeInput("units", "Time units:", choices = c("secs","min","hours","days","weeks"), selected = "hours"),
-				   selectizeInput("color", "Color:", choices = c(NA,NULL,colnames(eventlog)), selected = "event")
+				   selectizeInput("color", "Color:", choices = c(NA,NULL,colnames(eventlog)), selected = activity_id(eventlog))
 			),
 			column(width = 10,
 				   plotOutput("dotted_chart")

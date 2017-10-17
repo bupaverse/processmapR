@@ -5,15 +5,17 @@
 \alias{idotted_chart}
 \title{Dotted chart}
 \usage{
-dotted_chart(eventlog, x = c("absolute","relative","relative_week","relative_day"), y = c("start", "end",
-  "duration"), color = NULL, units = c("weeks", "days", "hours", "mins", "secs"))
+dotted_chart(eventlog, x = c("absolute", "relative", "relative_week",
+  "relative_day"), y = c("start", "end", "duration", "start_week",
+  "start_day"), color = NULL, units = c("weeks", "days", "hours", "mins",
+  "secs"))
 
 idotted_chart(eventlog)
 }
 \arguments{
 \item{eventlog}{Eventlog object}
 
-\item{x}{Value for plot on x-axis:  absolute time or relative time (since start, since start of week, since start of day)}
+\item{x}{Value for plot on x-axis: absolute time or relative time (since start, since start of week, since start of day)}
 
 \item{y}{Ordering of the cases on y-axis: start, end or duration}
 
