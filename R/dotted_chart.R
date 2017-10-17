@@ -60,11 +60,12 @@ dotted_chart <- function(eventlog,
 				   end_day = as.double(timeSinceStartOfDay(end), units = units)) %>%
 			mutate(start_case = min(start),
 				   end_case = max(end),
-				   start_case_week = min(start_week),
-				   end_case_week = max(end_week),
-				   start_case_day = min(start_day),
-				   end_case_day = max(end_day),
 				   dur = as.double(end_case - start_case, units = units)) %>%
+			# add the time since week/day start for the first/last event in the case
+			mutate(start_case_week = timeSinceStartOfWeek(start_case),
+				   end_case_week = timeSinceStartOfWeek(end_case),
+				   start_case_day = timeSinceStartOfDay(start_case),
+				   end_case_day = timeSinceStartOfDay(end_case)) %>%
 			mutate(start_relative = as.double(start - start_case, units = units),
 				   end_relative = end - start_case) -> data
 	} else {
@@ -82,11 +83,12 @@ dotted_chart <- function(eventlog,
 				   end_day = as.double(timeSinceStartOfDay(end), units = units)) %>%
 			mutate(start_case = min(start),
 				   end_case = max(end),
-				   start_case_week = min(start_week),
-				   end_case_week = max(end_week),
-				   start_case_day = min(start_day),
-				   end_case_day = max(end_day),
 				   dur = as.double(end_case - start_case, units = units)) %>%
+			# add the time since week/day start for the first/last event in the case
+			mutate(start_case_week = timeSinceStartOfWeek(start_case),
+				   end_case_week = timeSinceStartOfWeek(end_case),
+				   start_case_day = timeSinceStartOfDay(start_case),
+				   end_case_day = timeSinceStartOfDay(end_case)) %>%
 			mutate(start_relative = as.double(start - start_case, units = units),
 				   end_relative = end - start_case) -> data
 	}
