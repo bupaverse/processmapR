@@ -35,12 +35,9 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 
 	log <- as.data.frame(log)
   
-	# Give unique node_id to each activity
 	log %>%
 		mutate(node_id = as.numeric(as.factor(!!as.symbol(activity_id(eventlog))))) -> log
 
-	# Create start event for each case, starting 1 
-	# second before the first event of each case
 	log %>%
 		group_by(!!as.symbol(case_id(eventlog))) %>%
 		arrange(!!as.symbol(timestamp(eventlog))) %>%
@@ -49,8 +46,6 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 			   event_classifier = "Start",
 			   node_id = 0) -> start_points
 	
-	# Create end event for each case, starting 
-	# 1 second after the last event of each case
 	log %>%
 		group_by(!!as.symbol(case_id(eventlog))) %>%
 		arrange(desc(!!as.symbol(timestamp(eventlog)))) %>%
@@ -93,7 +88,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 			mutate(next_event = lead(event_classifier),
 			       next_node_id = lead(node_id),
 			       ts_next_event = lead(start_time),
-			       idle_time = as.double( (ts_next_event - end_time), units = attr(type, "units")) ) %>%
+			       idle_time = as.double( (ts_next_event - start_time), units = attr(type, "units")) ) %>%
 			na.omit() -> precedences)
 
 		precedences %>%
@@ -105,8 +100,6 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 			mutate(rel_n = n/(sum(n))) -> edges
 	}
 
-
-	# Change the thickness of the edges corresponding to its occurence 
 	if(attr(type, "perspective") == "frequency") {
 		if(type == "absolute") {
 			edges %>%
@@ -121,7 +114,6 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		}
 
 	} else if(attr(type, "perspective") == "performance") {
-	  # Correspond the edge thickness to the mean time and color to the frequency
 		edges %>%
 			ungroup() %>%
 	    mutate(penwidth = 1 + 5*(mean_time - min(mean_time))/as.integer(max(mean_time) - min(mean_time)),
