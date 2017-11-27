@@ -34,10 +34,13 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 	log <- droplevels(eventlog)
 
 	log <- as.data.frame(log)
-
+  
+	# Give unique node_id to each activity
 	log %>%
 		mutate(node_id = as.numeric(as.factor(!!as.symbol(activity_id(eventlog))))) -> log
 
+	# Create start event for each case, starting 1 
+	# second before the first event of each case
 	log %>%
 		group_by(!!as.symbol(case_id(eventlog))) %>%
 		arrange(!!as.symbol(timestamp(eventlog))) %>%
@@ -45,7 +48,9 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		mutate(timestamp_classifier = (!!as.symbol(timestamp(eventlog))) - 1,
 			   event_classifier = "Start",
 			   node_id = 0) -> start_points
-
+	
+	# Create end event for each case, starting 
+	# 1 second after the last event of each case
 	log %>%
 		group_by(!!as.symbol(case_id(eventlog))) %>%
 		arrange(desc(!!as.symbol(timestamp(eventlog)))) %>%
@@ -54,25 +59,54 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 			   event_classifier = "End",
 			   node_id = n_activities(eventlog)+1) -> end_points
 
-	suppressWarnings(log %>%
-		rename(event_classifier = !!as.symbol(activity_id(eventlog)),
-			   timestamp_classifier = !!as.symbol(timestamp(eventlog))) %>%
-		bind_rows(start_points) %>%
-		bind_rows(end_points) %>%
-		group_by(!!as.symbol(activity_instance_id(eventlog)), event_classifier, node_id, !!as.symbol(case_id(eventlog))) %>%
-		summarize(ts = min(timestamp_classifier)) %>%
-		group_by(!!as.symbol(case_id(eventlog))) %>%
-		arrange(ts, event_classifier) %>%
-		mutate(next_event = lead(event_classifier),
-			   next_node_id = lead(node_id)) %>%
-		na.omit() -> precedences)
+	
+	if(attr(type, "perspective") == "frequency") {
+		suppressWarnings(log %>%
+			rename(event_classifier = !!as.symbol(activity_id(eventlog)),
+			       timestamp_classifier = !!as.symbol(timestamp(eventlog))) %>%
+			bind_rows(start_points) %>%
+			bind_rows(end_points) %>%
+			group_by(!!as.symbol(activity_instance_id(eventlog)), event_classifier, node_id, !!as.symbol(case_id(eventlog))) %>%
+			summarize(start_time = min(timestamp_classifier), end_time = max(timestamp_classifier)) %>%
+			group_by(!!as.symbol(case_id(eventlog))) %>%
+			arrange(start_time) %>%
+			mutate(next_event = lead(event_classifier),
+			       next_node_id = lead(node_id)) %>% 
+			na.omit() -> precedences)
+     
+		precedences %>%
+			group_by(event_classifier, node_id, next_event, next_node_id) %>%
+			summarize(n = n()) %>%
+			group_by(event_classifier, node_id) %>%
+			mutate(rel_n = n/(sum(n))) -> edges
+     
+	} else if(attr(type, "perspective") == "performance") {
+  		suppressWarnings(log %>%
+			rename(event_classifier = !!as.symbol(activity_id(eventlog)),
+			       timestamp_classifier = !!as.symbol(timestamp(eventlog))) %>%
+			bind_rows(start_points) %>%
+			bind_rows(end_points) %>%
+			group_by(!!as.symbol(activity_instance_id(eventlog)), event_classifier, node_id, !!as.symbol(case_id(eventlog))) %>%
+			summarize(start_time = min(timestamp_classifier), end_time = max(timestamp_classifier)) %>%
+			group_by(!!as.symbol(case_id(eventlog))) %>%
+			arrange(start_time) %>%
+			mutate(next_event = lead(event_classifier),
+			       next_node_id = lead(node_id),
+			       ts_next_event = lead(start_time),
+			       idle_time = as.double( (ts_next_event - end_time), units = attr(type, "units")) ) %>%
+			na.omit() -> precedences)
 
-	precedences %>%
-		group_by(event_classifier, node_id, next_event, next_node_id) %>%
-		summarize(n = n()) %>%
-		group_by(event_classifier, node_id) %>%
-		mutate(rel_n = n/(sum(n))) -> edges
+		precedences %>%
+			group_by(event_classifier, node_id, next_event, next_node_id) %>%
+			summarize(n = n(),
+				  mean_time = mean(idle_time),
+				  median_time = median(idle_time)) %>%
+			group_by(event_classifier, node_id) %>%
+			mutate(rel_n = n/(sum(n))) -> edges
+	}
 
+
+	# Change the thickness of the edges corresponding to its occurence 
 	if(attr(type, "perspective") == "frequency") {
 		if(type == "absolute") {
 			edges %>%
@@ -86,17 +120,19 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 				mutate(penwidth = 1 + 5*(n - min(n))/(max(n) - min(n))) -> edges
 		}
 
-	} else {
+	} else if(attr(type, "perspective") == "performance") {
+	  # Correspond the edge thickness to the mean time and color to the frequency
 		edges %>%
 			ungroup() %>%
-			mutate(penwidth = 1 + 5*(n - min(n))/(max(n) - min(n))) -> edges
-	}
-
+	    mutate(penwidth = 1 + 5*(mean_time - min(mean_time))/as.integer(max(mean_time) - min(mean_time)),
+	           color = gray(1 - ( ( (n - min(n))/(max(n) - min(n)) ) + 0.1*( 1- ((n - min(n))/(max(n) - min(n))) ) ))) -> edges
+	} 
+	
 	if(attr(type, "perspective") == "frequency") {
 		eventlog %>%
 			activities() %>%
 			arrange_(activity_id(eventlog)) -> nodes
-	} else {
+	} else if(attr(type, "perspective") == "performance") {
 		eventlog %>%
 			processing_time("activity", units = attr(type, "units")) %>%
 			attr("raw") %>%
@@ -161,18 +197,33 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 								   fontname = "Arial",
 								   tooltip = c("Start",paste0(nodes$event_classifier, "\n (",nodes$absolute_frequency, ")"), "End"))
 	}
-
-	edges_df <- create_edge_df(from = edges$node_id +1,
-							   to= edges$next_node_id + 1,
-							   label = edges$n,
-							   color = "grey",
-							   fontname = "Arial",
-							   arrowsize = 1,
-							   penwidth = edges$penwidth)
-	# edges_df <- create_edges(from = edges$event, to=edges$next_event,
-	# 						 label = edges$n,
-	# 						 color = "grey",
-	# 						 fontname = "Arial")
+	
+	if(attr(type, "perspective") == "frequency") {
+  	edges_df <- create_edge_df(from = edges$node_id +1,
+  							   to= edges$next_node_id + 1,
+  							   label = edges$n,
+  							   color = "grey",
+  							   fontname = "Arial",
+  							   arrowsize = 1,
+  							   penwidth = edges$penwidth)
+  	# edges_df <- create_edges(from = edges$event, to=edges$next_event,
+  	# 						 label = edges$n,
+  	# 						 color = "grey",
+  	# 						 fontname = "Arial")
+	} else if(attr(type, "perspective") == "performance") {
+	  edges_df <- create_edge_df(from = edges$node_id +1,
+	                             to= edges$next_node_id + 1,
+	                             label = paste0("  ", round(edges$mean_time,2), " ", attr(type, "units"), "\n", 
+	                                            "  ", round(edges$median_time,2), " ", attr(type, "units")),
+	                             color = edges$color,
+	                             fontname = "Arial",
+	                             arrowsize = 1,
+	                             penwidth = edges$penwidth)
+	  # edges_df <- create_edges(from = edges$event, to=edges$next_event,
+	  # 						 label = edges$n,
+	  # 						 color = "grey",
+	  # 						 fontname = "Arial")
+	  }
 
 	create_graph(nodes_df, edges_df) %>%
 		set_global_graph_attrs(attr = "rankdir",value =  "LR",attr_type =  "graph") -> graph
