@@ -53,7 +53,7 @@ trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage
 		ggplot(aes(rank_event, as.factor(trace_id))) +
 		geom_tile(aes(fill = event_classifier), color = "white") +
 		geom_text(aes(label = abbreviate(event_classifier)), color = "white",fontface = "bold") +
-		facet_grid(reorder(paste0(round(100*relative_frequency,2),"%"), relative_frequency)~.,scales = "free", space = "free") +
+		facet_grid(reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)~.,scales = "free", space = "free") +
 		scale_y_discrete(breaks = NULL) +
 		labs(y = "Traces", x = "Activities") +
 		scale_fill_discrete(name = "Activities")  +
