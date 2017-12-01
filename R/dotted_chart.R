@@ -14,7 +14,6 @@ dotted_chart <- function(eventlog, x, sort, color, units, ...) {
 	UseMethod("dotted_chart")
 }
 
-
 #Utility functions for week/day caluclations
 timeSinceStartOfWeek <- function(time) {
 	midnight <- trunc(time, "days")
@@ -32,7 +31,6 @@ timeSinceStartOfDay <- function(time) {
 timeFormat <- function(time){
 	substr(format(as.hms(as.double(time, units = "secs") %% (24 * 60 * 60))),0,5)
 }
-
 
 # compute data for dotted_chart
 dotted_chart_data <- function(eventlog, color, units) {

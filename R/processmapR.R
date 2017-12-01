@@ -31,6 +31,7 @@
 #' @importFrom utils setTxtProgressBar
 #' @importFrom utils txtProgressBar
 #' @importFrom utils data
+#' @importFrom scales rescale
 
 globalVariables(c("case_classifier","consequent","end_case","resource_classifier","antecedent","rel_n","rel_antecedent","rel_consequent",
 				  "timestamp_classifier","ts","aid","case","event","event_classifier","next_event","next_node_id",

@@ -9,7 +9,7 @@ Description: Visualize of process maps based on
     event logs, in the form of directed graphs. Part of the 'bupaR' framework.
 License: MIT + file LICENSE
 Imports:
-    dplyr,bupaR, edeaR, DiagrammeR, ggplot2, ggthemes, stringr, purrr, data.table, shiny, miniUI, glue, forcats, hms, RColorBrewer, plotly, rlang
+    dplyr,bupaR, edeaR, DiagrammeR, ggplot2, ggthemes, stringr, purrr, data.table, shiny, miniUI, glue, forcats, hms, RColorBrewer, plotly, rlang, scales
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
