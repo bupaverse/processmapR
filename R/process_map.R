@@ -62,7 +62,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 
 	suppressWarnings(base_log %>%
 		ungroup() %>%
-		mutate(act = ordered(act, levels = c("Start", activity_labels(eventlog), "End"))) %>%
+		mutate(act = ordered(act, levels = c("Start", as.character(activity_labels(eventlog)), "End"))) %>%
 		group_by(case) %>%
 		arrange(start_time, act) %>%
 		mutate(next_act = lead(act),
