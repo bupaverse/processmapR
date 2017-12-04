@@ -11,6 +11,9 @@ performance(FUN = mean, units = "days", flow_time = c("inter_start_time",
 \item{FUN}{A summary function to be called on the process time of a specific activity, e.g. mean, median, min, max}
 
 \item{units}{The time unit in which processing time should be presented (mins, hours, days, weeks)}
+
+\item{flow_time}{The time to depict on the flows: the inter start time is the time between the start timestamp of consecutive activity instances,
+the idle time is the time between the end and start time of consecutive activity instances.}
 }
 \description{
 Function to create a performance map profile to be used as the type of a process map. It results in a process map describing process time.

@@ -32,11 +32,15 @@ plotly_dotted_chart(eventlog)
 
 \item{x}{Value for plot on x-axis: absolute time or relative time (since start, since start of week, since start of day)}
 
+\item{sort}{Ordering of the cases on y-axis: start, end or duration}
+
 \item{color}{Optional, variable to use for coloring dots. Default is the activity identifier. Use NA for no colors.}
 
 \item{units}{Time units to use on x-axis in case of relative time.}
 
-\item{y}{Ordering of the cases on y-axis: start, end or duration}
+\item{...}{Deprecated arguments}
+
+\item{plotly}{Return plotly object}
 }
 \description{
 Create a dotted chart to view all events in a glance

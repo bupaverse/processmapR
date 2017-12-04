@@ -21,6 +21,24 @@
 
 process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 
+	act <- NULL
+	aid <- NULL
+	case <- NULL
+	time <- NULL
+	start_time <- NULL
+	end_time <- NULL
+	node_id <- NULL
+	n.x <- NULL
+	n.y <- NULL
+	from_id <- NULL
+	tooltip <- NULL
+	label <- NULL
+	next_act <- NULL
+	to_id <- NULL
+	duration <- NULL
+	value <- NULL
+	color_level <- NULL
+
 	if(n_traces(eventlog) > 750) {
 		message("You are about to draw a process map with a lot of traces.
 				This might take a long time. Try to filter your event log. Are you sure you want to proceed?")

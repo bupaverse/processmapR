@@ -2,9 +2,11 @@
 #' @description Create a dotted chart to view all events in a glance
 #' @param eventlog Eventlog object
 #' @param x Value for plot on x-axis: absolute time or relative time (since start, since start of week, since start of day)
-#' @param y Ordering of the cases on y-axis: start, end or duration
+#' @param sort Ordering of the cases on y-axis: start, end or duration
 #' @param color Optional, variable to use for coloring dots. Default is the activity identifier. Use NA for no colors.
 #' @param units Time units to use on x-axis in case of relative time.
+#' @param plotly Return plotly object
+#' @param ... Deprecated arguments
 #'
 #' @export dotted_chart
 #'
@@ -19,12 +21,12 @@ timeSinceStartOfWeek <- function(time) {
 	midnight <- trunc(time, "days")
 	weekDay <- as.integer(format(time, "%w"))
 	weekDay <- ifelse(weekDay, weekDay-1, 6) # Let week start with Monday
-	msSinceMidnight <- difftime(time, midnight, unit="secs")
+	msSinceMidnight <- difftime(time, midnight, units="secs")
 	as.difftime(msSinceMidnight + weekDay*24*60*60, units = "secs")
 }
 timeSinceStartOfDay <- function(time) {
 	midnight <- trunc(time, "days")
-	difftime(time, midnight, unit="secs")
+	difftime(time, midnight, units="secs")
 }
 # time formatter for the week and day options
 
@@ -34,6 +36,12 @@ timeFormat <- function(time){
 
 # compute data for dotted_chart
 dotted_chart_data <- function(eventlog, color, units) {
+
+	start <- NULL
+	end <- NULL
+	start_case <- NULL
+	end_case <- NULL
+	color <- NULL
 
 	if(is.null(color)) {
 		eventlog %>%
@@ -85,6 +93,7 @@ configure_x_labs <- function(x, units) {
 
 dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units) {
 
+	color <- NULL
 	x_aes <- configure_x_aes(x)
 	y_aes <- configure_y_aes(y)
 	x_labs <- configure_x_labs(x, units)

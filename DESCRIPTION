@@ -1,10 +1,12 @@
 Package: processmapR
 Type: Package
 Title: Construct Process Maps Using Event Data
-Version: 0.2.0
-Date: 2017-09-04
-Author: Gert Janssenswillen
-Maintainer: Gert Janssenswillen <gert.janssenswillen@uhasselt.be>
+Version: 0.2.1
+Date: 2017-12-04
+Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhasselt.be", role = c("aut","cre")),
+ person("Benoît","Depaire",email = "benoit.depaire@uhasselt.be", role = c("ctb")),
+ person("Felix","Mannhardt",email = "Felix.Mannhardt@sintef.no", role = c("ctb")),
+ person("Thijs","Beuving", email = "thijs.beuving@kpn.com", role = c("ctb")))
 Description: Visualize of process maps based on
     event logs, in the form of directed graphs. Part of the 'bupaR' framework.
 License: MIT + file LICENSE

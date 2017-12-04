@@ -13,6 +13,12 @@ plot.precedence_matrix <- function(x, ...) {
 
 	type <- attr(x, "matrix_type")
 
+	antecedent <- NULL
+	consequent <- NULL
+	rel_n <- NULL
+	rel_antecedent <- NULL
+	rel_consequent <- NULL
+
 	if(type == "absolute") {
 
 		x %>%

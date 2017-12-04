@@ -19,8 +19,18 @@
 
 resource_matrix <- function(eventlog, type = c("absolute","relative","relative_antecedent","relative_consequent")) {
 
+	stopifnot("eventlog" %in% class(eventlog))
+
 	type <- match.arg(type)
 	log <- eventlog
+	ts <- NULL
+	timestamp_classifier <- NULL
+	antecedent <- NULL
+	consequent <- NULL
+	aid <- NULL
+	resource_classifier <- NULL
+	case_classifier <- NULL
+
 
 	colnames(log)[colnames(log) == resource_id(eventlog)] <- "resource_classifier"
 	colnames(log)[colnames(log) == case_id(eventlog)] <- "case_classifier"

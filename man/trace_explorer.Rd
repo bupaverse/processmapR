@@ -4,7 +4,8 @@
 \alias{trace_explorer}
 \title{Trace explorer}
 \usage{
-trace_explorer(eventlog, type = c("frequent", "infrequent"), coverage = 0.2)
+trace_explorer(eventlog, type = c("frequent", "infrequent"), coverage = 0.2,
+  raw_data = F)
 }
 \arguments{
 \item{eventlog}{Eventlog object}
@@ -12,6 +13,8 @@ trace_explorer(eventlog, type = c("frequent", "infrequent"), coverage = 0.2)
 \item{type}{Frequent or infrequenct traces to explore}
 
 \item{coverage}{The percentage coverage of the trace to explore. Default is 20\% most (in)frequent}
+
+\item{raw_data}{Retrun raw data}
 }
 \description{
 Explore traces, ordered by relative trace frequency

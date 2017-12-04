@@ -5,19 +5,31 @@
 #' @param eventlog Eventlog object
 #' @param type Frequent or infrequenct traces to explore
 #' @param coverage The percentage coverage of the trace to explore. Default is 20\% most (in)frequent
+#' @param raw_data Retrun raw data
 #'
 #' @export trace_explorer
 #'
-trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage = 0.2) {
-	stop_eventlog(eventlog)
+trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage = 0.2, raw_data = F) {
+	stopifnot("eventlog" %in% class(eventlog))
 	type <- match.arg(type)
 
 
+	event_classifier <- NULL
+	absolute_frequency <- NULL
+	relative_frequency <- NULL
+	cum_freq <- NULL
+	case_classifier <- NULL
+	aid <- NULL
+	timestamp_classifier <- NULL
+	trace_id <- NULL
+	ts <- NULL
+	cum_freq_lag <- NULL
+	rank_event <- NULL
 
-	eventlog %>% cases_light %>%
+	eventlog %>% case_list %>%
 		rename_("case_classifier" = case_id(eventlog)) -> cases
 
-	eventlog %>% traces_light %>%
+	eventlog %>% trace_list %>%
 		mutate(rank_trace = row_number(-absolute_frequency)) %>%
 		arrange(-relative_frequency) %>%
 		mutate(cum_freq = cumsum(relative_frequency)) %>%
@@ -48,16 +60,19 @@ trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage
 		stop("No traces selected. Consider increasing the coverage")
 	}
 
-
-	temp %>%
-		ggplot(aes(rank_event, as.factor(trace_id))) +
-		geom_tile(aes(fill = event_classifier), color = "white") +
-		geom_text(aes(label = abbreviate(event_classifier)), color = "white",fontface = "bold") +
-		facet_grid(reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)~.,scales = "free", space = "free") +
-		scale_y_discrete(breaks = NULL) +
-		labs(y = "Traces", x = "Activities") +
-		scale_fill_discrete(name = "Activities")  +
-		theme_light() +
-		theme(strip.text.y = element_text(angle = 0))
+	if(raw_data)
+		temp
+	else {
+		temp %>%
+			ggplot(aes(rank_event, as.factor(trace_id))) +
+			geom_tile(aes(fill = event_classifier), color = "white") +
+			geom_text(aes(label = abbreviate(event_classifier)), color = "white",fontface = "bold") +
+			facet_grid(reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)~.,scales = "free", space = "free") +
+			scale_y_discrete(breaks = NULL) +
+			labs(y = "Traces", x = "Activities") +
+			scale_fill_discrete(name = "Activities")  +
+			theme_light() +
+			theme(strip.text.y = element_text(angle = 0))
+	}
 
 }
