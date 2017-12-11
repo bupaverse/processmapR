@@ -117,19 +117,21 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 				   label = if_end(act, act, tooltip))
 	}
 
-	nodes_frequency <- function(precedence, type) {
+	nodes_frequency <- function(precedence, type, n_cases) {
 
 		precedence %>%
 			group_by(act, from_id) %>%
-			summarize(n = as.double(n())) %>%
+			summarize(n = as.double(n()),
+					  n_distinct_cases = as.double(n_distinct(case))) %>%
 			ungroup() %>%
-			mutate(label = case_when(type == "relative" ~ n/sum(n),
-									 type == "absolute" ~ n)) %>%
+			mutate(label = case_when(type == "relative" ~ 100*n/sum(n),
+									 type == "absolute" ~ n,
+									 type == "relative_case" ~ 100*n_distinct_cases/n_cases)) %>%
 			mutate(color_level = label,
 				   shape = if_end(act,"circle","rectangle"),
 				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= quantile(label, 0.4), "black","white")),
 				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
-				   tooltip = paste0(act, "\n (", round(label, 2), ")"),
+				   tooltip = paste0(act, "\n (", round(label, 2), ifelse(type == "absolute","", "%"),")"),
 				   label = if_end(act, act, tooltip)) %>%
 			na.omit()
 	}
@@ -152,15 +154,17 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 			mutate(label = if_end(act, "", if_end(next_act, "", label)))
 	}
 
-	edges_frequency <- function(precedence, type) {
+	edges_frequency <- function(precedence, type, n_cases) {
 		precedence %>%
 			ungroup() %>%
 			group_by(act, from_id, next_act, to_id) %>%
-			summarize(n = as.double(n())) %>%
+			summarize(n = as.double(n()),
+					  n_distinct_cases = as.double(n_distinct(case))) %>%
 			na.omit() %>%
 			group_by(act, from_id) %>%
 			mutate(label = case_when(type == "relative" ~ round(100*n/sum(n),2),
-									 type == "absolute" ~ n)) %>%
+									 type == "absolute" ~ n,
+									 type == "relative_case" ~ round(100*n_distinct_cases/n_cases, 2))) %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(label, to = c(1,5)))
 	}
@@ -169,13 +173,13 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 
 
 	if(perspective == "frequency") {
-		nodes_frequency(base_precedence, type) -> nodes
+		nodes_frequency(base_precedence, type, n_cases(eventlog)) -> nodes
 	} else if(perspective == "performance")
 		nodes_performance(base_precedence, type) -> nodes
 
 
 	if(perspective == "frequency") {
-		edges_frequency(base_precedence, type) -> edges
+		edges_frequency(base_precedence, type, n_cases(eventlog)) -> edges
 	} else if(perspective == "performance")
 		edges_performance(base_precedence, type) -> edges
 

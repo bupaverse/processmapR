@@ -4,10 +4,11 @@
 \alias{frequency}
 \title{Frequency map profile}
 \usage{
-frequency(value = c("absolute", "relative"))
+frequency(value = c("absolute", "relative", "relative_case"))
 }
 \arguments{
-\item{value}{The type of frequency value to be used: absolute or relative.}
+\item{value}{The type of frequency value to be used:
+absolute, relative (percentage of activity instances) or relative_case (percentage of cases the activity occurs in).}
 }
 \description{
 Function to create a frequency profile for a process map.
