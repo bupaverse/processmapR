@@ -42,8 +42,8 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 		summarize(ts = min(timestamp_classifier))  %>%
 		group_by(case_classifier) %>%
 		arrange(ts) %>%
-		mutate(antecedent = event_classifier,
-				  consequent = lead(event_classifier, default = "End")) -> temp
+		mutate(antecedent = as.character(event_classifier),
+				  consequent = lead(as.character(event_classifier), default = "End")) -> temp
 
 	temp %>%
 		arrange(ts) %>%
