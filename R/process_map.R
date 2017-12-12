@@ -94,10 +94,6 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 					 	select(-n.x, -n.y) %>%
 					 	ungroup() -> base_precedence)
 
-	temp <- list()
-
-	temp[[1]] <- (base_precedence %>% select(from_id, to_id) %>% unique)
-
 
 	if_end <- function(node, true, false) {
 		ifelse(node %in% c("Start","End"), true, false)
@@ -187,12 +183,6 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		edges_frequency(base_precedence, type, n_cases(eventlog)) -> edges
 	} else if(perspective == "performance")
 		edges_performance(base_precedence, type) -> edges
-
-
-	temp[[2]] <- nodes %>% select(from_id)
-	temp[[3]] <- edges %>% select(from_id, to_id)
-	return(temp)
-
 
 
 	nodes %>%
