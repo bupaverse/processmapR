@@ -150,7 +150,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units")))) %>%
 			group_by(act, next_act, from_id, to_id) %>%
 			summarize(value = type(time, na.rm = T),
-					  label = paste0(round(type(time),2), " ", attr(type, "units"))) %>%
+					  label = paste0(round(type(time, na.rm = T),2), " ", attr(type, "units"))) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(value, to = c(1,5))) %>%
