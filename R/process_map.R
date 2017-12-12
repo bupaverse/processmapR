@@ -102,12 +102,13 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		ifelse(node %in% c("Start"), true, false)
 	}
 
+
 	nodes_performance <- function(precedence, type) {
 
 		precedence %>%
 			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))) %>%
 			group_by(act, from_id) %>%
-			summarize(label = type(duration)) %>%
+			summarize(label = type(duration, na.rm = T)) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(color_level = label,
@@ -117,6 +118,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 				   tooltip = paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
 				   label = if_end(act, act, tooltip))
 	}
+
 
 	nodes_frequency <- function(precedence, type, n_cases) {
 
@@ -147,7 +149,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units")),
 									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units")))) %>%
 			group_by(act, next_act, from_id, to_id) %>%
-			summarize(value = type(time),
+			summarize(value = type(time, na.rm = T),
 					  label = paste0(round(type(time),2), " ", attr(type, "units"))) %>%
 			na.omit() %>%
 			ungroup() %>%
@@ -183,6 +185,9 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		edges_frequency(base_precedence, type, n_cases(eventlog)) -> edges
 	} else if(perspective == "performance")
 		edges_performance(base_precedence, type) -> edges
+
+
+
 
 
 	nodes %>%
