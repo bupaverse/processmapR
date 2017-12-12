@@ -49,6 +49,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 	}
 
 
+
 	eventlog %>%
 		as.data.frame() %>%
 		droplevels %>%
@@ -79,18 +80,19 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		mutate(node_id = 1:n()) -> base_nodes
 
 	suppressWarnings(base_log %>%
-		ungroup() %>%
-		mutate(act = ordered(act, levels = c("Start", as.character(activity_labels(eventlog)), "End"))) %>%
-		group_by(case) %>%
-		arrange(start_time, act) %>%
-		mutate(next_act = lead(act),
-			   next_start_time = lead(start_time),
-			   next_end_time = lead(end_time)) %>%
-		full_join(base_nodes, by = c("act" = "act")) %>%
-		rename(from_id = node_id) %>%
-		full_join(base_nodes, by = c("next_act" = "act")) %>%
-		rename(to_id = node_id) %>%
-		select(-n.x, -n.y) -> base_precedence)
+					 	ungroup() %>%
+					 	mutate(act = ordered(act, levels = c("Start", as.character(activity_labels(eventlog)), "End"))) %>%
+					 	group_by(case) %>%
+					 	arrange(start_time, act) %>%
+					 	mutate(next_act = lead(act),
+					 		   next_start_time = lead(start_time),
+					 		   next_end_time = lead(end_time)) %>%
+					 	full_join(base_nodes, by = c("act" = "act")) %>%
+					 	rename(from_id = node_id) %>%
+					 	full_join(base_nodes, by = c("next_act" = "act")) %>%
+					 	rename(to_id = node_id) %>%
+					 	select(-n.x, -n.y) %>%
+					 	ungroup() -> base_precedence)
 
 
 	if_end <- function(node, true, false) {
@@ -106,7 +108,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		precedence %>%
 			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))) %>%
 			group_by(act, from_id) %>%
-			summarize(label = type(duration)) %>%
+			summarize(label = type(duration, na.rm = T)) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(color_level = label,
@@ -116,6 +118,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 				   tooltip = paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
 				   label = if_end(act, act, tooltip))
 	}
+
 
 	nodes_frequency <- function(precedence, type, n_cases) {
 
@@ -146,8 +149,8 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units")),
 									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units")))) %>%
 			group_by(act, next_act, from_id, to_id) %>%
-			summarize(value = type(time),
-					  label = paste0(round(type(time),2), " ", attr(type, "units"))) %>%
+			summarize(value = type(time, na.rm = T),
+					  label = paste0(round(type(time, na.rm = T),2), " ", attr(type, "units"))) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(value, to = c(1,5))) %>%
@@ -182,6 +185,9 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		edges_frequency(base_precedence, type, n_cases(eventlog)) -> edges
 	} else if(perspective == "performance")
 		edges_performance(base_precedence, type) -> edges
+
+
+
 
 
 	nodes %>%
