@@ -49,6 +49,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 	}
 
 
+
 	eventlog %>%
 		as.data.frame() %>%
 		droplevels %>%
@@ -79,18 +80,23 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		mutate(node_id = 1:n()) -> base_nodes
 
 	suppressWarnings(base_log %>%
-		ungroup() %>%
-		mutate(act = ordered(act, levels = c("Start", as.character(activity_labels(eventlog)), "End"))) %>%
-		group_by(case) %>%
-		arrange(start_time, act) %>%
-		mutate(next_act = lead(act),
-			   next_start_time = lead(start_time),
-			   next_end_time = lead(end_time)) %>%
-		full_join(base_nodes, by = c("act" = "act")) %>%
-		rename(from_id = node_id) %>%
-		full_join(base_nodes, by = c("next_act" = "act")) %>%
-		rename(to_id = node_id) %>%
-		select(-n.x, -n.y) -> base_precedence)
+					 	ungroup() %>%
+					 	mutate(act = ordered(act, levels = c("Start", as.character(activity_labels(eventlog)), "End"))) %>%
+					 	group_by(case) %>%
+					 	arrange(start_time, act) %>%
+					 	mutate(next_act = lead(act),
+					 		   next_start_time = lead(start_time),
+					 		   next_end_time = lead(end_time)) %>%
+					 	full_join(base_nodes, by = c("act" = "act")) %>%
+					 	rename(from_id = node_id) %>%
+					 	full_join(base_nodes, by = c("next_act" = "act")) %>%
+					 	rename(to_id = node_id) %>%
+					 	select(-n.x, -n.y) %>%
+					 	ungroup() -> base_precedence)
+
+	temp <- list()
+
+	temp[[1]] <- (base_precedence %>% select(from_id, to_id) %>% unique)
 
 
 	if_end <- function(node, true, false) {
@@ -99,7 +105,6 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 	if_start <- function(node, true, false) {
 		ifelse(node %in% c("Start"), true, false)
 	}
-
 
 	nodes_performance <- function(precedence, type) {
 
@@ -182,6 +187,12 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 		edges_frequency(base_precedence, type, n_cases(eventlog)) -> edges
 	} else if(perspective == "performance")
 		edges_performance(base_precedence, type) -> edges
+
+
+	temp[[2]] <- nodes %>% select(from_id)
+	temp[[3]] <- edges %>% select(from_id, to_id)
+	return(temp)
+
 
 
 	nodes %>%
