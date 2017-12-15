@@ -41,7 +41,6 @@ dotted_chart_data <- function(eventlog, color, units) {
 	end <- NULL
 	start_case <- NULL
 	end_case <- NULL
-	color <- NULL
 
 	if(is.null(color)) {
 		eventlog %>%
