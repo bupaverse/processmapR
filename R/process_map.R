@@ -6,6 +6,7 @@
 #' @param eventlog The event log object for which to create a process map
 #' @param type A process map type, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
+#' @param force Force the rendering of the map, even with a large number of traces
 #'
 #'
 #' @examples
@@ -19,7 +20,7 @@
 
 
 
-process_map <- function(eventlog, type = frequency("absolute") , render = T) {
+process_map <- function(eventlog, type = frequency("absolute") , render = T, force = F) {
 
 	act <- NULL
 	aid <- NULL
@@ -39,7 +40,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T) {
 	value <- NULL
 	color_level <- NULL
 
-	if(n_traces(eventlog) > 750) {
+	if(!force && n_traces(eventlog) > 750) {
 		message("You are about to draw a process map with a lot of traces.
 				This might take a long time. Try to filter your event log. Are you sure you want to proceed?")
 		answer <- readline("Y/N: ")
