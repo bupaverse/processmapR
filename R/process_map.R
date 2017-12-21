@@ -114,26 +114,26 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T, for
 			ungroup() %>%
 			mutate(color_level = label,
 				   shape = if_end(act,"circle","rectangle"),
-				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= quantile(label, 0.65), "black","white")),
+				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
 				   tooltip = paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
 				   label = if_end(act, act, tooltip))
 	}
 
 
-	nodes_frequency <- function(precedence, type, n_cases) {
+	nodes_frequency <- function(precedence, type, n_cases, n_activity_instances) {
 
 		precedence %>%
 			group_by(act, from_id) %>%
 			summarize(n = as.double(n()),
 					  n_distinct_cases = as.double(n_distinct(case))) %>%
 			ungroup() %>%
-			mutate(label = case_when(type == "relative" ~ 100*n/sum(n),
+			mutate(label = case_when(type == "relative" ~ 100*n/n_activity_instances,
 									 type == "absolute" ~ n,
 									 type == "relative_case" ~ 100*n_distinct_cases/n_cases)) %>%
 			mutate(color_level = label,
 				   shape = if_end(act,"circle","rectangle"),
-				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= quantile(label, 0.4), "black","white")),
+				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
 				   tooltip = paste0(act, "\n (", round(label, 2), ifelse(type == "absolute","", "%"),")"),
 				   label = if_end(act, act, tooltip)) %>%
@@ -177,7 +177,7 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T, for
 
 
 	if(perspective == "frequency") {
-		nodes_frequency(base_precedence, type, n_cases(eventlog)) -> nodes
+		nodes_frequency(base_precedence, type, n_cases(eventlog), n_activity_instances(eventlog)) -> nodes
 	} else if(perspective == "performance")
 		nodes_performance(base_precedence, type) -> nodes
 
