@@ -4,7 +4,7 @@
 \alias{frequency}
 \title{Frequency map profile}
 \usage{
-frequency(value = c("absolute", "relative", "relative_case"))
+frequency(value = c("absolute", "relative", "absolute_case", "relative_case"))
 }
 \arguments{
 \item{value}{The type of frequency value to be used:

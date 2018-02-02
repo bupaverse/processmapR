@@ -130,6 +130,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 			ungroup() %>%
 			mutate(label = case_when(type == "relative" ~ 100*n/n_activity_instances,
 									 type == "absolute" ~ n,
+									 type == "absolute_case" ~ n_distinct_cases,
 									 type == "relative_case" ~ 100*n_distinct_cases/n_cases)) %>%
 			mutate(color_level = label,
 				   shape = if_end(act,"circle","rectangle"),
@@ -168,6 +169,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 			group_by(act, from_id) %>%
 			mutate(label = case_when(type == "relative" ~ round(100*n/sum(n),2),
 									 type == "absolute" ~ n,
+									 type == "absolute_case" ~ n_distinct_cases,
 									 type == "relative_case" ~ round(100*n_distinct_cases/n_cases, 2))) %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(label, to = c(1,5)))
