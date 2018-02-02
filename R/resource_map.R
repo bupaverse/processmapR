@@ -4,8 +4,9 @@
 #'
 #' @description A function for creating a resource map of an event log based on handover of work.
 #' @param eventlog The event log object for which to create a resource map
+#' @param type A process map type, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
-#'
+#' @param force Force the rendering of the map, even with a large number of traces
 #'
 #' @examples
 #' \dontrun{
@@ -18,7 +19,7 @@
 
 
 
-resource_map <- function(eventlog, render = T) {
+resource_map <- function(eventlog, type = frequency("absolute"), render = T, force = F) {
 	event_classifier <- activity_id(eventlog)
 	resource_classifier <- resource_id(eventlog)
 
@@ -30,7 +31,7 @@ resource_map <- function(eventlog, render = T) {
 
 	eventlog %>%
 		set_names(n) %>%
-		process_map(render = render)
+		process_map(render = render, type = type, force = force)
 
 
 }

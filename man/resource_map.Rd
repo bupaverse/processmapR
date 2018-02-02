@@ -4,12 +4,17 @@
 \alias{resource_map}
 \title{Resource Map}
 \usage{
-resource_map(eventlog, render = T)
+resource_map(eventlog, type = frequency("absolute"), render = T,
+  force = F)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a resource map}
 
+\item{type}{A process map type, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.}
+
 \item{render}{Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.}
+
+\item{force}{Force the rendering of the map, even with a large number of traces}
 }
 \description{
 A function for creating a resource map of an event log based on handover of work.

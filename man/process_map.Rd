@@ -4,7 +4,8 @@
 \alias{process_map}
 \title{Process Map}
 \usage{
-process_map(eventlog, type = frequency("absolute"), render = T, force = F)
+process_map(eventlog, type = frequency("absolute"), type_nodes = type,
+  type_edges = type, render = T, force = F)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a process map}

@@ -20,7 +20,7 @@
 
 
 
-process_map <- function(eventlog, type = frequency("absolute") , render = T, force = F) {
+process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type , render = T, force = F) {
 
 	act <- NULL
 	aid <- NULL
@@ -173,19 +173,20 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T, for
 			mutate(penwidth = rescale(label, to = c(1,5)))
 	}
 
-	perspective <- attr(type, "perspective")
+	perspective_nodes <- attr(type_nodes, "perspective")
+	perspective_edges <- attr(type_edges, "perspective")
 
 
-	if(perspective == "frequency") {
-		nodes_frequency(base_precedence, type, n_cases(eventlog), n_activity_instances(eventlog)) -> nodes
-	} else if(perspective == "performance")
-		nodes_performance(base_precedence, type) -> nodes
+	if(perspective_nodes == "frequency") {
+		nodes_frequency(base_precedence, type_nodes, n_cases(eventlog), n_activity_instances(eventlog)) -> nodes
+	} else if(perspective_nodes == "performance")
+		nodes_performance(base_precedence, type_nodes) -> nodes
 
 
-	if(perspective == "frequency") {
-		edges_frequency(base_precedence, type, n_cases(eventlog)) -> edges
-	} else if(perspective == "performance")
-		edges_performance(base_precedence, type) -> edges
+	if(perspective_edges == "frequency") {
+		edges_frequency(base_precedence, type_edges, n_cases(eventlog)) -> edges
+	} else if(perspective_edges == "performance")
+		edges_performance(base_precedence, type_edges) -> edges
 
 
 
@@ -214,14 +215,14 @@ process_map <- function(eventlog, type = frequency("absolute") , render = T, for
 				   to = edges$to_id,
 				   label = edges$label,
 				   penwidth = edges$penwidth,
-				   color = ifelse(perspective == "performance", "red4", "dodgerblue4"),
+				   color = ifelse(perspective_edges == "performance", "red4", "dodgerblue4"),
 				   fontname = "Arial") -> edges_df
 
 	create_graph(nodes_df, edges_df) %>%
 		set_global_graph_attrs(attr = "rankdir", value = "LR",attr_type = "graph") %>%
 		colorize_node_attrs(node_attr_from = "color_level",
 							node_attr_to = "fillcolor",
-							palette = ifelse(perspective == "performance", "Reds", "PuBu"),
+							palette = ifelse(perspective_nodes == "performance", "Reds", "PuBu"),
 							default_color = "white",
 							cut_points = seq(min_level-0.1, max_level+.1, length.out = 9)) -> graph
 
