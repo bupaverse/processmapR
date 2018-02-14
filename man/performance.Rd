@@ -4,8 +4,8 @@
 \alias{performance}
 \title{Performance map profile}
 \usage{
-performance(FUN = mean, units = "days", flow_time = c("inter_start_time",
-  "idle_time"))
+performance(FUN = mean, units = "days", flow_time = c("idle_time",
+  "inter_start_time"))
 }
 \arguments{
 \item{FUN}{A summary function to be called on the process time of a specific activity, e.g. mean, median, min, max}

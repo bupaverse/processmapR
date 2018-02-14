@@ -136,7 +136,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 				   shape = if_end(act,"circle","rectangle"),
 				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
-				   tooltip = paste0(act, "\n (", round(label, 2), ifelse(type == "absolute","", "%"),")"),
+				   tooltip = paste0(act, "\n (", round(label, 2), ifelse(type %in% c("absolute", "absolute_case"),"", "%"),")"),
 				   label = if_end(act, act, tooltip)) %>%
 			na.omit()
 	}
