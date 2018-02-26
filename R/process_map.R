@@ -156,7 +156,8 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 			na.omit() %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(value, to = c(1,5))) %>%
-			mutate(label = if_end(act, "", if_end(next_act, "", label)))
+			mutate(label = if_end(act, " ", if_end(next_act, " ", label))) %>%
+			select(-value)
 	}
 
 	edges_frequency <- function(precedence, type, n_cases) {
@@ -208,6 +209,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 				   color = nodes$color,
 				   tooltip = nodes$tooltip,
 				   penwidth = 1.5,
+				   fixedsize = FALSE,
 				   fontname = "Arial") -> nodes_df
 
 	min_level <- min(nodes_df$color_level)
@@ -221,7 +223,8 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 				   fontname = "Arial") -> edges_df
 
 	create_graph(nodes_df, edges_df) %>%
-		set_global_graph_attrs(attr = "rankdir", value = "LR",attr_type = "graph") %>%
+		add_global_graph_attrs(attr = "rankdir", value = "TB",attr_type = "graph") %>%
+		add_global_graph_attrs(attr = "layout", value = "dot", attr_type = "graph") %>%
 		colorize_node_attrs(node_attr_from = "color_level",
 							node_attr_to = "fillcolor",
 							palette = ifelse(perspective_nodes == "performance", "Reds", "PuBu"),
