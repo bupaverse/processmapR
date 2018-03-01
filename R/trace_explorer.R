@@ -43,12 +43,13 @@ trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage
 				"timestamp_classifier" = timestamp(eventlog)) %>%
 		as.data.frame %>%
 		group_by(case_classifier, event_classifier, aid) %>%
-		summarize(ts = min(timestamp_classifier)) %>%
+		summarize(ts = min(timestamp_classifier),
+				  min_order = min(.order)) %>%
 		inner_join(cases, by = "case_classifier") %>%
 		group_by(trace_id) %>%
 		filter(case_classifier == first(case_classifier)) %>%
 		inner_join(traces, by = "trace") %>%
-		arrange(ts, event_classifier) %>%
+		arrange(ts, min_order) %>%
 		mutate(rank_event = seq_len(n()))  -> temp
 
 	if(type == "frequent")

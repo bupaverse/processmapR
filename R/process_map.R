@@ -40,40 +40,32 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 	value <- NULL
 	color_level <- NULL
 
-	if(!force && n_traces(eventlog) > 750) {
-		message("You are about to draw a process map with a lot of traces.
-				This might take a long time. Try to filter your event log. Are you sure you want to proceed?")
-		answer <- readline("Y/N: ")
-
-		if(answer != "Y")
-			break()
-	}
-
-
-
 	eventlog %>%
 		as.data.frame() %>%
 		droplevels %>%
 		select(act = !!activity_id_(eventlog),
 			   aid = !!activity_instance_id_(eventlog),
 			   case = !!case_id_(eventlog),
-			   time = !!timestamp_(eventlog)) %>%
+			   time = !!timestamp_(eventlog),
+			   .order) %>%
 		group_by(act, aid, case) %>%
 		summarize(start_time = min(time),
-				  end_time = max(time)) -> base_log
+				  end_time = max(time),
+				  min_order = min(.order)) -> base_log
 
 
 	base_log %>%
 		group_by(case) %>%
-		arrange(start_time) %>%
+		arrange(start_time, min_order) %>%
 		slice(c(1,n())) %>%
 		mutate(act = c("Start","End")) %>%
 		mutate(start_time = recode(act, "End" = end_time, .default = start_time)) %>%
-		mutate(end_time = recode(act, "Start" = start_time, .default = end_time)) -> end_points
+		mutate(end_time = recode(act, "Start" = start_time, .default = end_time)) %>%
+		mutate(min_order = recode(act, "End" = Inf, "Start" = -Inf)) -> end_points
 
 
-	base_log  %>%
-		bind_rows(end_points) -> base_log
+	suppressWarnings(base_log  %>%
+		bind_rows(end_points) -> base_log)
 
 	base_log %>%
 		ungroup() %>%
@@ -84,7 +76,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 					 	ungroup() %>%
 					 	mutate(act = ordered(act, levels = c("Start", as.character(sort(activity_labels(eventlog))), "End"))) %>%
 					 	group_by(case) %>%
-					 	arrange(start_time, act) %>%
+					 	arrange(start_time, min_order) %>%
 					 	mutate(next_act = lead(act),
 					 		   next_start_time = lead(start_time),
 					 		   next_end_time = lead(end_time)) %>%
@@ -200,6 +192,17 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 		mutate(color_level = if_end(act, Inf, color_level)) -> nodes
 
 
+
+
+	if(!force && nrow(edges) > 750) {
+		message("You are about to draw a large process map.
+				This might take a long time and render unreadable. Try to filter your event log. Are you sure you want to proceed?")
+		answer <- readline("Y/N: ")
+
+		if(answer != "Y")
+			break()
+	}
+
 	create_node_df(n = nrow(nodes),
 				   label = nodes$label,
 				   shape = nodes$shape,
@@ -214,6 +217,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 
 	min_level <- min(nodes_df$color_level)
 	max_level <- max(nodes_df$color_level[nodes_df$color_level < Inf])
+
 
 	create_edge_df(from = edges$from_id,
 				   to = edges$to_id,
