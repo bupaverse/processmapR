@@ -41,9 +41,9 @@ resource_matrix <- function(eventlog, type = c("absolute","relative","relative_a
 
 	log %>%
 		group_by(case_classifier, resource_classifier, aid) %>%
-		summarize(ts = min(timestamp_classifier))  %>%
+		summarize(ts = min(timestamp_classifier), min_order = min(.order))  %>%
 		group_by(case_classifier) %>%
-		arrange(ts) %>%
+		arrange(ts, min_order) %>%
 		mutate(antecedent = resource_classifier,
 			   consequent = lead(resource_classifier)) %>%
 		ungroup() %>%
