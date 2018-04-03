@@ -53,15 +53,22 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 				  end_time = max(time),
 				  min_order = min(.order)) -> base_log
 
-
 	base_log %>%
 		group_by(case) %>%
-		arrange(start_time, min_order) %>%
-		slice(c(1,n())) %>%
-		mutate(act = c("Start","End")) %>%
-		mutate(start_time = recode(act, "End" = end_time, .default = start_time)) %>%
-		mutate(end_time = recode(act, "Start" = start_time, .default = end_time)) %>%
-		mutate(min_order = recode(act, "End" = Inf, "Start" = -Inf)) -> end_points
+		arrange(start_time, min_order) -> points_temp
+
+	points_temp %>%
+		slice(c(1)) %>%
+		mutate(act = "Start",
+			   end_time = start_time,
+			   min_order = -Inf) -> end_points_start
+	points_temp %>%
+		slice(c(n())) %>%
+		mutate(act = "End",
+			   start_time = end_time,
+			   min_order = Inf) -> end_points_end
+
+	bind_rows(end_points_start, end_points_end) -> end_points
 
 
 	suppressWarnings(base_log  %>%
