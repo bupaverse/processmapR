@@ -3,6 +3,7 @@
 S3method(dotted_chart,eventlog)
 S3method(dotted_chart,grouped_eventlog)
 S3method(plot,precedence_matrix)
+export(custom)
 export(dotted_chart)
 export(frequency)
 export(idotted_chart)

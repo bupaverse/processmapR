@@ -47,11 +47,38 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 			   aid = !!activity_instance_id_(eventlog),
 			   case = !!case_id_(eventlog),
 			   time = !!timestamp_(eventlog),
-			   .order) %>%
-		group_by(act, aid, case) %>%
-		summarize(start_time = min(time),
-				  end_time = max(time),
-				  min_order = min(.order)) -> base_log
+			   .order,
+			   everything()) %>%
+		group_by(act, aid, case) -> grouped_log
+
+	perspective_nodes <- attr(type_nodes, "perspective")
+	perspective_edges <- attr(type_edges, "perspective")
+
+	if(perspective_nodes == "custom" && perspective_edges == "custom") {
+		attributeNode <- sym(attr(type_nodes, "attribute"))
+		attributeEdge <- sym(attr(type_edges, "attribute"))
+		grouped_log %>% summarize(start_time = min(time),
+								  end_time = max(time),
+								  min_order = min(.order),
+								  !!attributeNode := first(!!attributeNode),
+								  !!attributeEdge := first(!!attributeEdge)) -> base_log
+	} else if(perspective_nodes == "custom") {
+		attribute <- sym(attr(type_nodes, "attribute"))
+		grouped_log %>% summarize(start_time = min(time),
+								  end_time = max(time),
+								  min_order = min(.order),
+								  !!attribute := first(!!attribute)) -> base_log
+	} else if (perspective_edges == "custom") {
+		attribute <- sym(attr(type_edges, "attribute"))
+		grouped_log %>% summarize(start_time = min(time),
+								  end_time = max(time),
+								  min_order = min(.order),
+								  !!attribute := first(!!attribute)) -> base_log
+	} else {
+		grouped_log %>% summarize(start_time = min(time),
+								  end_time = max(time),
+								  min_order = min(.order)) -> base_log
+	}
 
 	base_log %>%
 		group_by(case) %>%
@@ -140,6 +167,24 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 			na.omit()
 	}
 
+	nodes_custom <- function(precedence, type) {
+
+		attribute <- sym(attr(type, "attribute"))
+
+		precedence %>%
+			group_by(act, from_id) %>%
+			summarize(label = type(!!attribute, na.rm = T)) %>%
+			na.omit() %>%
+			ungroup() %>%
+			mutate(color_level = label,
+				   shape = if_end(act,"circle","rectangle"),
+				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
+				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
+				   tooltip =  paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
+				   label = paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
+				   label = if_end(act, act, tooltip))
+	}
+
 
 	edges_performance <- function(precedence, type) {
 
@@ -175,20 +220,38 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 			mutate(penwidth = rescale(label, to = c(1,5)))
 	}
 
-	perspective_nodes <- attr(type_nodes, "perspective")
-	perspective_edges <- attr(type_edges, "perspective")
+	edges_custom <- function(precedence, type) {
+
+		attribute <- sym(attr(type, "attribute"))
+
+		precedence %>%
+			ungroup() %>%
+			group_by(act, next_act, from_id, to_id) %>%
+			summarize(value = type(!!attribute, na.rm = T),
+					  label = round(type(!!attribute, na.rm = T),2)) %>%
+			na.omit() %>%
+			ungroup() %>%
+			mutate(penwidth = rescale(value, to = c(1,5))) %>%
+			mutate(label = paste0(label, " ", attr(type, "units"))) %>%
+			select(-value)
+
+	}
 
 
-	if(perspective_nodes == "frequency") {
+	if(perspective_nodes == "frequency")
 		nodes_frequency(base_precedence, type_nodes, n_cases(eventlog), n_activity_instances(eventlog)) -> nodes
-	} else if(perspective_nodes == "performance")
+	else if(perspective_nodes == "performance")
 		nodes_performance(base_precedence, type_nodes) -> nodes
+	else if(perspective_nodes == "custom")
+		nodes_custom(base_precedence, type_nodes) -> nodes
 
 
-	if(perspective_edges == "frequency") {
+	if(perspective_edges == "frequency")
 		edges_frequency(base_precedence, type_edges, n_cases(eventlog)) -> edges
-	} else if(perspective_edges == "performance")
+	else if(perspective_edges == "performance")
 		edges_performance(base_precedence, type_edges) -> edges
+	else if(perspective_edges == "custom")
+		edges_custom(base_precedence, type_edges) -> edges
 
 
 
