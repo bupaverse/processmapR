@@ -30,7 +30,13 @@ data(traffic_fines)
 # using zoo::na.locf instead of tidyr::fill since it is much faster
 # still the whole pre-processing is still very slow
 library(zoo)
-traffic_fines_prepared <- traffic_fines \%>\% filter_trace_frequency(percentage = 0.8) \%>\% group_by_case() \%>\% mutate(amount = na.locf(amount, na.rm = F)) \%>\% ungroup_eventlog()
+
+traffic_fines_prepared <- traffic_fines \%>\%
+filter_trace_frequency(percentage = 0.8) \%>\%
+group_by_case() \%>\%
+mutate(amount = na.locf(amount, na.rm = F)) \%>\%
+ungroup_eventlog()
+
 process_map(traffic_fines_prepared, type_nodes = custom(attribute = "amount", units = "EUR"))
 }
 
