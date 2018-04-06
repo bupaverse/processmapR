@@ -1,8 +1,10 @@
 #' @title Custom map profile
 #' @description Function to create a custom map profile based on some event log attribute.
-#' @param FUN A summary function to be called on the provided event attribute, e.g. mean, median, min, max
-#' @param attribute The name of the case attribute to visualize
-#'
+#' @details If used for edges, it will show the attribute values which related to the out-going node of the edge.#'
+#' @param FUN A summary function to be called on the provided event attribute, e.g. mean, median, min, max. na.rm = T by default.
+#' @param attribute The name of the case attribute to visualize (should be numeric)
+#' @param units Character to be placed after values (e.g. EUR for monitary euro values)
+#' @param color_scale Name of color scale to be used for nodes. Defaults to PuBu. See `Rcolorbrewer::brewer.pal.info()` for all options.
 #' @examples
 #' \dontrun{
 #' library(eventdataR)
@@ -21,9 +23,10 @@
 
 
 
-custom <- function(FUN = mean, attribute, units = "") {
+custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu") {
   attr(FUN, "attribute") <- attribute
   attr(FUN, "units") <- units
   attr(FUN, "perspective") <- "custom"
+  attr(FUN, "color") <- color_scale
   return(FUN)
 }

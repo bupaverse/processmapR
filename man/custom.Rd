@@ -4,15 +4,22 @@
 \alias{custom}
 \title{Custom map profile}
 \usage{
-custom(FUN = mean, attribute, units = "")
+custom(FUN = mean, attribute, units = "", color_scale = "PuBu")
 }
 \arguments{
-\item{FUN}{A summary function to be called on the provided event attribute, e.g. mean, median, min, max}
+\item{FUN}{A summary function to be called on the provided event attribute, e.g. mean, median, min, max. na.rm = T by default.}
 
-\item{attribute}{The name of the case attribute to visualize}
+\item{attribute}{The name of the case attribute to visualize (should be numeric)}
+
+\item{units}{Character to be placed after values (e.g. EUR for monitary euro values)}
+
+\item{color_scale}{Name of color scale to be used for nodes. Defaults to PuBu. See `Rcolorbrewer::brewer.pal.info()` for all options.}
 }
 \description{
 Function to create a custom map profile based on some event log attribute.
+}
+\details{
+If used for edges, it will show the attribute values which related to the out-going node of the edge.#'
 }
 \examples{
 \dontrun{
@@ -20,9 +27,10 @@ library(eventdataR)
 library(processmapR)
 data(traffic_fines)
 # make sure the amount attribute is propagated forward in each trace
-# note that zoo::na.locf is much faster than tidyr::fill still it is incredibly slow for what it does
+# using zoo::na.locf instead of tidyr::fill since it is much faster
+# still the whole pre-processing is still very slow
 library(zoo)
-traffic_fines_prepared <- traffic_fines \%>\% group_by_case() \%>\% mutate(amount = na.locf(amount, na.rm = F)) \%>\% ungroup_eventlog() \%>\% filter_trace_frequency(percentage = 0.8)
+traffic_fines_prepared <- traffic_fines \%>\% filter_trace_frequency(percentage = 0.8) \%>\% group_by_case() \%>\% mutate(amount = na.locf(amount, na.rm = F)) \%>\% ungroup_eventlog()
 process_map(traffic_fines_prepared, type_nodes = custom(attribute = "amount", units = "EUR"))
 }
 

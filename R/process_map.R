@@ -293,6 +293,10 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 	max_level <- max(nodes_df$color_level[nodes_df$color_level < Inf])
 
 
+
+
+
+
 	create_edge_df(from = edges$from_id,
 				   to = edges$to_id,
 				   label = edges$label,
@@ -305,7 +309,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 		add_global_graph_attrs(attr = "layout", value = "dot", attr_type = "graph") %>%
 		colorize_node_attrs(node_attr_from = "color_level",
 							node_attr_to = "fillcolor",
-							palette = ifelse(perspective_nodes == "performance", "Reds", "PuBu"),
+							palette = attr(type_nodes, "color"),
 							default_color = "white",
 							cut_points = seq(min_level-0.1, max_level+.1, length.out = 9)) -> graph
 
