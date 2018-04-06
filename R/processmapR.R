@@ -37,4 +37,4 @@
 #' @importFrom plotly renderPlotly
 #' @importFrom plotly plotlyOutput
 
-globalVariables(".")
+globalVariables(c(".", ".order"))

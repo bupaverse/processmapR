@@ -20,6 +20,7 @@
 resource_matrix <- function(eventlog, type = c("absolute","relative","relative_antecedent","relative_consequent")) {
 
 	stopifnot("eventlog" %in% class(eventlog))
+	min_order <- NULL
 
 	type <- match.arg(type)
 	log <- eventlog

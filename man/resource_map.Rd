@@ -4,8 +4,7 @@
 \alias{resource_map}
 \title{Resource Map}
 \usage{
-resource_map(eventlog, type = frequency("absolute"), render = T,
-  force = F)
+resource_map(eventlog, type = frequency("absolute"), render = T, ...)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a resource map}
@@ -14,7 +13,7 @@ resource_map(eventlog, type = frequency("absolute"), render = T,
 
 \item{render}{Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.}
 
-\item{force}{Force the rendering of the map, even with a large number of traces}
+\item{...}{Deprecated arguments}
 }
 \description{
 A function for creating a resource map of an event log based on handover of work.
