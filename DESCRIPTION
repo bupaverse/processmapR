@@ -1,7 +1,7 @@
 Package: processmapR
 Type: Package
 Title: Construct Process Maps Using Event Data
-Version: 0.3.0
+Version: 0.3.0.9000
 Date: 2018-03-26
 Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhasselt.be", role = c("aut","cre")),
  person("Benoît","Depaire",email = "benoit.depaire@uhasselt.be", role = c("ctb")),
