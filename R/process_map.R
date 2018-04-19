@@ -23,7 +23,7 @@
 
 
 
-process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type , render = T, ...) {
+process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type , render = T, fixed_edge_width = F, ...) {
 
 	min_order <- NULL
 	act <- NULL
@@ -258,6 +258,9 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 		edges_custom(base_precedence, type_edges) -> edges
 
 
+	if(fixed_edge_width) {
+		edges %>% mutate(penwidth = 1) -> edges
+	}
 
 
 
