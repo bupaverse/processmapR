@@ -292,11 +292,6 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 	min_level <- min(nodes_df$color_level)
 	max_level <- max(nodes_df$color_level[nodes_df$color_level < Inf])
 
-
-
-
-
-
 	create_edge_df(from = edges$from_id,
 				   to = edges$to_id,
 				   label = edges$label,
@@ -315,8 +310,13 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 
 
 	if(render == T) {
-		graph %>% render_graph() %>% return()
-	} else
+		graph %>% render_graph() -> graph
+		attr(graph, "base_precedence") <- base_precedence
+
 		graph %>% return()
+	} else  {
+		attr(graph, "base_precedence") <- base_precedence
+		graph %>% return()
+	}
 
 }
