@@ -7,6 +7,7 @@
 #' @param type A process map type, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
 #' @param type_edges A process map type to be used for edges only, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
 #' @param type_nodes A process map type to be used for nodes only, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
+#' @param rankdir The direction in which to layout the graph: "TB", "LR", "BT", "RL", corresponding to directed graphs drawn from top to bottom, from left to right, from bottom to top, and from right to left, respectively.
 
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
 #' @param ... Deprecated arguments
@@ -23,7 +24,7 @@
 
 
 
-process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type , render = T, fixed_edge_width = F, ...) {
+process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type, rankdir = "TB", render = T, fixed_edge_width = F, ...) {
 
 	min_order <- NULL
 	act <- NULL
@@ -303,7 +304,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 				   fontname = "Arial") -> edges_df
 
 	create_graph(nodes_df, edges_df) %>%
-		add_global_graph_attrs(attr = "rankdir", value = "TB",attr_type = "graph") %>%
+		add_global_graph_attrs(attr = "rankdir", value = rankdir,attr_type = "graph") %>%
 		add_global_graph_attrs(attr = "layout", value = "dot", attr_type = "graph") %>%
 		colorize_node_attrs(node_attr_from = "color_level",
 							node_attr_to = "fillcolor",
