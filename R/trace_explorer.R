@@ -13,6 +13,7 @@ trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage
 	stopifnot("eventlog" %in% class(eventlog))
 	type <- match.arg(type)
 
+	min_order <- NULL
 
 	event_classifier <- NULL
 	absolute_frequency <- NULL

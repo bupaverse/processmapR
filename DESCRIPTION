@@ -1,8 +1,8 @@
 Package: processmapR
 Type: Package
 Title: Construct Process Maps Using Event Data
-Version: 0.2.1
-Date: 2017-12-04
+Version: 0.3.0.9000
+Date: 2018-03-26
 Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhasselt.be", role = c("aut","cre")),
  person("Benoît","Depaire",email = "benoit.depaire@uhasselt.be", role = c("ctb")),
  person("Felix","Mannhardt",email = "Felix.Mannhardt@sintef.no", role = c("ctb")),
@@ -11,7 +11,7 @@ Description: Visualize of process maps based on
     event logs, in the form of directed graphs. Part of the 'bupaR' framework.
 License: MIT + file LICENSE
 Imports:
-    dplyr,bupaR, edeaR, DiagrammeR, ggplot2, ggthemes, stringr, purrr, data.table, shiny, miniUI, glue, forcats, hms, RColorBrewer, plotly, rlang, scales
+    dplyr, bupaR (>= 0.4.0), edeaR (>= 0.8.0), DiagrammeR (>= 1.0.0), ggplot2, ggthemes, stringr, purrr, data.table, shiny, miniUI, glue, forcats, hms, RColorBrewer, plotly, rlang, scales
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

@@ -5,8 +5,11 @@
 #' @description A function for creating a process map of an event log.
 #' @param eventlog The event log object for which to create a process map
 #' @param type A process map type, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
+#' @param type_edges A process map type to be used for edges only, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
+#' @param type_nodes A process map type to be used for nodes only, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.
+
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
-#' @param force Force the rendering of the map, even with a large number of traces
+#' @param ... Deprecated arguments
 #'
 #'
 #' @examples
@@ -20,8 +23,9 @@
 
 
 
-process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type , render = T, force = F) {
+process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type , render = T, fixed_edge_width = F, ...) {
 
+	min_order <- NULL
 	act <- NULL
 	aid <- NULL
 	case <- NULL
@@ -217,7 +221,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 									 type == "absolute_case" ~ n_distinct_cases,
 									 type == "relative_case" ~ round(100*n_distinct_cases/n_cases, 2))) %>%
 			ungroup() %>%
-			mutate(penwidth = rescale(label, to = c(1,5)))
+			mutate(penwidth = rescale(label, to = c(1,5), from = c(0, max(label))))
 	}
 
 	edges_custom <- function(precedence, type) {
@@ -254,24 +258,27 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 		edges_custom(base_precedence, type_edges) -> edges
 
 
+	if(fixed_edge_width) {
+		edges %>% mutate(penwidth = 1) -> edges
+	}
 
 
 
 	nodes %>%
-		mutate(color_level = rescale(color_level)) %>%
+		mutate(color_level = rescale(color_level, from = c(0, max(color_level)))) %>%
 		mutate(color_level = if_end(act, Inf, color_level)) -> nodes
 
 
-
-
-	if(!force && nrow(edges) > 750) {
-		message("You are about to draw a large process map.
-				This might take a long time and render unreadable. Try to filter your event log. Are you sure you want to proceed?")
-		answer <- readline("Y/N: ")
-
-		if(answer != "Y")
-			break()
-	}
+#
+#
+# 	if(!force && nrow(edges) > 750) {
+# 		message("You are about to draw a large process map.
+# 				This might take a long time and render unreadable. Try to filter your event log. Are you sure you want to proceed?")
+# 		answer <- readline("Y/N: ")
+#
+# 		if(answer != "Y")
+# 			break()
+# 	}
 
 	create_node_df(n = nrow(nodes),
 				   label = nodes$label,
@@ -288,7 +295,6 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 	min_level <- min(nodes_df$color_level)
 	max_level <- max(nodes_df$color_level[nodes_df$color_level < Inf])
 
-
 	create_edge_df(from = edges$from_id,
 				   to = edges$to_id,
 				   label = edges$label,
@@ -301,14 +307,19 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 		add_global_graph_attrs(attr = "layout", value = "dot", attr_type = "graph") %>%
 		colorize_node_attrs(node_attr_from = "color_level",
 							node_attr_to = "fillcolor",
-							palette = ifelse(perspective_nodes == "performance", "Reds", "PuBu"),
+							palette = attr(type_nodes, "color"),
 							default_color = "white",
 							cut_points = seq(min_level-0.1, max_level+.1, length.out = 9)) -> graph
 
 
 	if(render == T) {
-		graph %>% render_graph() %>% return()
-	} else
+		graph %>% render_graph() -> graph
+		attr(graph, "base_precedence") <- base_precedence
+
 		graph %>% return()
+	} else  {
+		attr(graph, "base_precedence") <- base_precedence
+		graph %>% return()
+	}
 
 }
