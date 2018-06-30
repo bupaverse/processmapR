@@ -18,6 +18,7 @@ plot.precedence_matrix <- function(x, ...) {
 	rel_n <- NULL
 	rel_antecedent <- NULL
 	rel_consequent <- NULL
+	rel_n_cases <- NULL
 
 	if(type == "absolute") {
 
@@ -46,6 +47,19 @@ plot.precedence_matrix <- function(x, ...) {
 				  legend.position = "top")-> p
 		p <- p + labs(x = "Antecedent", y = "Consequent")
 
+
+		return(p)
+	} else if(type == "relative_case") {
+		x %>%
+			ggplot(aes(antecedent, consequent)) +
+			geom_tile(aes(fill = rel_n_cases)) +
+			geom_text(aes(label = round(rel_n_cases*100, 2)), color = "white", fontface = "bold") +
+			scale_fill_continuous_tableau(name = "Relative Frequency", palette = "Blue") +
+			theme_light() +
+			coord_flip() +
+			theme(axis.text.x = element_text(angle = 45, hjust = 1),
+				  legend.position = "top")-> p
+		p <- p + labs(x = "Antecedent", y = "Consequent")
 
 		return(p)
 	} else if(type == "relative_antecedent") {

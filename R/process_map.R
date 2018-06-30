@@ -10,6 +10,7 @@
 #' @param rankdir The direction in which to layout the graph:  "LR" (default),"TB", "BT", "RL", corresponding to directed graphs drawn from top to bottom, from left to right, from bottom to top, and from right to left, respectively.
 
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
+#' @param fixed_edge_width If TRUE, don't vary the width of edges.
 #' @param ... Deprecated arguments
 #'
 #'

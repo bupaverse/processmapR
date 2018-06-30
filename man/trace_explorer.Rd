@@ -4,15 +4,20 @@
 \alias{trace_explorer}
 \title{Trace explorer}
 \usage{
-trace_explorer(eventlog, type = c("frequent", "infrequent"), coverage = 0.2,
-  raw_data = F)
+trace_explorer(eventlog, coverage = 0.2, type = c("frequent", "infrequent"),
+  .abbreviate = T, scale_fill = scale_fill_discrete(h = c(0, 360) + 15, l =
+  40), raw_data = F)
 }
 \arguments{
 \item{eventlog}{Eventlog object}
 
+\item{coverage}{The percentage coverage of the trace to explore. Default is 20\% most (in)frequent}
+
 \item{type}{Frequent or infrequenct traces to explore}
 
-\item{coverage}{The percentage coverage of the trace to explore. Default is 20\% most (in)frequent}
+\item{.abbreviate}{If TRUE, abbreviate activity labels}
+
+\item{scale_fill}{Set color scale}
 
 \item{raw_data}{Retrun raw data}
 }

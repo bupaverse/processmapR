@@ -6,10 +6,18 @@
 #' @param type Frequent or infrequenct traces to explore
 #' @param coverage The percentage coverage of the trace to explore. Default is 20\% most (in)frequent
 #' @param raw_data Retrun raw data
+#' @param .abbreviate If TRUE, abbreviate activity labels
+#' @param scale_fill Set color scale
+#'
 #'
 #' @export trace_explorer
 #'
-trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage = 0.2, raw_data = F) {
+trace_explorer <- function(eventlog,
+						   coverage = 0.2,
+						   type = c("frequent","infrequent"),
+						   .abbreviate = T,
+						   scale_fill = scale_fill_discrete(h = c(0,360) + 15, l = 40),
+						   raw_data = F) {
 	stopifnot("eventlog" %in% class(eventlog))
 	type <- match.arg(type)
 
@@ -62,17 +70,29 @@ trace_explorer <- function(eventlog, type = c("frequent","infrequent"), coverage
 		stop("No traces selected. Consider increasing the coverage")
 	}
 
+	ABBR <- function(do_abbreviate) {
+		if(do_abbreviate) {
+			abbreviate
+		} else
+			function(value) {
+				str_wrap(value, 20)
+			}
+	}
+
+
 	if(raw_data)
 		temp
 	else {
+
 		temp %>%
 			ggplot(aes(rank_event, as.factor(trace_id))) +
 			geom_tile(aes(fill = event_classifier), color = "white") +
-			geom_text(aes(label = abbreviate(event_classifier)), color = "white",fontface = "bold") +
+			geom_text(aes(label = ABBR(.abbreviate)(event_classifier)), color = "white",fontface = "bold") +
 			facet_grid(reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)~.,scales = "free", space = "free") +
 			scale_y_discrete(breaks = NULL) +
 			labs(y = "Traces", x = "Activities") +
-			scale_fill_discrete(name = "Activities")  +
+			scale_fill  +
+			labs(fill = "Activity") +
 			theme_light() +
 			theme(strip.text.y = element_text(angle = 0))
 	}

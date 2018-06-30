@@ -17,7 +17,7 @@
 #'
 #' @export precedence_matrix
 
-precedence_matrix <- function(eventlog, type = c("absolute","relative","relative_antecedent","relative_consequent")) {
+precedence_matrix <- function(eventlog, type = c("absolute","relative","relative_antecedent","relative_consequent", "relative_case")) {
 	stopifnot("eventlog" %in% class(eventlog))
 
 	type <- match.arg(type)
@@ -31,20 +31,13 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 	ts <- NULL
 	min_order <- NULL
 
-	colnames(log)[colnames(log) == activity_id(eventlog)] <- "event_classifier"
-	colnames(log)[colnames(log) == case_id(eventlog)] <- "case_classifier"
-	colnames(log)[colnames(log) == timestamp(eventlog)] <- "timestamp_classifier"
-	colnames(log)[colnames(log) == activity_instance_id(eventlog)] <- "aid"
-
-
-
 	log %>%
-		group_by(case_classifier, event_classifier, aid) %>%
-		summarize(ts = min(timestamp_classifier), min_order = min(.order))  %>%
-		group_by(case_classifier) %>%
+		group_by(!!case_id_(eventlog), !!activity_id_(eventlog), !!activity_instance_id_(eventlog)) %>%
+		summarize(ts = min(!!timestamp_(eventlog)), min_order = min(.order))  %>%
+		group_by(!!case_id_(eventlog)) %>%
 		arrange(ts, min_order) %>%
-		mutate(antecedent = as.character(event_classifier),
-				  consequent = lead(as.character(event_classifier), default = "End")) -> temp
+		mutate(antecedent = as.character(!!activity_id_(eventlog)),
+				  consequent = lead(as.character(!!activity_id_(eventlog)), default = "End")) -> temp
 
 	temp %>%
 		arrange(ts, min_order) %>%
@@ -89,8 +82,33 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 			ungroup() -> log
 		class(log) <- c("precedence_matrix", class(log))
 		attr(log, "matrix_type") <- "relative_consequent"
-	} else {
-		stop("Argument type should be one of: absolute, relative, relative_antecedent, relative_consequent")
+	}
+	else if (type == "relative_case") {
+		temp %>%
+			arrange(ts, min_order) %>%
+			slice(1:1) %>%
+			mutate(consequent = antecedent,
+				   antecedent = "Start") %>%
+			bind_rows(temp) %>%
+			ungroup() %>%
+			select(!!case_id_(eventlog), antecedent, consequent) %>%
+			na.omit() %>%
+			group_by(antecedent, consequent) %>%
+			summarize(n_cases = n_distinct(!!case_id_(eventlog))) %>%
+			mutate(rel_n_cases = n_cases/n_cases(eventlog)) %>%
+			ungroup() -> log
+
+		n_consequents <- length(unique(log$consequent))
+
+		log %>%
+			mutate(antecedent = fct_relevel(antecedent, "Start"),
+				   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> log
+
+		class(log) <- c("precedence_matrix", class(log))
+		attr(log, "matrix_type") <- "relative_case"
+	}
+	else {
+		stop("Argument type should be one of: absolute, relative, relative_antecedent, relative_consequent, relative_case")
 	}
 
 	return(log)

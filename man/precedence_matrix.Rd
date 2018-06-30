@@ -5,7 +5,7 @@
 \title{Precendence Matrix}
 \usage{
 precedence_matrix(eventlog, type = c("absolute", "relative",
-  "relative_antecedent", "relative_consequent"))
+  "relative_antecedent", "relative_consequent", "relative_case"))
 }
 \arguments{
 \item{eventlog}{The event log object to be used}

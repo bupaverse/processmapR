@@ -5,7 +5,8 @@
 \title{Process Map}
 \usage{
 process_map(eventlog, type = frequency("absolute"), type_nodes = type,
-  type_edges = type, render = T, ...)
+  type_edges = type, rankdir = "LR", render = T, fixed_edge_width = F,
+  ...)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a process map}
@@ -16,7 +17,11 @@ process_map(eventlog, type = frequency("absolute"), type_nodes = type,
 
 \item{type_edges}{A process map type to be used for edges only, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.}
 
+\item{rankdir}{The direction in which to layout the graph:  "LR" (default),"TB", "BT", "RL", corresponding to directed graphs drawn from top to bottom, from left to right, from bottom to top, and from right to left, respectively.}
+
 \item{render}{Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.}
+
+\item{fixed_edge_width}{If TRUE, don't vary the width of edges.}
 
 \item{...}{Deprecated arguments}
 }
