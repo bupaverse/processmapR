@@ -25,7 +25,12 @@
 
 
 
-process_map <- function(eventlog, type = frequency("absolute"), type_nodes = type, type_edges = type, rankdir = "LR", render = T, fixed_edge_width = F, ...) {
+process_map <- function(eventlog, type = frequency("absolute"),
+						type_nodes = type,
+						type_edges = type,
+						rankdir = "LR",
+						render = T,
+						fixed_edge_width = F, ...) {
 
 	min_order <- NULL
 	act <- NULL
@@ -141,7 +146,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 	nodes_performance <- function(precedence, type) {
 
 		precedence %>%
-			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))) %>%
+			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))*attr(type, "scale_time")) %>%
 			group_by(act, from_id) %>%
 			summarize(label = type(duration, na.rm = T)) %>%
 			na.omit() %>%
@@ -150,7 +155,7 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 				   shape = if_end(act,"circle","rectangle"),
 				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
-				   tooltip = paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
+				   tooltip = paste0(act, "\n (", round(label, 2), " ",attr(type, "units_label"),")"),
 				   label = if_end(act, act, tooltip))
 	}
 
@@ -200,11 +205,11 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 
 		precedence %>%
 			ungroup() %>%
-			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units")),
-									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units")))) %>%
+			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units"))*attr(type, "scale_time"),
+									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units"))*attr(type, "scale_time"))) %>%
 			group_by(act, next_act, from_id, to_id) %>%
 			summarize(value = type(time, na.rm = T),
-					  label = paste0(round(type(time, na.rm = T),2), " ", attr(type, "units"))) %>%
+					  label = paste0(round(type(time, na.rm = T),2), " ", attr(type, "units_label"))) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(value, to = c(1,5))) %>%

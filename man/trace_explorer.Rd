@@ -5,8 +5,8 @@
 \title{Trace explorer}
 \usage{
 trace_explorer(eventlog, coverage = 0.2, type = c("frequent", "infrequent"),
-  .abbreviate = T, scale_fill = scale_fill_discrete(h = c(0, 360) + 15, l =
-  40), raw_data = F)
+  .abbreviate = T, show_labels = T, scale_fill = scale_fill_discrete(h =
+  c(0, 360) + 15, l = 40), raw_data = F)
 }
 \arguments{
 \item{eventlog}{Eventlog object}
