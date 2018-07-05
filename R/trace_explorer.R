@@ -16,6 +16,7 @@ trace_explorer <- function(eventlog,
 						   coverage = 0.2,
 						   type = c("frequent","infrequent"),
 						   .abbreviate = T,
+						   show_labels = T,
 						   scale_fill = scale_fill_discrete(h = c(0,360) + 15, l = 40),
 						   raw_data = F) {
 	stopifnot("eventlog" %in% class(eventlog))
@@ -87,14 +88,19 @@ trace_explorer <- function(eventlog,
 		temp %>%
 			ggplot(aes(rank_event, as.factor(trace_id))) +
 			geom_tile(aes(fill = event_classifier), color = "white") +
-			geom_text(aes(label = ABBR(.abbreviate)(event_classifier)), color = "white",fontface = "bold") +
 			facet_grid(reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)~.,scales = "free", space = "free") +
 			scale_y_discrete(breaks = NULL) +
 			labs(y = "Traces", x = "Activities") +
 			scale_fill  +
 			labs(fill = "Activity") +
 			theme_light() +
-			theme(strip.text.y = element_text(angle = 0))
+			theme(strip.text.y = element_text(angle = 0)) -> p
+
+		if(show_labels)
+			p + geom_text(aes(label = ABBR(.abbreviate)(event_classifier)), color = "white",fontface = "bold")
+		else
+			p
+
 	}
 
 }

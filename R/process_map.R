@@ -46,6 +46,8 @@ process_map <- function(eventlog, type = frequency("absolute"), type_nodes = typ
 	value <- NULL
 	color_level <- NULL
 
+	eventlog <- ungroup_eventlog(eventlog)
+
 	eventlog %>%
 		as.data.frame() %>%
 		droplevels %>%
