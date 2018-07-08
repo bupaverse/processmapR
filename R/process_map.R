@@ -308,7 +308,7 @@ process_map <- function(eventlog, type = frequency("absolute"),
 				   to = edges$to_id,
 				   label = edges$label,
 				   penwidth = edges$penwidth,
-				   color = ifelse(perspective_edges == "performance", "red4", "dodgerblue4"),
+				   color = attr(type_edges, "color_edges"),
 				   fontname = "Arial") -> edges_df
 
 	create_graph(nodes_df, edges_df) %>%

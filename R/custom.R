@@ -5,6 +5,7 @@
 #' @param attribute The name of the case attribute to visualize (should be numeric)
 #' @param units Character to be placed after values (e.g. EUR for monitary euro values)
 #' @param color_scale Name of color scale to be used for nodes. Defaults to PuBu. See `Rcolorbrewer::brewer.pal.info()` for all options.
+#' @param color_edges The color used for edges. Defaults to dodgerblue4.
 #' @examples
 #' \dontrun{
 #' library(eventdataR)
@@ -29,10 +30,11 @@
 
 
 
-custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu") {
+custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu", color_edges = "dodgerblue4") {
   attr(FUN, "attribute") <- attribute
   attr(FUN, "units") <- units
   attr(FUN, "perspective") <- "custom"
   attr(FUN, "color") <- color_scale
+  attr(FUN, "color_edges") <- color_edges
   return(FUN)
 }
