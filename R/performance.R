@@ -10,7 +10,7 @@
 
 
 
-performance <- function(FUN = mean, units = c("mins","hours","days","weeks", "months", "quarters", "semesters","years"), flow_time = c("idle_time","inter_start_time"), color_scale = "Reds") {
+performance <- function(FUN = mean, units = c("mins","secs", "hours","days","weeks", "months", "quarters", "semesters","years"), flow_time = c("idle_time","inter_start_time"), color_scale = "Reds") {
 	flow_time <- match.arg(flow_time)
 	units <- match.arg(units)
 	attr(FUN, "flow_time") <- flow_time
@@ -18,7 +18,7 @@ performance <- function(FUN = mean, units = c("mins","hours","days","weeks", "mo
 
 	attr(FUN, "units_label") <- units
 
-	if(units %in% c("mins","hours","days","weeks")) {
+	if(units %in% c("mins","hours","days","weeks", "secs")) {
 		attr(FUN, "units") <- units
 		attr(FUN, "scale_time") <- 1
 	} else if (units == "months") {
