@@ -4,7 +4,8 @@
 \alias{custom}
 \title{Custom map profile}
 \usage{
-custom(FUN = mean, attribute, units = "", color_scale = "PuBu")
+custom(FUN = mean, attribute, units = "", color_scale = "PuBu",
+  color_edges = "dodgerblue4")
 }
 \arguments{
 \item{FUN}{A summary function to be called on the provided event attribute, e.g. mean, median, min, max. na.rm = T by default.}
@@ -14,6 +15,8 @@ custom(FUN = mean, attribute, units = "", color_scale = "PuBu")
 \item{units}{Character to be placed after values (e.g. EUR for monitary euro values)}
 
 \item{color_scale}{Name of color scale to be used for nodes. Defaults to PuBu. See `Rcolorbrewer::brewer.pal.info()` for all options.}
+
+\item{color_edges}{The color used for edges. Defaults to dodgerblue4.}
 }
 \description{
 Function to create a custom map profile based on some event log attribute.

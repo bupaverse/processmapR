@@ -5,6 +5,7 @@
 #' @param eventlog Eventlog object
 #' @param type Frequent or infrequenct traces to explore
 #' @param coverage The percentage coverage of the trace to explore. Default is 20\% most (in)frequent
+#' @param n_traces Instead of setting coverage, you can set an exact number of traces. Should an integer larger than 0.
 #' @param raw_data Retrun raw data
 #' @param .abbreviate If TRUE, abbreviate activity labels
 #' @param scale_fill Set color scale
@@ -13,7 +14,8 @@
 #' @export trace_explorer
 #'
 trace_explorer <- function(eventlog,
-						   coverage = 0.2,
+						   coverage = NULL,
+						   n_traces = NULL,
 						   type = c("frequent","infrequent"),
 						   .abbreviate = T,
 						   show_labels = T,
@@ -21,6 +23,20 @@ trace_explorer <- function(eventlog,
 						   raw_data = F) {
 	stopifnot("eventlog" %in% class(eventlog))
 	type <- match.arg(type)
+
+
+
+	if(is.null(coverage) & is.null(n_traces)) {
+		coverage <- 0.2
+	} else if(!is.null(coverage) & !is.null(n_traces)) {
+		stop("coverage and n_traces cannot be set at the same time. Use one and set the other to NULL")
+	} else if(is.null(coverage)) {
+		if(n_traces <= 0)
+			stop("n_traces should be greater than zero.")
+	}
+
+
+
 
 	min_order <- NULL
 
@@ -45,6 +61,27 @@ trace_explorer <- function(eventlog,
 		mutate(cum_freq = cumsum(relative_frequency)) %>%
 		mutate(cum_freq_lag = lag(cum_freq, default = 0)) -> traces
 
+	x <- nrow(traces)
+
+
+	if(type == "frequent" & !is.null(coverage))
+		traces <- traces %>% filter(cum_freq_lag < coverage)
+	else if(type == "infrequent" & !is.null(coverage))
+		traces <- traces %>% filter(cum_freq_lag > (1-coverage))
+	else if(type == "frequent")
+		traces <- traces %>% arrange(-relative_frequency) %>% slice(1:n_traces)
+	else
+		traces <- traces %>% arrange(relative_frequency) %>% slice(1:n_traces)
+
+	if(is.null(coverage) & x < n_traces) {
+		warning("Less traces found than specified number.")
+	}
+
+
+	if(nrow(traces) == 0) {
+		stop("No traces selected. Consider increasing the coverage")
+	}
+
 
 	eventlog %>%
 		rename_("case_classifier" = case_id(eventlog),
@@ -60,16 +97,12 @@ trace_explorer <- function(eventlog,
 		filter(case_classifier == first(case_classifier)) %>%
 		inner_join(traces, by = "trace") %>%
 		arrange(ts, min_order) %>%
-		mutate(rank_event = seq_len(n()))  -> temp
+		mutate(rank_event = seq_len(n())) %>%
+		ungroup() -> temp
 
-	if(type == "frequent")
-		temp <- temp %>% filter(cum_freq_lag < coverage)
-	else
-		temp <- temp %>% filter(cum_freq_lag > (1-coverage))
 
-	if(nrow(temp) == 0) {
-		stop("No traces selected. Consider increasing the coverage")
-	}
+
+
 
 	ABBR <- function(do_abbreviate) {
 		if(do_abbreviate) {
