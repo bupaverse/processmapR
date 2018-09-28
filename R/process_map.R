@@ -33,10 +33,10 @@ process_map <- function(eventlog, type = frequency("absolute"),
 						fixed_edge_width = F, ...) {
 
 	min_order <- NULL
-	act <- NULL
-	aid <- NULL
-	case <- NULL
-	time <- NULL
+	ACTIVITY_CLASSIFIER_ <- NULL
+	ACTIVITY_INSTANCE_CLASSIFIER_ <- NULL
+	CASE_CLASSIFIER_ <- NULL
+	TIMESTAMP_CLASSIFIER_ <- NULL
 	start_time <- NULL
 	end_time <- NULL
 	node_id <- NULL
@@ -56,13 +56,13 @@ process_map <- function(eventlog, type = frequency("absolute"),
 	eventlog %>%
 		as.data.frame() %>%
 		droplevels %>%
-		select(act = !!activity_id_(eventlog),
-			   aid = !!activity_instance_id_(eventlog),
-			   case = !!case_id_(eventlog),
-			   time = !!timestamp_(eventlog),
+		select(ACTIVITY_CLASSIFIER_ = !!activity_id_(eventlog),
+			   ACTIVITY_INSTANCE_CLASSIFIER_ = !!activity_instance_id_(eventlog),
+			   CASE_CLASSIFIER_ = !!case_id_(eventlog),
+			   TIMESTAMP_CLASSIFIER_ = !!timestamp_(eventlog),
 			   .order,
 			   everything()) %>%
-		group_by(act, aid, case) -> grouped_log
+		group_by(ACTIVITY_CLASSIFIER_, ACTIVITY_INSTANCE_CLASSIFIER_, CASE_CLASSIFIER_) -> grouped_log
 
 	perspective_nodes <- attr(type_nodes, "perspective")
 	perspective_edges <- attr(type_edges, "perspective")
@@ -70,41 +70,41 @@ process_map <- function(eventlog, type = frequency("absolute"),
 	if(perspective_nodes == "custom" && perspective_edges == "custom") {
 		attributeNode <- sym(attr(type_nodes, "attribute"))
 		attributeEdge <- sym(attr(type_edges, "attribute"))
-		grouped_log %>% summarize(start_time = min(time),
-								  end_time = max(time),
+		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+								  end_time = max(TIMESTAMP_CLASSIFIER_),
 								  min_order = min(.order),
 								  !!attributeNode := first(!!attributeNode),
 								  !!attributeEdge := first(!!attributeEdge)) -> base_log
 	} else if(perspective_nodes == "custom") {
 		attribute <- sym(attr(type_nodes, "attribute"))
-		grouped_log %>% summarize(start_time = min(time),
-								  end_time = max(time),
+		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+								  end_time = max(TIMESTAMP_CLASSIFIER_),
 								  min_order = min(.order),
 								  !!attribute := first(!!attribute)) -> base_log
 	} else if (perspective_edges == "custom") {
 		attribute <- sym(attr(type_edges, "attribute"))
-		grouped_log %>% summarize(start_time = min(time),
-								  end_time = max(time),
+		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+								  end_time = max(TIMESTAMP_CLASSIFIER_),
 								  min_order = min(.order),
 								  !!attribute := first(!!attribute)) -> base_log
 	} else {
-		grouped_log %>% summarize(start_time = min(time),
-								  end_time = max(time),
+		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+								  end_time = max(TIMESTAMP_CLASSIFIER_),
 								  min_order = min(.order)) -> base_log
 	}
 
 	base_log %>%
-		group_by(case) %>%
+		group_by(CASE_CLASSIFIER_) %>%
 		arrange(start_time, min_order) -> points_temp
 
 	points_temp %>%
 		slice(c(1)) %>%
-		mutate(act = "Start",
+		mutate(ACTIVITY_CLASSIFIER_ = "Start",
 			   end_time = start_time,
 			   min_order = -Inf) -> end_points_start
 	points_temp %>%
 		slice(c(n())) %>%
-		mutate(act = "End",
+		mutate(ACTIVITY_CLASSIFIER_ = "End",
 			   start_time = end_time,
 			   min_order = Inf) -> end_points_end
 
@@ -116,20 +116,20 @@ process_map <- function(eventlog, type = frequency("absolute"),
 
 	base_log %>%
 		ungroup() %>%
-		count(act) %>%
+		count(ACTIVITY_CLASSIFIER_) %>%
 		mutate(node_id = 1:n()) -> base_nodes
 
 	suppressWarnings(base_log %>%
 					 	ungroup() %>%
-					 	mutate(act = ordered(act, levels = c("Start", as.character(sort(activity_labels(eventlog))), "End"))) %>%
-					 	group_by(case) %>%
+					 	mutate(ACTIVITY_CLASSIFIER_ = ordered(ACTIVITY_CLASSIFIER_, levels = c("Start", as.character(sort(activity_labels(eventlog))), "End"))) %>%
+					 	group_by(CASE_CLASSIFIER_) %>%
 					 	arrange(start_time, min_order) %>%
-					 	mutate(next_act = lead(act),
+					 	mutate(next_act = lead(ACTIVITY_CLASSIFIER_),
 					 		   next_start_time = lead(start_time),
 					 		   next_end_time = lead(end_time)) %>%
-					 	full_join(base_nodes, by = c("act" = "act")) %>%
+					 	full_join(base_nodes, by = c("ACTIVITY_CLASSIFIER_" = "ACTIVITY_CLASSIFIER_")) %>%
 					 	rename(from_id = node_id) %>%
-					 	full_join(base_nodes, by = c("next_act" = "act")) %>%
+					 	full_join(base_nodes, by = c("next_act" = "ACTIVITY_CLASSIFIER_")) %>%
 					 	rename(to_id = node_id) %>%
 					 	select(-n.x, -n.y) %>%
 					 	ungroup() -> base_precedence)
@@ -147,36 +147,36 @@ process_map <- function(eventlog, type = frequency("absolute"),
 
 		precedence %>%
 			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))*attr(type, "scale_time")) %>%
-			group_by(act, from_id) %>%
+			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
 			summarize(label = type(duration, na.rm = T)) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(color_level = label,
-				   shape = if_end(act,"circle","rectangle"),
-				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
-				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
-				   tooltip = paste0(act, "\n (", round(label, 2), " ",attr(type, "units_label"),")"),
-				   label = if_end(act, act, tooltip))
+				   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
+				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
+				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
+				   tooltip = paste0(ACTIVITY_CLASSIFIER_, "\n (", round(label, 2), " ",attr(type, "units_label"),")"),
+				   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip))
 	}
 
 
 	nodes_frequency <- function(precedence, type, n_cases, n_activity_instances) {
 
 		precedence %>%
-			group_by(act, from_id) %>%
+			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
 			summarize(n = as.double(n()),
-					  n_distinct_cases = as.double(n_distinct(case))) %>%
+					  n_distinct_cases = as.double(n_distinct(CASE_CLASSIFIER_))) %>%
 			ungroup() %>%
 			mutate(label = case_when(type == "relative" ~ 100*n/n_activity_instances,
 									 type == "absolute" ~ n,
 									 type == "absolute_case" ~ n_distinct_cases,
 									 type == "relative_case" ~ 100*n_distinct_cases/n_cases)) %>%
 			mutate(color_level = label,
-				   shape = if_end(act,"circle","rectangle"),
-				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
-				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
-				   tooltip = paste0(act, "\n (", round(label, 2), ifelse(type %in% c("absolute", "absolute_case"),"", "%"),")"),
-				   label = if_end(act, act, tooltip)) %>%
+				   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
+				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
+				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
+				   tooltip = paste0(ACTIVITY_CLASSIFIER_, "\n (", round(label, 2), ifelse(type %in% c("absolute", "absolute_case"),"", "%"),")"),
+				   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip)) %>%
 			na.omit()
 	}
 
@@ -185,17 +185,17 @@ process_map <- function(eventlog, type = frequency("absolute"),
 		attribute <- sym(attr(type, "attribute"))
 
 		precedence %>%
-			group_by(act, from_id) %>%
+			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
 			summarize(label = type(!!attribute, na.rm = T)) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(color_level = label,
-				   shape = if_end(act,"circle","rectangle"),
-				   fontcolor = if_end(act, if_start(act, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
-				   color = if_end(act, if_start(act, "chartreuse4","brown4"),"grey"),
-				   tooltip =  paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
-				   label = paste0(act, "\n (", round(label, 2), " ",attr(type, "units"),")"),
-				   label = if_end(act, act, tooltip))
+				   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
+				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
+				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
+				   tooltip =  paste0(ACTIVITY_CLASSIFIER_, "\n (", round(label, 2), " ",attr(type, "units"),")"),
+				   label = paste0(ACTIVITY_CLASSIFIER_, "\n (", round(label, 2), " ",attr(type, "units"),")"),
+				   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip))
 	}
 
 
@@ -207,24 +207,24 @@ process_map <- function(eventlog, type = frequency("absolute"),
 			ungroup() %>%
 			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units"))*attr(type, "scale_time"),
 									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units"))*attr(type, "scale_time"))) %>%
-			group_by(act, next_act, from_id, to_id) %>%
+			group_by(ACTIVITY_CLASSIFIER_, next_act, from_id, to_id) %>%
 			summarize(value = type(time, na.rm = T),
 					  label = paste0(round(type(time, na.rm = T),2), " ", attr(type, "units_label"))) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(value, to = c(1,5))) %>%
-			mutate(label = if_end(act, " ", if_end(next_act, " ", label))) %>%
+			mutate(label = if_end(ACTIVITY_CLASSIFIER_, " ", if_end(next_act, " ", label))) %>%
 			select(-value)
 	}
 
 	edges_frequency <- function(precedence, type, n_cases) {
 		precedence %>%
 			ungroup() %>%
-			group_by(act, from_id, next_act, to_id) %>%
+			group_by(ACTIVITY_CLASSIFIER_, from_id, next_act, to_id) %>%
 			summarize(n = as.double(n()),
-					  n_distinct_cases = as.double(n_distinct(case))) %>%
+					  n_distinct_cases = as.double(n_distinct(CASE_CLASSIFIER_))) %>%
 			na.omit() %>%
-			group_by(act, from_id) %>%
+			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
 			mutate(label = case_when(type == "relative" ~ round(100*n/sum(n),2),
 									 type == "absolute" ~ n,
 									 type == "absolute_case" ~ n_distinct_cases,
@@ -239,7 +239,7 @@ process_map <- function(eventlog, type = frequency("absolute"),
 
 		precedence %>%
 			ungroup() %>%
-			group_by(act, next_act, from_id, to_id) %>%
+			group_by(ACTIVITY_CLASSIFIER_, next_act, from_id, to_id) %>%
 			summarize(value = type(!!attribute, na.rm = T),
 					  label = round(type(!!attribute, na.rm = T),2)) %>%
 			na.omit() %>%
@@ -275,7 +275,7 @@ process_map <- function(eventlog, type = frequency("absolute"),
 
 	nodes %>%
 		mutate(color_level = rescale(color_level, from = c(0, max(color_level)))) %>%
-		mutate(color_level = if_end(act, Inf, color_level)) -> nodes
+		mutate(color_level = if_end(ACTIVITY_CLASSIFIER_, Inf, color_level)) -> nodes
 
 
 #
@@ -319,6 +319,11 @@ process_map <- function(eventlog, type = frequency("absolute"),
 							palette = attr(type_nodes, "color"),
 							default_color = "white",
 							cut_points = seq(min_level-0.1, max_level+.1, length.out = 9)) -> graph
+
+	base_precedence %>%
+		rename(case = CASE_CLASSIFIER_,
+			   aid = ACTIVITY_INSTANCE_CLASSIFIER_,
+			   act = ACTIVITY_CLASSIFIER_) -> base_precedence
 
 
 	if(render == T) {
