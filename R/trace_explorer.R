@@ -73,7 +73,8 @@ trace_explorer <- function(eventlog,
 	else
 		traces <- traces %>% arrange(relative_frequency) %>% slice(1:n_traces)
 
-	if(is.null(coverage) & x < n_traces) {
+	if(is.null(coverage)) {
+		if(x < n_traces)
 		warning("Less traces found than specified number.")
 	}
 
