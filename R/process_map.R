@@ -11,6 +11,7 @@
 
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
 #' @param fixed_edge_width If TRUE, don't vary the width of edges.
+#' @param fixed_node_pos When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that his can only be used with the 'neato' layout engine.
 #' @param ... Deprecated arguments
 #'
 #'
@@ -30,7 +31,9 @@ process_map <- function(eventlog, type = frequency("absolute"),
 						type_edges = type,
 						rankdir = "LR",
 						render = T,
-						fixed_edge_width = F, ...) {
+						fixed_edge_width = F,
+						fixed_node_pos = NULL,
+						...) {
 
 	min_order <- NULL
 	ACTIVITY_CLASSIFIER_ <- NULL
@@ -301,6 +304,12 @@ process_map <- function(eventlog, type = frequency("absolute"),
 				   fixedsize = FALSE,
 				   fontname = "Arial") -> nodes_df
 
+	if (is.data.frame(fixed_node_pos)) {
+		nodes %>%
+			left_join(fixed_node_pos, by = c("ACTIVITY_CLASSIFIER_" = "act")) -> nodes
+		nodes_df %>% mutate(x = nodes$x, y = nodes$y) -> nodes_df
+	}
+
 	min_level <- min(nodes_df$color_level)
 	max_level <- max(nodes_df$color_level[nodes_df$color_level < Inf])
 
@@ -313,7 +322,7 @@ process_map <- function(eventlog, type = frequency("absolute"),
 
 	create_graph(nodes_df, edges_df) %>%
 		add_global_graph_attrs(attr = "rankdir", value = rankdir,attr_type = "graph") %>%
-		add_global_graph_attrs(attr = "layout", value = "dot", attr_type = "graph") %>%
+		add_global_graph_attrs(attr = "layout", value = if_else(is.data.frame(fixed_node_pos), "neato", "dot"), attr_type = "graph") %>%
 		colorize_node_attrs(node_attr_from = "color_level",
 							node_attr_to = "fillcolor",
 							palette = attr(type_nodes, "color"),
