@@ -6,12 +6,18 @@
 #' the idle time is the time between the end and start time of consecutive activity instances.
 #' @param color_scale Name of color scale to be used for nodes. Defaults to Reds. See `Rcolorbrewer::brewer.pal.info()` for all options.
 #' @param color_edges The color used for edges. Defaults to red4.
+#' @param ... Additional arguments too FUN
 #' @export performance
 
 
 
 
-performance <- function(FUN = mean, units = c("mins","secs", "hours","days","weeks", "months", "quarters", "semesters","years"), flow_time = c("idle_time","inter_start_time"), color_scale = "Reds", color_edges = "red4") {
+performance <- function(FUN = mean,
+						units = c("mins","secs", "hours","days","weeks", "months", "quarters", "semesters","years"),
+						flow_time = c("idle_time","inter_start_time"),
+						color_scale = "Reds",
+						color_edges = "red4",
+						...) {
 
 	flow_time <- match.arg(flow_time)
 	units <- match.arg(units)
@@ -19,6 +25,7 @@ performance <- function(FUN = mean, units = c("mins","secs", "hours","days","wee
 	attr(FUN, "perspective") <- "performance"
 
 	attr(FUN, "units_label") <- units
+	attr(FUN, "arguments") <- list(...)
 
 	if(units %in% c("mins","hours","days","weeks", "secs")) {
 		attr(FUN, "units") <- units

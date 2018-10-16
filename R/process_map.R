@@ -151,7 +151,7 @@ process_map <- function(eventlog, type = frequency("absolute"),
 		precedence %>%
 			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))*attr(type, "scale_time")) %>%
 			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
-			summarize(label = type(duration, na.rm = T)) %>%
+			summarize(label = do.call(function(...) type(duration, na.rm = T,...),  attr(type, "arguments"))) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(color_level = label,
@@ -211,8 +211,8 @@ process_map <- function(eventlog, type = frequency("absolute"),
 			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units"))*attr(type, "scale_time"),
 									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units"))*attr(type, "scale_time"))) %>%
 			group_by(ACTIVITY_CLASSIFIER_, next_act, from_id, to_id) %>%
-			summarize(value = type(time, na.rm = T),
-					  label = paste0(round(type(time, na.rm = T),2), " ", attr(type, "units_label"))) %>%
+			summarize(value = do.call(function(...) type(time, na.rm = T,...),  attr(type, "arguments"))) %>%
+			mutate( label = paste0(round(value,2), " ", attr(type, "units_label"))) %>%
 			na.omit() %>%
 			ungroup() %>%
 			mutate(penwidth = rescale(value, to = c(1,5))) %>%

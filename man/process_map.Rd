@@ -6,7 +6,7 @@
 \usage{
 process_map(eventlog, type = frequency("absolute"), type_nodes = type,
   type_edges = type, rankdir = "LR", render = T, fixed_edge_width = F,
-  ...)
+  fixed_node_pos = NULL, ...)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a process map}
@@ -22,6 +22,8 @@ process_map(eventlog, type = frequency("absolute"), type_nodes = type,
 \item{render}{Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.}
 
 \item{fixed_edge_width}{If TRUE, don't vary the width of edges.}
+
+\item{fixed_node_pos}{When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that his can only be used with the 'neato' layout engine.}
 
 \item{...}{Deprecated arguments}
 }
