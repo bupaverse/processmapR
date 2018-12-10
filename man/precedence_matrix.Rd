@@ -5,14 +5,15 @@
 \title{Precendence Matrix}
 \usage{
 precedence_matrix(eventlog, type = c("absolute", "relative",
-  "relative_antecedent", "relative_consequent", "relative_case"))
+  "relative-antecedent", "relative-consequent", "relative-case"))
 }
 \arguments{
 \item{eventlog}{The event log object to be used}
 
-\item{type}{The type of precedence matrix, which can be absolulte, relative, relative_antecedent or relative_consequent. Absolute will return
+\item{type}{The type of precedence matrix, which can be absolulte, relative, relative-antecedent or relative-consequent. Absolute will return
 a matrix with absolute frequencies, relative will return global relative frequencies for all antecedent-consequent pairs.
-Relative_antecedent will return relative frequencies within each antecendent, i.e. showing the relative proportion of consequents within each antecedent. Relative_consequent will do the reverse.}
+Relative-antecedent will return relative frequencies within each antecendent, i.e. showing the relative proportion of consequents within each antecedent.
+Relative-consequent will do the reverse.}
 }
 \description{
 Construct a precendence matrix, showing how activities are followed by each other.

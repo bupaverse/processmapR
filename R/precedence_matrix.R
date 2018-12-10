@@ -4,9 +4,10 @@
 #' @description  Construct a precendence matrix, showing how activities are followed by each other.
 #'
 #' @param eventlog The event log object to be used
-#' @param type The type of precedence matrix, which can be absolulte, relative, relative_antecedent or relative_consequent. Absolute will return
+#' @param type The type of precedence matrix, which can be absolulte, relative, relative-antecedent or relative-consequent. Absolute will return
 #' a matrix with absolute frequencies, relative will return global relative frequencies for all antecedent-consequent pairs.
-#' Relative_antecedent will return relative frequencies within each antecendent, i.e. showing the relative proportion of consequents within each antecedent. Relative_consequent will do the reverse.
+#' Relative-antecedent will return relative frequencies within each antecendent, i.e. showing the relative proportion of consequents within each antecedent.
+#' Relative-consequent will do the reverse.
 #'
 #' @examples
 #' \dontrun{
@@ -17,8 +18,22 @@
 #'
 #' @export precedence_matrix
 
-precedence_matrix <- function(eventlog, type = c("absolute","relative","relative_antecedent","relative_consequent", "relative_case")) {
+precedence_matrix <- function(eventlog, type = c("absolute","relative","relative-antecedent","relative-consequent", "relative-case")) {
 	stopifnot("eventlog" %in% class(eventlog))
+
+
+	if(type == "relative_antecedent") {
+		type <- "relative-antecedent"
+		warning("Use type = 'relative-antecedent' instead of 'relative_antecedent'")
+	}
+	if(type == "relative_consequent") {
+		type <- "relative-consequent"
+		warning("Use type = 'relative-consequent' instead of 'relative_consequent'")
+	}
+	if(type == "relative_case") {
+		type <- "relative-case"
+		warning("Use type = 'relative-case' instead of 'relative_case'")
+	}
 
 	type <- match.arg(type)
 	log <- eventlog
@@ -58,16 +73,16 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 			   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> log
 
 	if(type == "absolute") {
-		class(log) <- c("precedence_matrix", class(log))
+		class(log) <- c("precedence-matrix", class(log))
 		attr(log, "matrix_type") <- "absolute"
 	}
 	else if (type == "relative") {
 		log %>%
 			mutate(rel_n = n/sum(n)) -> log
-		class(log) <- c("precedence_matrix", class(log))
+		class(log) <- c("precedence-matrix", class(log))
 		attr(log, "matrix_type") <- "relative"
 	}
-	else if (type == "relative_antecedent") {
+	else if (type == "relative-antecedent") {
 		log %>%
 			group_by(antecedent) %>%
 			mutate(rel_antecedent = n/sum(n)) %>%
@@ -75,7 +90,7 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 		class(log) <- c("precedence_matrix", class(log))
 		attr(log, "matrix_type") <- "relative_antecedent"
 	}
-	else if(type == "relative_consequent") {
+	else if(type == "relative-consequent") {
 		log %>%
 			group_by(consequent) %>%
 			mutate(rel_consequent = n/sum(n)) %>%
@@ -83,7 +98,7 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 		class(log) <- c("precedence_matrix", class(log))
 		attr(log, "matrix_type") <- "relative_consequent"
 	}
-	else if (type == "relative_case") {
+	else if (type == "relative-case") {
 		temp %>%
 			arrange(ts, min_order) %>%
 			slice(1:1) %>%
@@ -107,9 +122,7 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 		class(log) <- c("precedence_matrix", class(log))
 		attr(log, "matrix_type") <- "relative_case"
 	}
-	else {
-		stop("Argument type should be one of: absolute, relative, relative_antecedent, relative_consequent, relative_case")
-	}
+
 
 	return(log)
 }
