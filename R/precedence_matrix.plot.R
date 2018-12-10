@@ -26,7 +26,7 @@ plot.precedence_matrix <- function(x, ...) {
 			ggplot(aes(antecedent, consequent)) +
 			geom_tile(aes(fill = n)) +
 			geom_text(aes(label = n), color = "white", fontface = "bold")  +
-			scale_fill_continuous_tableau(name = "Relative Frequency", palette = "Blue") +
+			scale_fill_continuous_tableau(name = "Absolute Frequency", palette = "Blue") +
 			coord_flip() +
 			theme_light() +
 			theme(axis.text.x = element_text(angle = 45, hjust = 1),
