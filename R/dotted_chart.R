@@ -244,7 +244,12 @@ iplotly_dotted_chart <- function(eventlog) {
 #' @rdname dotted_chart
 #' @export plotly_dotted_chart
 
-plotly_dotted_chart <- function(eventlog) {
-	dotted_chart(eventlog) %>%
+plotly_dotted_chart <- function(eventlog,
+								x = c("absolute","relative","relative_week","relative_day"),
+								sort = c("start","end","duration", "start_week","start_day"),
+								color = NULL,
+								units = c("weeks","days","hours","mins","secs"),
+								...) {
+	dotted_chart(eventlog, x, sort, color, units) %>%
 		ggplotly
 }

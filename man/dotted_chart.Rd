@@ -25,7 +25,10 @@ idotted_chart(eventlog, plotly = FALSE)
 
 iplotly_dotted_chart(eventlog)
 
-plotly_dotted_chart(eventlog)
+plotly_dotted_chart(eventlog, x = c("absolute", "relative", "relative_week",
+  "relative_day"), sort = c("start", "end", "duration", "start_week",
+  "start_day"), color = NULL, units = c("weeks", "days", "hours", "mins",
+  "secs"), ...)
 }
 \arguments{
 \item{eventlog}{Eventlog object}
