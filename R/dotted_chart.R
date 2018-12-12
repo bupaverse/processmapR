@@ -7,7 +7,7 @@
 #' @param units Time units to use on x-axis in case of relative time.
 #' @param plotly Return plotly object
 #' @param ... Deprecated arguments
-#'
+#' @importFrom tidyr spread
 #' @export dotted_chart
 #'
 
@@ -58,6 +58,20 @@ dotted_chart_data <- function(eventlog, color, units) {
 		summarize(start = min(!!timestamp_(eventlog)),
 				  end = max(!!timestamp_(eventlog))) %>%
 		group_by(!!case_id_(eventlog)) %>%
+		arrange(start) %>%
+		mutate(rank = paste0("ACTIVITY_RANKED_AS_", 1:n())) %>%
+		ungroup() %>%
+		select(!!case_id_(eventlog), rank, start) %>%
+		spread(rank, start) %>%
+		arrange_if(str_detect(names(.), "ACTIVITY_RANKED_AS_")) %>%
+		mutate(start_case_rank = 1:n()) %>%
+		select(!!case_id_(eventlog), start_case_rank) -> eventlog_rank_start_cases
+
+	eventlog %>%
+		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
+		summarize(start = min(!!timestamp_(eventlog)),
+				  end = max(!!timestamp_(eventlog))) %>%
+		group_by(!!case_id_(eventlog)) %>%
 		mutate(start_week = as.double(timeSinceStartOfWeek(start), units = units)) %>%
 		mutate(start_day = as.double(timeSinceStartOfDay(start), units = units)) %>%
 		mutate(start_case = min(start),
@@ -65,7 +79,8 @@ dotted_chart_data <- function(eventlog, color, units) {
 			   dur = as.double(end_case - start_case, units = units)) %>%
 		mutate(start_case_week = timeSinceStartOfWeek(start_case),
 			   start_case_day = timeSinceStartOfDay(start_case)) %>%
-		mutate(start_relative = as.double(start - start_case, units = units))
+		mutate(start_relative = as.double(start - start_case, units = units)) %>%
+		full_join(eventlog_rank_start_cases)
 }
 
 configure_x_aes <- function(x) {
@@ -76,7 +91,7 @@ configure_x_aes <- function(x) {
 }
 
 configure_y_aes <- function(y) {
-	case_when(y == "start" ~ "start_case",
+	case_when(y == "start" ~ "start_case_rank",
 			  y == "end" ~ "end_case",
 			  y == "duration" ~ "dur",
 			  y == "start_week" ~ "start_case_week",
