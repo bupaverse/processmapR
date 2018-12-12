@@ -138,3 +138,26 @@ trace_explorer <- function(eventlog,
 	}
 
 }
+
+#' @rdname trace_explorer
+#' @export plotly_trace_explorer
+
+plotly_trace_explorer <- function(eventlog,
+								  coverage = NULL,
+								  n_traces = NULL,
+								  type = c("frequent","infrequent"),
+								  .abbreviate = T,
+								  show_labels = T,
+								  scale_fill = scale_fill_discrete(h = c(0,360) + 15, l = 40),
+								  raw_data = F) {
+
+	trace_explorer(eventlog,
+				   coverage,
+				   n_traces,
+				   type,
+				   .abbreviate,
+				   show_labels,
+				   scale_fill,
+				   raw_data) %>%
+		ggplotly
+}
