@@ -36,5 +36,45 @@ custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu", colo
   attr(FUN, "perspective") <- "custom"
   attr(FUN, "color") <- color_scale
   attr(FUN, "color_edges") <- color_edges
+
+  attr(FUN, "create_nodes") <- function(precedence, type, extra_data) {
+
+  	attribute <- sym(attr(type, "attribute"))
+
+  	precedence %>%
+  		group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
+  		summarize(label = type(!!attribute, na.rm = T)) %>%
+  		na.omit() %>%
+  		ungroup() %>%
+  		mutate(color_level = label,
+  			   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
+  			   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
+  			   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
+  			   tooltip =  paste0(ACTIVITY_CLASSIFIER_, "\n", round(label, 2), " ",attr(type, "units")),
+  			   label = paste0(ACTIVITY_CLASSIFIER_, "\n", round(label, 2), " ",attr(type, "units")),
+  			   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip))
+  }
+
+  attr(FUN, "create_edges") <- 	function(precedence, type, extra_data) {
+
+  	attribute <- sym(attr(type, "attribute"))
+
+
+
+
+  	precedence %>%
+  		ungroup() %>%
+  		group_by(ACTIVITY_CLASSIFIER_, next_act, from_id, to_id) %>%
+  		summarize(value = type(!!attribute, na.rm = T),
+  				  label = round(type(!!attribute, na.rm = T),2)) %>%
+  		na.omit() %>%
+  		ungroup() %>%
+  		mutate(penwidth = rescale(value, to = c(1,5))) %>%
+  		mutate(label = paste0(label, " ", attr(type, "units"))) %>%
+  		select(-value)
+
+  }
+
+
   return(FUN)
 }

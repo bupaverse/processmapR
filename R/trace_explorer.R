@@ -8,6 +8,7 @@
 #' @param n_traces Instead of setting coverage, you can set an exact number of traces. Should be an integer larger than 0.
 #' @param raw_data Retrun raw data
 #' @param .abbreviate If TRUE, abbreviate activity labels
+#' @param show_labels If False, activity labels are not shown.
 #' @param scale_fill Set color scale
 #'
 #'

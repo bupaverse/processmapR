@@ -18,8 +18,6 @@ deprecated_y_arg <- function(s, ...) {
 	}
 }
 
-
-
 summary_statistics <- function(vector) {
 
 
@@ -28,4 +26,11 @@ summary_statistics <- function(vector) {
 	s <- c(s, IQR = s[5] - s[2])
 	names(s) <- c("min","q1","median","mean","q3","max","st_dev","iqr")
 	return(s)
+}
+
+if_end <- function(node, true, false) {
+	ifelse(node %in% c("Start","End"), true, false)
+}
+if_start <- function(node, true, false) {
+	ifelse(node %in% c("Start"), true, false)
 }

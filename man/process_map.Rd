@@ -2,20 +2,31 @@
 % Please edit documentation in R/process_map.R
 \name{process_map}
 \alias{process_map}
+\alias{process_map.eventlog}
 \title{Process Map}
 \usage{
-process_map(eventlog, type = frequency("absolute"), type_nodes = type,
-  type_edges = type, rankdir = "LR", render = T, fixed_edge_width = F,
+process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes, sec_edges,
+  rankdir, render, fixed_edge_width, fixed_node_pos, ...)
+
+\method{process_map}{eventlog}(eventlog, type = frequency("absolute"),
+  sec = NULL, type_nodes = type, type_edges = type, sec_nodes = sec,
+  sec_edges = sec, rankdir = "LR", render = T, fixed_edge_width = F,
   fixed_node_pos = NULL, ...)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a process map}
 
-\item{type}{A process map type, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.}
+\item{type}{A process map type, which can be created with the functions frequency, performance and custom. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time. The third one allows custom attributes to be used.}
+
+\item{sec}{A secondary process map type. Values are shown between brackets.}
 
 \item{type_nodes}{A process map type to be used for nodes only, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.}
 
 \item{type_edges}{A process map type to be used for edges only, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.}
+
+\item{sec_nodes}{A secondary process map type for nodes only.}
+
+\item{sec_edges}{A secondary process map type for edges only.}
 
 \item{rankdir}{The direction in which to layout the graph:  "LR" (default),"TB", "BT", "RL", corresponding to directed graphs drawn from top to bottom, from left to right, from bottom to top, and from right to left, respectively.}
 
@@ -30,10 +41,16 @@ process_map(eventlog, type = frequency("absolute"), type_nodes = type,
 \description{
 A function for creating a process map of an event log.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{eventlog}: Process map for event log
+}}
+
 \examples{
 \dontrun{
 library(eventdataR)
 data(patients)
 process_map(patients)
 }
+
 }
