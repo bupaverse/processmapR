@@ -186,7 +186,7 @@ process_map.eventlog <- function(eventlog,
 			full_join(nodes_secondary, by = c("ACTIVITY_CLASSIFIER_", "from_id")) %>%
 			mutate(label = if_end(ACTIVITY_CLASSIFIER_,
 								  ACTIVITY_CLASSIFIER_,
-								  paste0(label, "\n","(", map(sec_label, ~str_split(.x, "\n")[[1]][2]), ")"))) -> nodes
+								  str_replace(paste0(label, "\n","(", map(sec_label, ~str_split(.x, "\n")[[1]][2]), ")"), "\n\\(\\)",""))) -> nodes
 	}
 
 	if(!is.null(sec_edges)) {
@@ -196,7 +196,7 @@ process_map.eventlog <- function(eventlog,
 
 		edges %>%
 			full_join(edges_secondary, by = c("from_id","to_id")) %>%
-			mutate(label = paste0(label, "\n", sec_label)) -> edges
+			mutate(label = str_replace(paste0(label, "\n (", sec_label, ')'), "\n \\( \\)","")) -> edges
 	}
 
 	if(fixed_edge_width) {
