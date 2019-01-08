@@ -57,7 +57,7 @@ frequency <- function(value = c("absolute", "relative", "absolute_case", "relati
 			ungroup() %>%
 			mutate(penwidth = rescale(label, to = c(1,5), from = c(0, max(label)))) %>%
 			mutate(label = case_when(type == "absolute"        ~ paste0(label, ""),
-									 type == "absolute_cases"  ~ paste0(label, ""),
+									 type == "absolute_case"  ~ paste0(label, ""),
 									 type == "relative"        ~ paste0(label, "%"),
 									 type == "relative_case"   ~ paste0(label, "%")))
 
