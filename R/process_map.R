@@ -159,11 +159,12 @@ process_map.eventlog <- function(eventlog,
 					 		   next_start_time = lead(start_time),
 					 		   next_end_time = lead(end_time)) %>%
 					 	full_join(base_nodes, by = c("ACTIVITY_CLASSIFIER_" = "ACTIVITY_CLASSIFIER_")) %>%
-					 	rename(from_id = node_id) %>%
 					 	full_join(base_nodes, by = c("next_act" = "ACTIVITY_CLASSIFIER_")) %>%
-					 	rename(to_id = node_id) %>%
-					 	select(-n.x, -n.y) %>%
-					 	ungroup() -> base_precedence)
+					 	ungroup() %>%
+					 	select(everything(),
+					 		   -n.x, -n.y,
+					 		   from_id = node_id.x,
+					 		   to_id = node_id.y) -> base_precedence)
 
 	extra_data <- list()
 	extra_data$n_cases <- n_cases(eventlog)
