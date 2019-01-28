@@ -135,12 +135,11 @@ process_map.eventlog <- function(eventlog,
 			   start_time = end_time,
 			   min_order = Inf) -> end_points_end
 
-	bind_rows(end_points_start, end_points_end) -> end_points
-
 	#add endpoints to base log
 
-	suppressWarnings(base_log  %>%
-					 	bind_rows(end_points) -> base_log)
+	suppressWarnings(
+		bind_rows(end_points_start, end_points_end, base_log) -> base_log
+	)
 
 	#create base nodes list
 
