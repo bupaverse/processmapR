@@ -21,6 +21,7 @@
 precedence_matrix <- function(eventlog, type = c("absolute","relative","relative-antecedent","relative-consequent", "relative-case")) {
 	stopifnot("eventlog" %in% class(eventlog))
 
+	type <- match.arg(type)
 
 	if(type == "relative_antecedent") {
 		type <- "relative-antecedent"
@@ -73,30 +74,26 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 			   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> log
 
 	if(type == "absolute") {
-		class(log) <- c("precedence-matrix", class(log))
-		attr(log, "matrix_type") <- "absolute"
+		;
 	}
 	else if (type == "relative") {
 		log %>%
 			mutate(rel_n = n/sum(n)) -> log
-		class(log) <- c("precedence-matrix", class(log))
-		attr(log, "matrix_type") <- "relative"
+
 	}
 	else if (type == "relative-antecedent") {
 		log %>%
 			group_by(antecedent) %>%
 			mutate(rel_antecedent = n/sum(n)) %>%
 			ungroup() -> log
-		class(log) <- c("precedence_matrix", class(log))
-		attr(log, "matrix_type") <- "relative_antecedent"
+
 	}
 	else if(type == "relative-consequent") {
 		log %>%
 			group_by(consequent) %>%
 			mutate(rel_consequent = n/sum(n)) %>%
 			ungroup() -> log
-		class(log) <- c("precedence_matrix", class(log))
-		attr(log, "matrix_type") <- "relative_consequent"
+
 	}
 	else if (type == "relative-case") {
 		temp %>%
@@ -119,9 +116,9 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 			mutate(antecedent = fct_relevel(antecedent, "Start"),
 				   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> log
 
-		class(log) <- c("precedence_matrix", class(log))
-		attr(log, "matrix_type") <- "relative_case"
 	}
+	class(log) <- c("process_matrix", class(log))
+	attr(log, "matrix_type") <- type
 
 
 	return(log)

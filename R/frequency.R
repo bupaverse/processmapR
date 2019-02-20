@@ -7,7 +7,9 @@
 #' @export frequency
 
 
-frequency <- function(value = c("absolute", "relative", "absolute_case", "relative_case"), color_scale = "PuBu", color_edges = "dodgerblue4") {
+frequency <- function(value = c("absolute", "relative", "absolute-case", "relative-case"), color_scale = "PuBu", color_edges = "dodgerblue4") {
+
+	value <- str_replace(value, "_", "-")
 	value <- match.arg(value)
 	attr(value, "perspective") <- "frequency"
 	attr(value, "color") <- color_scale
@@ -27,13 +29,13 @@ frequency <- function(value = c("absolute", "relative", "absolute_case", "relati
 			ungroup() %>%
 			mutate(label = case_when(type == "relative" ~ 100*n/n_activity_instances,
 									 type == "absolute" ~ n,
-									 type == "absolute_case" ~ n_distinct_cases,
-									 type == "relative_case" ~ 100*n_distinct_cases/n_cases)) %>%
+									 type == "absolute-case" ~ n_distinct_cases,
+									 type == "relative-case" ~ 100*n_distinct_cases/n_cases)) %>%
 			mutate(color_level = label,
 				   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
 				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
-				   tooltip = paste0(ACTIVITY_CLASSIFIER_, "\n", round(label, 2), ifelse(type %in% c("absolute", "absolute_case"),"", "%")),
+				   tooltip = paste0(ACTIVITY_CLASSIFIER_, "\n", round(label, 2), ifelse(type %in% c("absolute", "absolute-case"),"", "%")),
 				   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip)) %>%
 			na.omit()
 	}
@@ -50,16 +52,60 @@ frequency <- function(value = c("absolute", "relative", "absolute_case", "relati
 					  n_distinct_cases = as.double(n_distinct(CASE_CLASSIFIER_))) %>%
 			na.omit() %>%
 			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
-			mutate(label = case_when(type == "relative" ~ round(100*n/sum(n),2),
-									 type == "absolute" ~ n,
-									 type == "absolute_case" ~ n_distinct_cases,
-									 type == "relative_case" ~ round(100*n_distinct_cases/n_cases, 2))) %>%
+			mutate(label_numeric = case_when(type == "relative" ~ n/sum(n),
+											 type == "absolute" ~ n,
+											 type == "absolute-case" ~ n_distinct_cases,
+											 type == "relative-case" ~ n_distinct_cases/n_cases)) %>%
 			ungroup() %>%
-			mutate(penwidth = rescale(label, to = c(1,5), from = c(0, max(label)))) %>%
-			mutate(label = case_when(type == "absolute"        ~ paste0(label, ""),
-									 type == "absolute_cases"  ~ paste0(label, ""),
-									 type == "relative"        ~ paste0(label, "%"),
-									 type == "relative_case"   ~ paste0(label, "%")))
+			mutate(penwidth = rescale(label_numeric, to = c(1,5), from = c(0, max(label_numeric)))) %>%
+			mutate(label = case_when(type == "absolute"        ~ paste0(label_numeric, ""),
+									 type == "absolute-case"  ~ paste0(label_numeric, ""),
+									 type == "relative"        ~ paste0(round(100*label_numeric,2), "%"),
+									 type == "relative-case"   ~ paste0(round(100*label_numeric,2), "%")))
+
+	}
+
+	attr(value, "transform_for_matrix") <- function(edges, type, extra_data) {
+		n_consequents <- length(unique(edges$next_act))
+
+		edges %>%
+			rename(antecedent = ACTIVITY_CLASSIFIER_,
+				   consequent = next_act) %>%
+			mutate(antecedent = fct_relevel(antecedent, "Start"),
+				   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> edges
+
+		edges %>%
+			select(-from_id, -to_id, -n_distinct_cases, -label, -penwidth) -> edges
+
+		if(type == "absolute") {
+			edges %>%
+				select(-label_numeric)
+		} else if(type == "relative-case") {
+			edges %>%
+				mutate(n_cases = label_numeric*extra_data$n_cases) %>%
+				mutate(rel_n_cases = label_numeric) %>%
+				select(-label_numeric, -n)
+		} else if(type == "relative-consequent") { #heritage precedence matrix
+			edges %>%
+				rename(n = label_numeric) %>%
+				group_by(consequent) %>%
+				mutate(rel_consequent = n/sum(n)) %>%
+				ungroup()
+		} else if(type == "relative-antecedent") { #heritage precedence matrix
+			edges %>%
+				rename(n = label_numeric) %>%
+				group_by(antecedent) %>%
+				mutate(rel_antecedent = n/sum(n)) %>%
+				ungroup()
+		} else if(type == "relative") {
+			edges %>%
+				mutate(rel_n = n/sum(n)) %>%
+				select(-label_numeric)
+		} else if(type == "absolute-case") {
+			edges %>%
+				mutate(n_cases = label_numeric) %>%
+				select(-label_numeric, -n)
+		}
 
 	}
 	return(value)

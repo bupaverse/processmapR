@@ -1,17 +1,18 @@
 
-#' @title Precendence Matrix
+#' @title Process Matrix Plot
 #'
 #' @description  Visualize a precendence matrix. A generic plot function for precedences matrices.
 #' @param x Precedence matrix
 #' @param ... Additional paramters
 #' @return A ggplot object, which can be customized further, if deemed necessary.
-#' @method plot precedence_matrix
+#' @method plot process_matrix
 
 #' @export
 
-plot.precedence_matrix <- function(x, ...) {
+plot.process_matrix <- function(x, ...) {
 
 	type <- attr(x, "matrix_type")
+	perspective <- attr(y, )
 
 	antecedent <- NULL
 	consequent <- NULL
@@ -49,12 +50,12 @@ plot.precedence_matrix <- function(x, ...) {
 
 
 		return(p)
-	} else if(type == "relative_case") {
+	} else if(type == "relative-case") {
 		x %>%
 			ggplot(aes(antecedent, consequent)) +
 			geom_tile(aes(fill = rel_n_cases)) +
 			geom_text(aes(label = round(rel_n_cases*100, 2)), color = "white", fontface = "bold") +
-			scale_fill_continuous_tableau(name = "Relative Frequency", palette = "Blue") +
+			scale_fill_continuous_tableau(name = "Relative Case Frequency", palette = "Blue") +
 			theme_light() +
 			coord_flip() +
 			theme(axis.text.x = element_text(angle = 45, hjust = 1),
@@ -62,7 +63,20 @@ plot.precedence_matrix <- function(x, ...) {
 		p <- p + labs(x = "Antecedent", y = "Consequent")
 
 		return(p)
-	} else if(type == "relative_antecedent") {
+	} else if(type == "absolute-case") {
+		x %>%
+			ggplot(aes(antecedent, consequent)) +
+			geom_tile(aes(fill = n_cases)) +
+			geom_text(aes(label = n_cases), color = "white", fontface = "bold") +
+			scale_fill_continuous_tableau(name = "Absolute Case Frequency", palette = "Blue") +
+			theme_light() +
+			coord_flip() +
+			theme(axis.text.x = element_text(angle = 45, hjust = 1),
+				  legend.position = "top")-> p
+		p <- p + labs(x = "Antecedent", y = "Consequent")
+
+		return(p)
+	} else if(type == "relative-antecedent") {
 		x %>%
 			ggplot(aes(antecedent, consequent)) +
 			geom_tile(aes(fill = rel_antecedent)) +
@@ -77,7 +91,7 @@ plot.precedence_matrix <- function(x, ...) {
 				  legend.position = "top")-> p
 		p <- p + labs(x = "Antecedent", y = "Consequent")
 		return(p)
-	} else if(type == "relative_consequent") {
+	} else if(type == "relative-consequent") {
 		x %>%
 			ggplot(aes(antecedent, consequent)) +
 			geom_tile(aes(fill = rel_consequent)) +

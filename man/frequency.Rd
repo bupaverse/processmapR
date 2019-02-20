@@ -4,7 +4,7 @@
 \alias{frequency}
 \title{Frequency map profile}
 \usage{
-frequency(value = c("absolute", "relative", "absolute_case", "relative_case"),
+frequency(value = c("absolute", "relative", "absolute-case", "relative-case"),
   color_scale = "PuBu", color_edges = "dodgerblue4")
 }
 \arguments{
