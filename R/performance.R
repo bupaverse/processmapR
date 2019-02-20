@@ -50,7 +50,20 @@ performance <- function(FUN = mean,
 
 
 	attr(FUN, "create_nodes") <- function(precedence, type, extra_data) {
-
+		from_id <- NULL
+		to_id <- NULL
+		label <- NULL
+		tooltip <- NULL
+		next_act <- NULL
+		end_time <- NULL
+		start_time <- NULL
+		duration <- NULL
+		antecedent <- NULL
+		time <- NULL
+		value <- NULL
+		ACTIVITY_CLASSIFIER_ <- NULL
+		label_numeric <- NULL
+		consequent <- NULL
 		precedence %>%
 			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))*attr(type, "scale_time")) %>%
 			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
@@ -68,13 +81,27 @@ performance <- function(FUN = mean,
 	attr(FUN, "create_edges") <- function(precedence, type, extra_data) {
 
 		flow_time <- attr(type, "flow_time")
-
+		from_id <- NULL
+		to_id <- NULL
+		label <- NULL
+		tooltip <- NULL
+		next_act <- NULL
+		end_time <- NULL
+		start_time <- NULL
+		duration <- NULL
+		antecedent <- NULL
+		time <- NULL
+		value <- NULL
+		ACTIVITY_CLASSIFIER_ <- NULL
+		label_numeric <- NULL
+		consequent <- NULL
 		precedence %>%
 			ungroup() %>%
 			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units"))*attr(type, "scale_time"),
 									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units"))*attr(type, "scale_time"))) %>%
 			group_by(ACTIVITY_CLASSIFIER_, next_act, from_id, to_id) %>%
 			summarize(value = do.call(function(...) type(time, na.rm = T,...),  attr(type, "arguments"))) %>%
+			mutate(label_numeric = value) %>%
 			mutate( label = paste0(round(value,2), " ", attr(type, "units_label"))) %>%
 			na.omit() %>%
 			ungroup() %>%
@@ -82,6 +109,33 @@ performance <- function(FUN = mean,
 			mutate(label = if_end(ACTIVITY_CLASSIFIER_, " ", if_end(next_act, " ", label))) %>%
 			select(-value)
 	}
+	attr(FUN, "transform_for_matrix") <- function(edges, type, extra_data) {
+		from_id <- NULL
+		to_id <- NULL
+		label <- NULL
+		end_time <- NULL
+		start_time <- NULL
+		duration <- NULL
+		time <- NULL
+		tooltip <- NULL
+		penwidth <- NULL
+		antecedent <- NULL
+		next_act <- NULL
+		value <- NULL
+		ACTIVITY_CLASSIFIER_ <- NULL
+		label_numeric <- NULL
+		consequent <- NULL
 
+		n_consequents <- length(unique(edges$next_act))
+
+		edges %>%
+			rename(antecedent = ACTIVITY_CLASSIFIER_,
+				   consequent = next_act) %>%
+			mutate(antecedent = fct_relevel(antecedent, "Start"),
+				   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) %>%
+			select(-from_id, -to_id, -penwidth, -label) %>%
+			rename(flow_time = label_numeric) -> edges
+		return(edges)
+	}
 	return(FUN)
 }

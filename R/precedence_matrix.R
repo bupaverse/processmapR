@@ -118,6 +118,7 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 
 	}
 	class(log) <- c("process_matrix", class(log))
+	attr(type, "perspective") <- "frequency"
 	attr(log, "matrix_type") <- type
 
 

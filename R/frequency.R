@@ -20,6 +20,19 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 
 		n_cases <- extra_data$n_cases
 		n_activity_instances <- extra_data$n_activity_instances
+		from_id <- NULL
+		to_id <- NULL
+		label <- NULL
+		tooltip <- NULL
+		next_act <- NULL
+		value <- NULL
+		CASE_CLASSIFIER_ <- NULL
+
+		ACTIVITY_CLASSIFIER_ <- NULL
+		label_numeric <- NULL
+		consequent <- NULL
+	antecedent <- NULL
+	n_distinct_cases <- NULL
 
 
 		precedence %>%
@@ -41,10 +54,21 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 	}
 
 	attr(value, "create_edges") <- function(precedence, type, extra_data) {
-
+		from_id <- NULL
+		to_id <- NULL
+		label <- NULL
+		tooltip <- NULL
+		next_act <- NULL
+		value <- NULL
+		ACTIVITY_CLASSIFIER_ <- NULL
+		label_numeric <- NULL
+		consequent <- NULL
+		CASE_CLASSIFIER_ <- NULL
+		antecedent <- NULL
+		n_distinct_cases <- NULL
 		n_cases <- extra_data$n_cases
 		n_activity_instances <- extra_data$n_activity_instances
-
+		penwidth <- NULL
 		precedence %>%
 			ungroup() %>%
 			group_by(ACTIVITY_CLASSIFIER_, from_id, next_act, to_id) %>%
@@ -66,8 +90,19 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 	}
 
 	attr(value, "transform_for_matrix") <- function(edges, type, extra_data) {
+		from_id <- NULL
+		to_id <- NULL
+		label <- NULL
+		tooltip <- NULL
+		next_act <- NULL
+		value <- NULL
+		ACTIVITY_CLASSIFIER_ <- NULL
+		label_numeric <- NULL
+		n_distinct_cases <- NULL
+		penwidth <- NULL
+		consequent <- NULL
 		n_consequents <- length(unique(edges$next_act))
-
+		antecedent <- NULL
 		edges %>%
 			rename(antecedent = ACTIVITY_CLASSIFIER_,
 				   consequent = next_act) %>%

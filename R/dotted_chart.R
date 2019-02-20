@@ -36,7 +36,7 @@ timeFormat <- function(time){
 
 # compute data for dotted_chart
 dotted_chart_data <- function(eventlog, color, units) {
-
+	start_case_rank <- NULL
 	start <- NULL
 	end <- NULL
 	start_case <- NULL

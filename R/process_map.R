@@ -73,6 +73,10 @@ process_map.eventlog <- function(eventlog,
 	duration <- NULL
 	value <- NULL
 	color_level <- NULL
+	sec_label <- NULL
+	node_id.y <- NULL
+	node_id.x <- NULL
+
 
 	eventlog <- ungroup_eventlog(eventlog)
 

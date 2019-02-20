@@ -38,7 +38,15 @@ custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu", colo
   attr(FUN, "color_edges") <- color_edges
 
   attr(FUN, "create_nodes") <- function(precedence, type, extra_data) {
-
+  	from_id <- NULL
+  	to_id <- NULL
+  	label <- NULL
+  	tooltip <- NULL
+  	next_act <- NULL
+  	value <- NULL
+  	ACTIVITY_CLASSIFIER_ <- NULL
+  	label_numeric <- NULL
+  	consequent <- NULL
   	attribute <- sym(attr(type, "attribute"))
 
   	precedence %>%
@@ -59,7 +67,15 @@ custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu", colo
 
   	attribute <- sym(attr(type, "attribute"))
 
-
+  	from_id <- NULL
+  	to_id <- NULL
+  	label <- NULL
+  	tooltip <- NULL
+  	next_act <- NULL
+  	value <- NULL
+  	ACTIVITY_CLASSIFIER_ <- NULL
+  	label_numeric <- NULL
+  	consequent <- NULL
 
 
   	precedence %>%
