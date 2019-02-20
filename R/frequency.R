@@ -106,7 +106,6 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 				mutate(n_cases = label_numeric) %>%
 				select(-label_numeric, -n)
 		}
-
 	}
 	return(value)
 }
