@@ -48,6 +48,7 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 	min_order <- NULL
 
 	log %>%
+		as.data.frame() %>%
 		group_by(!!case_id_(eventlog), !!activity_id_(eventlog), !!activity_instance_id_(eventlog)) %>%
 		summarize(ts = min(!!timestamp_(eventlog)), min_order = min(.order))  %>%
 		group_by(!!case_id_(eventlog)) %>%

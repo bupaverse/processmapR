@@ -54,6 +54,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 	}
 
 	eventlog %>%
+		as.data.frame() %>%
 		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
 		summarize(start = min(!!timestamp_(eventlog)),
 				  end = max(!!timestamp_(eventlog))) %>%
@@ -68,6 +69,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 		select(!!case_id_(eventlog), start_case_rank) -> eventlog_rank_start_cases
 
 	eventlog %>%
+		as.data.frame() %>%
 		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
 		summarize(start = min(!!timestamp_(eventlog)),
 				  end = max(!!timestamp_(eventlog))) %>%
