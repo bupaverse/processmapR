@@ -58,7 +58,10 @@ dotted_chart_data <- function(eventlog, color, units) {
 		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
 		summarize(start = min(!!timestamp_(eventlog)),
 				  end = max(!!timestamp_(eventlog))) %>%
-		group_by(!!case_id_(eventlog)) %>%
+		group_by(!!case_id_(eventlog)) -> grouped_activity_log
+
+
+	grouped_activity_log %>%
 		arrange(start) %>%
 		mutate(rank = paste0("ACTIVITY_RANKED_AS_", 1:n())) %>%
 		ungroup() %>%
@@ -68,12 +71,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 		mutate(start_case_rank = 1:n()) %>%
 		select(!!case_id_(eventlog), start_case_rank) -> eventlog_rank_start_cases
 
-	eventlog %>%
-		as.data.frame() %>%
-		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
-		summarize(start = min(!!timestamp_(eventlog)),
-				  end = max(!!timestamp_(eventlog))) %>%
-		group_by(!!case_id_(eventlog)) %>%
+	grouped_activity_log %>%
 		mutate(start_week = as.double(timeSinceStartOfWeek(start), units = units)) %>%
 		mutate(start_day = as.double(timeSinceStartOfDay(start), units = units)) %>%
 		mutate(start_case = min(start),
