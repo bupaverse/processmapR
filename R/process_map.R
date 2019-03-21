@@ -78,6 +78,9 @@ process_map.eventlog <- function(eventlog,
 	node_id.y <- NULL
 	node_id.x <- NULL
 
+	if (any(is.na(eventlog %>% pull(!!timestamp_(eventlog))))) {
+		warning("Some of the timestamps in the supplied event log are missing (NA values). This may result in a invalid process map!")
+	}
 
 	eventlog <- ungroup_eventlog(eventlog)
 
