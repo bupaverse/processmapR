@@ -306,7 +306,10 @@ process_map.grouped_eventlog <- function(eventlog,
 	m <- mapping(eventlog)
 
 	eventlog %>%
-		do(group_name = paste(unique(select(., group_vars(eventlog)))),
+		do(group_name = paste(select(., group_vars(eventlog)) %>%
+							  	mutate_all(as.character) %>%
+							  	distinct() %>%
+							  	unique(), collapse = ","),
 		   group_map = process_map(re_map(., m),
 									 type = type,
 									 sec = sec,
@@ -326,14 +329,13 @@ process_map.grouped_eventlog <- function(eventlog,
 						function(g_name, g_map) {
 							rendered_map <- render_graph(graph = g_map,
 														 title = g_name,
-														 # TODO, not so clear what to choose here
 														 width = "100%",
 														 height = "100%")
-							htmltools::tags$div(rendered_map, style = "border: 1px dashed gray;")
+							htmltools::tags$div(rendered_map, style = "border: 1px dashed gray; margin: 1px; width: 49%")
 						})
 		doc <- htmltools::tags$div(style = "display: flex; flex-wrap: wrap",
 								   group_tags)
-		htmltools::browsable(doc)
+		print(htmltools::browsable(doc))
 		grouped_map
 	} else {
 		grouped_map
