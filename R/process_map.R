@@ -327,11 +327,9 @@ process_map.grouped_eventlog <- function(eventlog,
 		group_tags <-
 			purrr::pmap(list(grouped_map$group_name, grouped_map$group_map),
 						function(g_name, g_map) {
-							rendered_map <- render_graph(graph = g_map,
-														 title = g_name,
-														 width = "100%",
-														 height = "100%")
-							htmltools::tags$div(rendered_map, style = "border: 1px dashed gray; margin: 1px; width: 49%")
+							rendered_map <- render_graph(graph = g_map, title = g_name,
+														 width = "100%", height = "100%")
+							htmltools::tags$div(rendered_map, style = "border: 1px dashed gray; margin: 1px; width: 100%")
 						})
 		doc <- htmltools::tags$div(style = "display: flex; flex-wrap: wrap",
 								   group_tags)
