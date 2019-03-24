@@ -135,7 +135,8 @@ process_map.eventlog <- function(eventlog,
 		prepared_log[, list(start_time = min(TIMESTAMP_CLASSIFIER_),
 							end_time = max(TIMESTAMP_CLASSIFIER_),
 							min_order = min(.order)),
-					 by = c("ACTIVITY_CLASSIFIER_", "ACTIVITY_INSTANCE_CLASSIFIER_", "CASE_CLASSIFIER_")] -> base_log
+					 by = c("ACTIVITY_CLASSIFIER_", "ACTIVITY_INSTANCE_CLASSIFIER_", "CASE_CLASSIFIER_")] %>%
+			as.data.frame() -> base_log
 	}
 
 	#create end points for graph
@@ -180,6 +181,7 @@ process_map.eventlog <- function(eventlog,
 	      	  by = CASE_CLASSIFIER_] %>%
 	 	merge(base_nodes, by.x = c("ACTIVITY_CLASSIFIER_"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
 	 	merge(base_nodes, by.x = c("next_act"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
+		as.data.frame() %>%
 	 	select(everything(),
 	 		   -n.x, -n.y,
 	 		   from_id = node_id.x,
