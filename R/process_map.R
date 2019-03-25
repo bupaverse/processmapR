@@ -30,6 +30,7 @@
 #' }
 #'
 #' @importFrom purrr map
+#' @importFrom data.table :=
 #'
 #' @export process_map
 
@@ -77,6 +78,9 @@ process_map.eventlog <- function(eventlog,
 	node_id.y <- NULL
 	node_id.x <- NULL
 
+	if (any(is.na(eventlog %>% pull(!!timestamp_(eventlog))))) {
+		warning("Some of the timestamps in the supplied event log are missing (NA values). This may result in a invalid process map!")
+	}
 
 	eventlog <- ungroup_eventlog(eventlog)
 
@@ -88,38 +92,51 @@ process_map.eventlog <- function(eventlog,
 			   CASE_CLASSIFIER_ = !!case_id_(eventlog),
 			   TIMESTAMP_CLASSIFIER_ = !!timestamp_(eventlog),
 			   .order,
-			   everything()) %>%
-		group_by(ACTIVITY_CLASSIFIER_, ACTIVITY_INSTANCE_CLASSIFIER_, CASE_CLASSIFIER_) -> grouped_log
+			   everything()) -> prepared_log
 
 	perspective_nodes <- attr(type_nodes, "perspective")
 	perspective_edges <- attr(type_edges, "perspective")
 
 	#create base_log: list of case > activity > instance - start + end + min + order (+ custom attributes)
 
+	group_log <- function(log) {
+		group_by(log, ACTIVITY_CLASSIFIER_, ACTIVITY_INSTANCE_CLASSIFIER_, CASE_CLASSIFIER_)
+	}
+
 	if(perspective_nodes == "custom" && perspective_edges == "custom") {
 		attributeNode <- sym(attr(type_nodes, "attribute"))
 		attributeEdge <- sym(attr(type_edges, "attribute"))
-		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
-								  end_time = max(TIMESTAMP_CLASSIFIER_),
-								  min_order = min(.order),
-								  !!attributeNode := first(!!attributeNode),
-								  !!attributeEdge := first(!!attributeEdge)) -> base_log
+		prepared_log %>%
+			group_log() %>%
+			summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+					  end_time = max(TIMESTAMP_CLASSIFIER_),
+					  min_order = min(.order),
+					  !!attributeNode := first(!!attributeNode),
+					  !!attributeEdge := first(!!attributeEdge)) -> base_log
 	} else if(perspective_nodes == "custom") {
 		attribute <- sym(attr(type_nodes, "attribute"))
-		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
-								  end_time = max(TIMESTAMP_CLASSIFIER_),
-								  min_order = min(.order),
-								  !!attribute := first(!!attribute)) -> base_log
+		prepared_log %>%
+			group_log() %>%
+			summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+					  end_time = max(TIMESTAMP_CLASSIFIER_),
+					  min_order = min(.order),
+					  !!attribute := first(!!attribute)) -> base_log
 	} else if (perspective_edges == "custom") {
 		attribute <- sym(attr(type_edges, "attribute"))
-		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
-								  end_time = max(TIMESTAMP_CLASSIFIER_),
-								  min_order = min(.order),
-								  !!attribute := first(!!attribute)) -> base_log
+		prepared_log %>%
+			group_log() %>%
+			summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+					  end_time = max(TIMESTAMP_CLASSIFIER_),
+					  min_order = min(.order),
+					  !!attribute := first(!!attribute)) -> base_log
 	} else {
-		grouped_log %>% summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
-								  end_time = max(TIMESTAMP_CLASSIFIER_),
-								  min_order = min(.order)) -> base_log
+		# speed up standard aggregation by using data.table fast grouping (GForce)
+		data.table::setDT(prepared_log)
+		prepared_log[, list(start_time = min(TIMESTAMP_CLASSIFIER_),
+							end_time = max(TIMESTAMP_CLASSIFIER_),
+							min_order = min(.order)),
+					 by = c("ACTIVITY_CLASSIFIER_", "ACTIVITY_INSTANCE_CLASSIFIER_", "CASE_CLASSIFIER_")] %>%
+			as.data.frame() -> base_log
 	}
 
 	#create end points for graph
@@ -142,33 +159,33 @@ process_map.eventlog <- function(eventlog,
 	#add endpoints to base log
 
 	suppressWarnings(
-		bind_rows(end_points_start, end_points_end, base_log) -> base_log
+		bind_rows(end_points_start, end_points_end, base_log) %>%
+			ungroup() -> base_log
 	)
 
 	#create base nodes list
 
 	base_log %>%
-		ungroup() %>%
 		count(ACTIVITY_CLASSIFIER_) %>%
 		mutate(node_id = 1:n()) -> base_nodes
+	data.table::setDT(base_nodes, key = c("ACTIVITY_CLASSIFIER_"))
 
 	#create base precedence list
 
-	suppressWarnings(base_log %>%
-					 	ungroup() %>%
-					 	mutate(ACTIVITY_CLASSIFIER_ = ordered(ACTIVITY_CLASSIFIER_, levels = c("Start", as.character(sort(activity_labels(eventlog))), "End"))) %>%
-					 	group_by(CASE_CLASSIFIER_) %>%
-					 	arrange(start_time, min_order) %>%
-					 	mutate(next_act = lead(ACTIVITY_CLASSIFIER_),
-					 		   next_start_time = lead(start_time),
-					 		   next_end_time = lead(end_time)) %>%
-					 	full_join(base_nodes, by = c("ACTIVITY_CLASSIFIER_" = "ACTIVITY_CLASSIFIER_")) %>%
-					 	full_join(base_nodes, by = c("next_act" = "ACTIVITY_CLASSIFIER_")) %>%
-					 	ungroup() %>%
-					 	select(everything(),
-					 		   -n.x, -n.y,
-					 		   from_id = node_id.x,
-					 		   to_id = node_id.y) -> base_precedence)
+	data.table::setDT(base_log, key = c("start_time", "min_order"))
+	base_log[, ACTIVITY_CLASSIFIER_ := ordered(ACTIVITY_CLASSIFIER_,
+											   levels = c("Start", as.character(sort(activity_labels(eventlog))), "End"))
+	      	][, `:=`(next_act = data.table::shift(ACTIVITY_CLASSIFIER_, 1, type = "lead"),
+	      			 next_start_time = data.table::shift(start_time, 1, type = "lead"),
+	      			 next_end_time = data.table::shift(end_time, 1, type = "lead")),
+	      	  by = CASE_CLASSIFIER_] %>%
+	 	merge(base_nodes, by.x = c("ACTIVITY_CLASSIFIER_"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
+	 	merge(base_nodes, by.x = c("next_act"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
+		as.data.frame() %>%
+	 	select(everything(),
+	 		   -n.x, -n.y,
+	 		   from_id = node_id.x,
+	 		   to_id = node_id.y) -> base_precedence
 
 	extra_data <- list()
 	extra_data$n_cases <- n_cases(eventlog)
