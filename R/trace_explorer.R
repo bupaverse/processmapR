@@ -91,9 +91,11 @@ trace_explorer <- function(eventlog,
 				"event_classifier" = activity_id(eventlog),
 				"timestamp_classifier" = timestamp(eventlog)) %>%
 		as.data.frame %>%
-		group_by(case_classifier, event_classifier, aid) %>%
-		summarize(ts = min(timestamp_classifier),
-				  min_order = min(.order)) %>%
+		arrange(timestamp_classifier, .order) %>%
+		# distinct keeps first entry (=minimum)
+		distinct(case_classifier, event_classifier, aid, .keep_all = TRUE) %>%
+		rename(ts = timestamp_classifier,
+	           min_order = .order) %>%
 		inner_join(cases, by = "case_classifier") %>%
 		group_by(trace_id) %>%
 		filter(case_classifier == first(case_classifier)) %>%
