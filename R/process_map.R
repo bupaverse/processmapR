@@ -286,3 +286,57 @@ process_map.eventlog <- function(eventlog,
 	}
 
 }
+
+#' @describeIn process_map Process map for event log
+#' @export
+
+
+process_map.grouped_eventlog <- function(eventlog,
+								 type = frequency("absolute"),
+								 sec = NULL,
+								 type_nodes = type,
+								 type_edges = type,
+								 sec_nodes = sec,
+								 sec_edges = sec,
+								 rankdir = "LR",
+								 render = T,
+								 fixed_edge_width = F,
+								 fixed_node_pos = NULL,
+								 ...) {
+	m <- mapping(eventlog)
+
+	eventlog %>%
+		do(group_name = paste(select(., group_vars(eventlog)) %>%
+							  	mutate_all(as.character) %>%
+							  	distinct() %>%
+							  	unique(), collapse = ","),
+		   group_map = process_map(re_map(., m),
+									 type = type,
+									 sec = sec,
+									 type_nodes = type_nodes,
+									 type_edges = type_edges,
+									 sec_nodes = sec_nodes,
+									 sec_edges = sec_edges,
+									 rankdir = rankdir,
+									 render = F,
+									 fixed_edge_width = fixed_edge_width,
+									 fixed_node_pos = fixed_node_pos,
+									 ...)) -> grouped_map
+
+	if (render) {
+		group_tags <-
+			purrr::pmap(list(grouped_map$group_name, grouped_map$group_map),
+						function(g_name, g_map) {
+							rendered_map <- render_graph(graph = g_map, title = g_name,
+														 width = "100%", height = "100%")
+							htmltools::tags$div(rendered_map, style = "border: 1px dashed gray; margin: 1px; width: 100%")
+						})
+		doc <- htmltools::tags$div(style = "display: flex; flex-wrap: wrap",
+								   group_tags)
+		print(htmltools::browsable(doc))
+		grouped_map
+	} else {
+		grouped_map
+	}
+
+}

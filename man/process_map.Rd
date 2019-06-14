@@ -3,6 +3,7 @@
 \name{process_map}
 \alias{process_map}
 \alias{process_map.eventlog}
+\alias{process_map.grouped_eventlog}
 \title{Process Map}
 \usage{
 process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes,
@@ -12,6 +13,12 @@ process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes,
   sec = NULL, type_nodes = type, type_edges = type,
   sec_nodes = sec, sec_edges = sec, rankdir = "LR", render = T,
   fixed_edge_width = F, fixed_node_pos = NULL, ...)
+
+\method{process_map}{grouped_eventlog}(eventlog,
+  type = frequency("absolute"), sec = NULL, type_nodes = type,
+  type_edges = type, sec_nodes = sec, sec_edges = sec,
+  rankdir = "LR", render = T, fixed_edge_width = F,
+  fixed_node_pos = NULL, ...)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a process map}
@@ -44,6 +51,8 @@ A function for creating a process map of an event log.
 \section{Methods (by class)}{
 \itemize{
 \item \code{eventlog}: Process map for event log
+
+\item \code{grouped_eventlog}: Process map for event log
 }}
 
 \examples{
