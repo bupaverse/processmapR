@@ -6,13 +6,14 @@
 #' @param color Optional, variable to use for coloring dots. Default is the activity identifier. Use NA for no colors.
 #' @param units Time units to use on x-axis in case of relative time.
 #' @param plotly Return plotly object
+#' @param add_end_events Whether to add dots for the complete lifecycle event with a different shape.
 #' @param ... Deprecated arguments
 #' @importFrom tidyr spread
 #' @export dotted_chart
 #'
 
 
-dotted_chart <- function(eventlog, x, sort, color, units, ...) {
+dotted_chart <- function(eventlog, x, sort, color, units, add_end_events = F, ...) {
 	UseMethod("dotted_chart")
 }
 
@@ -72,22 +73,25 @@ dotted_chart_data <- function(eventlog, color, units) {
 		select(!!case_id_(eventlog), start_case_rank) -> eventlog_rank_start_cases
 
 	grouped_activity_log %>%
-		mutate(start_week = as.double(timeSinceStartOfWeek(start), units = units)) %>%
-		mutate(start_day = as.double(timeSinceStartOfDay(start), units = units)) %>%
+		mutate(start_week = as.double(timeSinceStartOfWeek(start), units = units),
+			   end_week = as.double(timeSinceStartOfWeek(start), units = units)) %>%
+		mutate(start_day = as.double(timeSinceStartOfDay(start), units = units),
+			   end_day = as.double(timeSinceStartOfDay(end), units = units)) %>%
 		mutate(start_case = min(start),
 			   end_case = max(end),
 			   dur = as.double(end_case - start_case, units = units)) %>%
 		mutate(start_case_week = timeSinceStartOfWeek(start_case),
 			   start_case_day = timeSinceStartOfDay(start_case)) %>%
-		mutate(start_relative = as.double(start - start_case, units = units)) %>%
+		mutate(start_relative = as.double(start - start_case, units = units),
+			   end_relative = as.double(end - start_case, units = units)) %>%
 		full_join(eventlog_rank_start_cases)
 }
 
 configure_x_aes <- function(x) {
-	case_when(x == "absolute" ~ "start",
-			  x == "relative" ~ "start_relative",
-			  x == "relative_week" ~ "start_week",
-			  x == "relative_day" ~ "start_day")
+	case_when(x == "absolute" ~ c("start","end"),
+			  x == "relative" ~ c("start_relative", "end_relative"),
+			  x == "relative_week" ~ c("start_week", "end_week"),
+			  x == "relative_day" ~ c("start_day", "end_day"))
 }
 
 configure_y_aes <- function(y) {
@@ -105,7 +109,7 @@ configure_x_labs <- function(x, units) {
 			  x == "absolute" ~ "Time")
 }
 
-dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units) {
+dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units, add_end_events) {
 
 	color <- NULL
 	x_aes <- configure_x_aes(x)
@@ -113,15 +117,20 @@ dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units)
 	x_labs <- configure_x_labs(x, units)
 
 	data %>%
-		ggplot(aes_string(x = x_aes, y = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
+		ggplot(aes_string(x = x_aes[[1]], y = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
 		scale_y_discrete(breaks = NULL) +
 		labs(x = x_labs,y = "Cases") +
 		theme_light() -> p
 
-	p + geom_point(aes(color = color)) + scale_color_manual(name = col_label, values = col_vector) -> p
+	p + geom_point(aes(color = color, shape = "start")) +
+		scale_color_manual(name = col_label, values = col_vector) -> p
 
-
-
+	if (add_end_events) {
+		p + geom_point(aes(x = !!sym(x_aes[[2]]), color = color, shape = "complete", ), ) +
+			scale_shape_manual(name = "Lifecycle", values = c(1,16)) -> p
+	} else {
+		p + scale_shape_discrete(guide=FALSE) -> p
+	}
 
 	if(x == "relative_week" && units == "secs") {
 		p + scale_x_time(breaks = as.hms(seq(0, 7 * 86400, by = 8 * 3600)), labels = timeFormat) +
@@ -146,6 +155,7 @@ dotted_chart.eventlog <- function(eventlog,
 								  sort = c("start","end","duration", "start_week","start_day"),
 								  color = NULL,
 								  units = c("weeks","days","hours","mins","secs"),
+								  add_end_events = F,
 								  ...) {
 
 	x <- match.arg(x)
@@ -158,7 +168,7 @@ dotted_chart.eventlog <- function(eventlog,
 
 	eventlog %>%
 		dotted_chart_data(color, units) %>%
-		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color), units)
+		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color), units, add_end_events = add_end_events)
 }
 
 #' @describeIn dotted_chart Dotted chart for grouped event log
@@ -169,6 +179,7 @@ dotted_chart.grouped_eventlog <- function(eventlog,
 										  sort = c("start","end","duration", "start_week","start_day"),
 										  color = NULL,
 										  units = c("weeks","days","hours","mins","secs"),
+										  add_end_events = F,
 										  ...) {
 
 
@@ -184,7 +195,7 @@ dotted_chart.grouped_eventlog <- function(eventlog,
 
 	eventlog %>%
 		dotted_chart_data(color, units) %>%
-		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color), units) +
+		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color), units, add_end_events = add_end_events) +
 		facet_grid(as.formula(paste(c(paste(groups, collapse = "+"), "~." ), collapse = "")), scales = "free_y", space = "free")
 
 }
