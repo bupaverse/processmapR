@@ -1,7 +1,7 @@
 Package: processmapR
 Type: Package
 Title: Construct Process Maps Using Event Data
-Version: 0.3.3
+Version: 0.3.3.9000
 Date: 2019-02-22
 Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhasselt.be", role = c("aut","cre")),
  person("Benoît","Depaire",email = "benoit.depaire@uhasselt.be", role = c("ctb")),
@@ -28,13 +28,13 @@ Imports:
     plotly, 
     rlang, 
     scales,
-    viridis,
     tidyr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
-URL: https://www.bupar.net
+URL: https://www.bupar.net, https://github.com/bupaverse/processmapr
+BugReports: https://github.com/bupaverse/processmapr/issues
 
 
