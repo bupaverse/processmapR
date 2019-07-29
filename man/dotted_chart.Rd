@@ -9,26 +9,27 @@
 \alias{plotly_dotted_chart}
 \title{Dotted chart}
 \usage{
-dotted_chart(eventlog, x, sort, color, units, ...)
+dotted_chart(eventlog, x, sort, color, units, add_end_events = F, ...)
 
 \method{dotted_chart}{eventlog}(eventlog, x = c("absolute", "relative",
   "relative_week", "relative_day"), sort = c("start", "end", "duration",
   "start_week", "start_day"), color = NULL, units = c("weeks", "days",
-  "hours", "mins", "secs"), ...)
+  "hours", "mins", "secs"), add_end_events = F, ...)
 
 \method{dotted_chart}{grouped_eventlog}(eventlog, x = c("absolute",
   "relative", "relative_week", "relative_day"), sort = c("start", "end",
-  "duration", "start_week", "start_day"), color = NULL, units = c("weeks",
-  "days", "hours", "mins", "secs"), ...)
+  "duration", "start_week", "start_day"), color = NULL,
+  units = c("weeks", "days", "hours", "mins", "secs"),
+  add_end_events = F, ...)
 
 idotted_chart(eventlog, plotly = FALSE)
 
 iplotly_dotted_chart(eventlog)
 
-plotly_dotted_chart(eventlog, x = c("absolute", "relative", "relative_week",
-  "relative_day"), sort = c("start", "end", "duration", "start_week",
-  "start_day"), color = NULL, units = c("weeks", "days", "hours", "mins",
-  "secs"), ...)
+plotly_dotted_chart(eventlog, x = c("absolute", "relative",
+  "relative_week", "relative_day"), sort = c("start", "end", "duration",
+  "start_week", "start_day"), color = NULL, units = c("weeks", "days",
+  "hours", "mins", "secs"), ...)
 }
 \arguments{
 \item{eventlog}{Eventlog object}
@@ -40,6 +41,8 @@ plotly_dotted_chart(eventlog, x = c("absolute", "relative", "relative_week",
 \item{color}{Optional, variable to use for coloring dots. Default is the activity identifier. Use NA for no colors.}
 
 \item{units}{Time units to use on x-axis in case of relative time.}
+
+\item{add_end_events}{Whether to add dots for the complete lifecycle event with a different shape.}
 
 \item{...}{Deprecated arguments}
 

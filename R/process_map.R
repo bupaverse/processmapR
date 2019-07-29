@@ -30,6 +30,7 @@
 #' }
 #'
 #' @importFrom purrr map
+#' @importFrom data.table :=
 #'
 #' @export process_map
 
@@ -77,8 +78,120 @@ process_map.eventlog <- function(eventlog,
 	node_id.y <- NULL
 	node_id.x <- NULL
 
+	if (any(is.na(eventlog %>% pull(!!timestamp_(eventlog))))) {
+		warning("Some of the timestamps in the supplied event log are missing (NA values). This may result in a invalid process map!")
+	}
 
-	base_precedence <- create_base_precedence(eventlog, type_nodes, type_edges)
+
+	#base_precedence <- create_base_precedence(eventlog, type_nodes, type_edges)
+
+	eventlog <- ungroup_eventlog(eventlog)
+
+	eventlog %>%
+		as.data.frame() %>%
+		droplevels %>%
+		select(ACTIVITY_CLASSIFIER_ = !!activity_id_(eventlog),
+			   ACTIVITY_INSTANCE_CLASSIFIER_ = !!activity_instance_id_(eventlog),
+			   CASE_CLASSIFIER_ = !!case_id_(eventlog),
+			   TIMESTAMP_CLASSIFIER_ = !!timestamp_(eventlog),
+			   .order,
+			   everything()) -> prepared_log
+
+	perspective_nodes <- attr(type_nodes, "perspective")
+	perspective_edges <- attr(type_edges, "perspective")
+
+	#create base_log: list of case > activity > instance - start + end + min + order (+ custom attributes)
+
+	group_log <- function(log) {
+		group_by(log, ACTIVITY_CLASSIFIER_, ACTIVITY_INSTANCE_CLASSIFIER_, CASE_CLASSIFIER_)
+	}
+
+	if(perspective_nodes == "custom" && perspective_edges == "custom") {
+		attributeNode <- sym(attr(type_nodes, "attribute"))
+		attributeEdge <- sym(attr(type_edges, "attribute"))
+		prepared_log %>%
+			group_log() %>%
+			summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+					  end_time = max(TIMESTAMP_CLASSIFIER_),
+					  min_order = min(.order),
+					  !!attributeNode := first(!!attributeNode),
+					  !!attributeEdge := first(!!attributeEdge)) -> base_log
+	} else if(perspective_nodes == "custom") {
+		attribute <- sym(attr(type_nodes, "attribute"))
+		prepared_log %>%
+			group_log() %>%
+			summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+					  end_time = max(TIMESTAMP_CLASSIFIER_),
+					  min_order = min(.order),
+					  !!attribute := first(!!attribute)) -> base_log
+	} else if (perspective_edges == "custom") {
+		attribute <- sym(attr(type_edges, "attribute"))
+		prepared_log %>%
+			group_log() %>%
+			summarize(start_time = min(TIMESTAMP_CLASSIFIER_),
+					  end_time = max(TIMESTAMP_CLASSIFIER_),
+					  min_order = min(.order),
+					  !!attribute := first(!!attribute)) -> base_log
+	} else {
+		# speed up standard aggregation by using data.table fast grouping (GForce)
+		data.table::setDT(prepared_log)
+		prepared_log[, list(start_time = min(TIMESTAMP_CLASSIFIER_),
+							end_time = max(TIMESTAMP_CLASSIFIER_),
+							min_order = min(.order)),
+					 by = c("ACTIVITY_CLASSIFIER_", "ACTIVITY_INSTANCE_CLASSIFIER_", "CASE_CLASSIFIER_")] %>%
+			as.data.frame() -> base_log
+	}
+
+	#create end points for graph
+
+	base_log %>%
+		group_by(CASE_CLASSIFIER_) %>%
+		arrange(start_time, min_order) -> points_temp
+
+	points_temp %>%
+		slice(1) %>%
+		mutate(ACTIVITY_CLASSIFIER_ = "Start",
+			   end_time = start_time,
+			   min_order = -Inf) -> end_points_start
+	points_temp %>%
+		slice(n()) %>%
+		mutate(ACTIVITY_CLASSIFIER_ = "End",
+			   start_time = end_time,
+			   min_order = Inf) -> end_points_end
+
+	#add endpoints to base log
+
+	suppressWarnings(
+		bind_rows(end_points_start, end_points_end, base_log) %>%
+			ungroup() -> base_log
+	)
+
+	#create base nodes list
+
+	base_log %>%
+		count(ACTIVITY_CLASSIFIER_) %>%
+		mutate(node_id = 1:n()) -> base_nodes
+	data.table::setDT(base_nodes, key = c("ACTIVITY_CLASSIFIER_"))
+
+	#create base precedence list
+
+	data.table::setDT(base_log, key = c("start_time", "min_order"))
+	base_log[, ACTIVITY_CLASSIFIER_ := ordered(ACTIVITY_CLASSIFIER_,
+											   levels = c("Start", as.character(sort(activity_labels(eventlog))), "End"))
+	      	][, `:=`(next_act = data.table::shift(ACTIVITY_CLASSIFIER_, 1, type = "lead"),
+	      			 next_start_time = data.table::shift(start_time, 1, type = "lead"),
+	      			 next_end_time = data.table::shift(end_time, 1, type = "lead")),
+	      	  by = CASE_CLASSIFIER_] %>%
+	 	merge(base_nodes, by.x = c("ACTIVITY_CLASSIFIER_"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
+	 	merge(base_nodes, by.x = c("next_act"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
+		as.data.frame() %>%
+	 	select(everything(),
+	 		   -n.x, -n.y,
+	 		   from_id = node_id.x,
+	 		   to_id = node_id.y) -> base_precedence
+
+
+
 
 	extra_data <- list()
 	extra_data$n_cases <- n_cases(eventlog)
@@ -176,6 +289,60 @@ process_map.eventlog <- function(eventlog,
 	} else  {
 		attr(graph, "base_precedence") <- base_precedence
 		graph %>% return()
+	}
+
+}
+
+#' @describeIn process_map Process map for event log
+#' @export
+
+
+process_map.grouped_eventlog <- function(eventlog,
+								 type = frequency("absolute"),
+								 sec = NULL,
+								 type_nodes = type,
+								 type_edges = type,
+								 sec_nodes = sec,
+								 sec_edges = sec,
+								 rankdir = "LR",
+								 render = T,
+								 fixed_edge_width = F,
+								 fixed_node_pos = NULL,
+								 ...) {
+	m <- mapping(eventlog)
+
+	eventlog %>%
+		do(group_name = paste(select(., group_vars(eventlog)) %>%
+							  	mutate_all(as.character) %>%
+							  	distinct() %>%
+							  	unique(), collapse = ","),
+		   group_map = process_map(re_map(., m),
+									 type = type,
+									 sec = sec,
+									 type_nodes = type_nodes,
+									 type_edges = type_edges,
+									 sec_nodes = sec_nodes,
+									 sec_edges = sec_edges,
+									 rankdir = rankdir,
+									 render = F,
+									 fixed_edge_width = fixed_edge_width,
+									 fixed_node_pos = fixed_node_pos,
+									 ...)) -> grouped_map
+
+	if (render) {
+		group_tags <-
+			purrr::pmap(list(grouped_map$group_name, grouped_map$group_map),
+						function(g_name, g_map) {
+							rendered_map <- render_graph(graph = g_map, title = g_name,
+														 width = "100%", height = "100%")
+							htmltools::tags$div(rendered_map, style = "border: 1px dashed gray; margin: 1px; width: 100%")
+						})
+		doc <- htmltools::tags$div(style = "display: flex; flex-wrap: wrap",
+								   group_tags)
+		print(htmltools::browsable(doc))
+		grouped_map
+	} else {
+		grouped_map
 	}
 
 }
