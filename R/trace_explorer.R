@@ -20,6 +20,7 @@ trace_explorer <- function(eventlog,
 						   type = c("frequent","infrequent"),
 						   .abbreviate = T,
 						   show_labels = T,
+						   label_size = 4,
 						   scale_fill = scale_fill_discrete(h = c(0,360) + 15, l = 40),
 						   raw_data = F) {
 	stopifnot("eventlog" %in% class(eventlog))
@@ -134,7 +135,7 @@ trace_explorer <- function(eventlog,
 			theme(strip.text.y = element_text(angle = 0)) -> p
 
 		if(show_labels)
-			p + geom_text(aes(label = ABBR(.abbreviate)(event_classifier)), color = "white",fontface = "bold")
+			p + geom_text(aes(label = ABBR(.abbreviate)(event_classifier)), color = "white",fontface = "bold", size = label_size)
 		else
 			p
 
@@ -151,6 +152,7 @@ plotly_trace_explorer <- function(eventlog,
 								  type = c("frequent","infrequent"),
 								  .abbreviate = T,
 								  show_labels = T,
+								  label_size = 5,
 								  scale_fill = scale_fill_discrete(h = c(0,360) + 15, l = 40),
 								  raw_data = F) {
 
@@ -160,6 +162,7 @@ plotly_trace_explorer <- function(eventlog,
 				   type,
 				   .abbreviate,
 				   show_labels,
+				   label_size,
 				   scale_fill,
 				   raw_data) %>%
 		ggplotly
