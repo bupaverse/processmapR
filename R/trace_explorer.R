@@ -10,6 +10,7 @@
 #' @param .abbreviate If TRUE, abbreviate activity labels
 #' @param show_labels If False, activity labels are not shown.
 #' @param scale_fill Set color scale
+#' @param coverage_labels Change the labels to be shown on the right of the process variants. These can be relative frequency (default), absolute, or cumulative.
 #'
 #'
 #' @export trace_explorer
@@ -18,6 +19,7 @@ trace_explorer <- function(eventlog,
 						   coverage = NULL,
 						   n_traces = NULL,
 						   type = c("frequent","infrequent"),
+						   coverage_labels = c("relative","absolute","cumulative"),
 						   .abbreviate = T,
 						   show_labels = T,
 						   label_size = 4,
@@ -25,7 +27,7 @@ trace_explorer <- function(eventlog,
 						   raw_data = F) {
 	stopifnot("eventlog" %in% class(eventlog))
 	type <- match.arg(type)
-
+	coverage_labels <- match.arg(coverage_labels)
 
 
 	if(is.null(coverage) & is.null(n_traces)) {
@@ -77,7 +79,7 @@ trace_explorer <- function(eventlog,
 
 	if(is.null(coverage)) {
 		if(x < n_traces)
-		warning("Less traces found than specified number.")
+		warning("Fewer traces found than specified number.")
 	}
 
 
@@ -103,9 +105,18 @@ trace_explorer <- function(eventlog,
 		inner_join(traces, by = "trace") %>%
 		arrange(ts, min_order) %>%
 		mutate(rank_event = seq_len(n())) %>%
-		ungroup() -> temp
+		ungroup()  -> temp
 
-
+	if(coverage_labels == "relative") {
+		temp %>%
+			mutate(facets = reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)) -> temp
+	} else if(coverage_labels == "absolute") {
+		temp %>%
+			mutate(facets = reorder(absolute_frequency, -absolute_frequency)) -> temp
+	} else if(coverage_labels == "cumulative") {
+		temp %>%
+			mutate(facets = reorder(paste0(round(100*cum_freq,2),"%"), cum_freq)) -> temp
+	}
 
 
 
@@ -126,7 +137,7 @@ trace_explorer <- function(eventlog,
 		temp %>%
 			ggplot(aes(rank_event, as.factor(trace_id))) +
 			geom_tile(aes(fill = event_classifier), color = "white") +
-			facet_grid(reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)~.,scales = "free", space = "free") +
+			facet_grid(facets~.,scales = "free", space = "free") +
 			scale_y_discrete(breaks = NULL) +
 			labs(y = "Traces", x = "Activities") +
 			scale_fill  +
