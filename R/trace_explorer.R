@@ -22,12 +22,12 @@ trace_explorer <- function(eventlog,
 						   coverage_labels = c("relative","absolute","cumulative"),
 						   .abbreviate = T,
 						   show_labels = T,
-						   label_size = 4,
+						   label_size = 3,
 						   scale_fill = scale_fill_discrete(h = c(0,360) + 15, l = 40),
 						   raw_data = F) {
 	stopifnot("eventlog" %in% class(eventlog))
 	type <- match.arg(type)
-	coverage_labels <- match.arg(coverage_labels)
+
 
 
 	if(is.null(coverage) & is.null(n_traces)) {
@@ -105,19 +105,34 @@ trace_explorer <- function(eventlog,
 		inner_join(traces, by = "trace") %>%
 		arrange(ts, min_order) %>%
 		mutate(rank_event = seq_len(n())) %>%
-		ungroup()  -> temp
+		ungroup() %>%
+		mutate(facets_rel = reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)) %>%
+		mutate(facets_abs = reorder(absolute_frequency, -relative_frequency)) %>%
+		mutate(facets_cum = reorder(paste0(round(100*cum_freq,2),"%"), cum_freq)) -> temp
 
-	if(coverage_labels == "relative") {
-		temp %>%
-			mutate(facets = reorder(paste0(round(100*relative_frequency,2),"%"), -relative_frequency)) -> temp
-	} else if(coverage_labels == "absolute") {
-		temp %>%
-			mutate(facets = reorder(absolute_frequency, -absolute_frequency)) -> temp
-	} else if(coverage_labels == "cumulative") {
-		temp %>%
-			mutate(facets = reorder(paste0(round(100*cum_freq,2),"%"), cum_freq)) -> temp
+	if(length(coverage_labels) > 1) {
+
+		recode(rev(coverage_labels),
+			   "relative" = "facets_rel",
+			   "absolute" = "facets_abs",
+			   "cumulative" = "facets_cum") -> coverage_labels
+
+
+
+
+		facets <- as.formula(paste0(paste(coverage_labels, collapse = "+"), "~."))
 	}
+	else  {
+		coverage_labels <- match.arg(coverage_labels)
+		if(coverage_labels == "relative") {
+			facets <- facets_rel~.
+		} else if(coverage_labels == "absolute") {
+			facets <- facets_abs~.
+			} else if(coverage_labels == "cumulative") {
+			facets <- facets_cum~.
 
+		}
+	}
 
 
 	ABBR <- function(do_abbreviate) {
@@ -137,13 +152,15 @@ trace_explorer <- function(eventlog,
 		temp %>%
 			ggplot(aes(rank_event, as.factor(trace_id))) +
 			geom_tile(aes(fill = event_classifier), color = "white") +
-			facet_grid(facets~.,scales = "free", space = "free") +
+			facet_grid(facets,scales = "free", space = "free") +
 			scale_y_discrete(breaks = NULL) +
 			labs(y = "Traces", x = "Activities") +
 			scale_fill  +
 			labs(fill = "Activity") +
 			theme_light() +
-			theme(strip.text.y = element_text(angle = 0)) -> p
+			theme(strip.background = element_rect(color = "white"),
+				strip.text.y = element_text(angle = 0),
+				  strip.text = element_text(size = 11)) -> p
 
 		if(show_labels)
 			p + geom_text(aes(label = ABBR(.abbreviate)(event_classifier)), color = "white",fontface = "bold", size = label_size)
