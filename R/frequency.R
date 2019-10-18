@@ -40,6 +40,7 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 			summarize(n = as.double(n()),
 					  n_distinct_cases = as.double(n_distinct(CASE_CLASSIFIER_))) %>%
 			ungroup() %>%
+			na.omit() %>%  # exclude invalid rows before computation
 			mutate(label = case_when(type == "relative" ~ 100*n/n_activity_instances,
 									 type == "absolute" ~ n,
 									 type == "absolute-case" ~ n_distinct_cases,
@@ -49,8 +50,7 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
 				   tooltip = paste0(ACTIVITY_CLASSIFIER_, "\n", round(label, 2), ifelse(type %in% c("absolute", "absolute-case"),"", "%")),
-				   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip)) %>%
-			na.omit()
+				   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip))
 	}
 
 	attr(value, "create_edges") <- function(precedence, type, extra_data) {
