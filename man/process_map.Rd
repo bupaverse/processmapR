@@ -7,12 +7,14 @@
 \title{Process Map}
 \usage{
 process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes,
-  sec_edges, rankdir, render, fixed_edge_width, fixed_node_pos, ...)
+  sec_edges, rankdir, render, fixed_edge_width, fixed_node_pos,
+  layout_edge_weight, layout_edge_cutoff, ...)
 
 \method{process_map}{eventlog}(eventlog, type = frequency("absolute"),
   sec = NULL, type_nodes = type, type_edges = type,
   sec_nodes = sec, sec_edges = sec, rankdir = "LR", render = T,
-  fixed_edge_width = F, fixed_node_pos = NULL, ...)
+  fixed_edge_width = F, fixed_node_pos = NULL,
+  layout_edge_weight = FALSE, layout_edge_cutoff = 0, ...)
 
 \method{process_map}{grouped_eventlog}(eventlog,
   type = frequency("absolute"), sec = NULL, type_nodes = type,
@@ -42,6 +44,10 @@ process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes,
 \item{fixed_edge_width}{If TRUE, don't vary the width of edges.}
 
 \item{fixed_node_pos}{When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that his can only be used with the 'neato' layout engine.}
+
+\item{layout_edge_weight}{When `TRUE` then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'.}
+
+\item{layout_edge_cutoff}{Edges that apprear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.}
 
 \item{...}{Deprecated arguments}
 }

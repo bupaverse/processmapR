@@ -17,8 +17,11 @@
 #' @param rankdir The direction in which to layout the graph:  "LR" (default),"TB", "BT", "RL", corresponding to directed graphs drawn from top to bottom, from left to right, from bottom to top, and from right to left, respectively.
 
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
+
 #' @param fixed_edge_width If TRUE, don't vary the width of edges.
 #' @param fixed_node_pos When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that his can only be used with the 'neato' layout engine.
+#' @param layout_edge_weight When `TRUE` then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'.
+#' @param layout_edge_cutoff Edges that apprear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.
 #' @param ... Deprecated arguments
 #'
 #'
@@ -35,7 +38,7 @@
 #' @export process_map
 
 
-process_map <- function(eventlog, type, sec, type_nodes, type_edges, sec_nodes, sec_edges, rankdir,render, fixed_edge_width, fixed_node_pos, ...) {
+process_map <- function(eventlog, type, sec, type_nodes, type_edges, sec_nodes, sec_edges, rankdir,render, fixed_edge_width, fixed_node_pos, layout_edge_weight, layout_edge_cutoff, ...) {
 	UseMethod("process_map")
 }
 
@@ -54,6 +57,8 @@ process_map.eventlog <- function(eventlog,
 								 render = T,
 								 fixed_edge_width = F,
 								 fixed_node_pos = NULL,
+								 layout_edge_weight = FALSE,
+								 layout_edge_cutoff = 0.0,
 								 ...) {
 
 	min_order <- NULL
@@ -77,6 +82,8 @@ process_map.eventlog <- function(eventlog,
 	sec_label <- NULL
 	node_id.y <- NULL
 	node_id.x <- NULL
+	weight <- NULL
+	constraint <- NULL
 
 	if (any(is.na(eventlog %>% pull(!!timestamp_(eventlog))))) {
 		warning("Some of the timestamps in the supplied event log are missing (NA values). This may result in a invalid process map!")
@@ -230,7 +237,19 @@ process_map.eventlog <- function(eventlog,
 		edges %>% mutate(penwidth = 1) -> edges
 	}
 
+	# This is to improve the DOT layout by using the frequency information
+	if (layout_edge_weight) {
+		edges %>% mutate(weight = as.integer(((n - min(n)) / max(n)) * 100)) -> edges
+	} else {
+		edges %>% mutate(weight = 1) -> edges
+	}
 
+	# This is to improve the DOT layout by simply ignoring very infrequent edges in the layout
+	if (layout_edge_cutoff > 0) {
+		edges %>% mutate(constraint = if_else(((n - min(n)) / max(n)) < layout_edge_cutoff, FALSE, TRUE)) -> edges
+	} else {
+		edges %>% mutate(constraint = TRUE) -> edges
+	}
 
 	nodes %>%
 		mutate(color_level = rescale(color_level, from = c(0, max(color_level)))) %>%
@@ -264,7 +283,9 @@ process_map.eventlog <- function(eventlog,
 				   penwidth = edges$penwidth,
 				   color = attr(type_edges, "color_edges"),
 				   fontname = "Arial",
-				   fontsize = 10) -> edges_df
+				   fontsize = 10,
+				   weight = edges$weight,
+				   constraint = edges$constraint) -> edges_df
 
 	create_graph(nodes_df, edges_df) %>%
 		add_global_graph_attrs(attr = "rankdir", value = rankdir,attr_type = "graph") %>%
@@ -280,9 +301,22 @@ process_map.eventlog <- function(eventlog,
 			   aid = ACTIVITY_INSTANCE_CLASSIFIER_,
 			   act = ACTIVITY_CLASSIFIER_) -> base_precedence
 
-
 	if(render == T) {
+
+		# Since DiagrammeR does not support the necessary GraphViz attributes,
+		# we use a workaround to add them tot the DOT code. See the issue logged here:
+		# https://github.com/rich-iannone/DiagrammeR/issues/360
+
+	  	# hack to add 'weight' attribute to the graph
+		graph$edges_df %>%
+			mutate(len = weight, decorate = constraint) -> graph$edges_df
+
 		graph %>% render_graph() -> graph
+
+		graph$x$diagram %>%
+			stringr::str_replace_all("len", "weight") %>%
+			stringr::str_replace_all("decorate", "constraint") -> graph$x$diagram
+
 		attr(graph, "base_precedence") <- base_precedence
 
 		graph %>% return()

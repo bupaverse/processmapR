@@ -100,7 +100,9 @@ performance <- function(FUN = mean,
 			mutate(time = case_when(flow_time == "inter_start_time" ~ as.double(next_start_time - start_time, units = attr(type, "units"))*attr(type, "scale_time"),
 									flow_time == "idle_time" ~ as.double(next_start_time - end_time, units = attr(type, "units"))*attr(type, "scale_time"))) %>%
 			group_by(ACTIVITY_CLASSIFIER_, next_act, from_id, to_id) %>%
-			summarize(value = do.call(function(...) type(time, na.rm = T,...),  attr(type, "arguments"))) %>%
+
+			summarize(value = do.call(function(...) type(time, na.rm = T,...),  attr(type, "arguments")),
+					  n = as.double(n())) %>%
 			mutate(label_numeric = value) %>%
 			mutate( label = paste0(round(value,2), " ", attr(type, "units_label"))) %>%
 			na.omit() %>%

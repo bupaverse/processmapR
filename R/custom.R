@@ -82,7 +82,8 @@ custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu", colo
   		ungroup() %>%
   		group_by(ACTIVITY_CLASSIFIER_, next_act, from_id, to_id) %>%
   		summarize(value = type(!!attribute, na.rm = T),
-  				  label = round(type(!!attribute, na.rm = T),2)) %>%
+  		          n = as.double(n()),
+  				      label = round(type(!!attribute, na.rm = T),2)) %>%
   		na.omit() %>%
   		ungroup() %>%
   		mutate(penwidth = rescale(value, to = c(1,5))) %>%
