@@ -342,6 +342,8 @@ process_map.grouped_eventlog <- function(eventlog,
 								 render = T,
 								 fixed_edge_width = F,
 								 fixed_node_pos = NULL,
+								 layout_edge_weight = FALSE,
+								 layout_edge_cutoff = 0.0,
 								 ...) {
 	m <- mapping(eventlog)
 
@@ -361,6 +363,8 @@ process_map.grouped_eventlog <- function(eventlog,
 									 render = F,
 									 fixed_edge_width = fixed_edge_width,
 									 fixed_node_pos = fixed_node_pos,
+								 	 layout_edge_weight = layout_edge_weight,
+								 	 layout_edge_cutoff = layout_edge_cutoff,
 									 ...)) -> grouped_map
 
 	if (render) {
