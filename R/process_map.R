@@ -21,7 +21,7 @@
 #' @param fixed_edge_width If TRUE, don't vary the width of edges.
 #' @param fixed_node_pos When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that his can only be used with the 'neato' layout engine.
 #' @param layout_edge_weight When `TRUE` then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'.
-#' @param layout_edge_cutoff Edges that apprear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.
+#' @param layout_edge_cutoff Edges that appear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.
 #' @param ... Deprecated arguments
 #'
 #'

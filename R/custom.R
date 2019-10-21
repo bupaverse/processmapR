@@ -28,8 +28,6 @@
 #' @export custom
 
 
-
-
 custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu", color_edges = "dodgerblue4") {
   attr(FUN, "attribute") <- attribute
   attr(FUN, "units") <- units
@@ -76,7 +74,6 @@ custom <- function(FUN = mean, attribute, units = "", color_scale = "PuBu", colo
   	ACTIVITY_CLASSIFIER_ <- NULL
   	label_numeric <- NULL
   	consequent <- NULL
-
 
   	precedence %>%
   		ungroup() %>%

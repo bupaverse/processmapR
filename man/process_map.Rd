@@ -20,7 +20,8 @@ process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes,
   type = frequency("absolute"), sec = NULL, type_nodes = type,
   type_edges = type, sec_nodes = sec, sec_edges = sec,
   rankdir = "LR", render = T, fixed_edge_width = F,
-  fixed_node_pos = NULL, ...)
+  fixed_node_pos = NULL, layout_edge_weight = FALSE,
+  layout_edge_cutoff = 0, ...)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a process map}
@@ -47,7 +48,7 @@ process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes,
 
 \item{layout_edge_weight}{When `TRUE` then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'.}
 
-\item{layout_edge_cutoff}{Edges that apprear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.}
+\item{layout_edge_cutoff}{Edges that appear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.}
 
 \item{...}{Deprecated arguments}
 }
