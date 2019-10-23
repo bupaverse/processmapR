@@ -38,7 +38,7 @@
 #' @export process_map
 
 
-process_map <- function(eventlog, type, sec, type_nodes, type_edges, sec_nodes, sec_edges, rankdir,render, fixed_edge_width, fixed_node_pos, layout_edge_weight, layout_edge_cutoff, ...) {
+process_map <- function(eventlog,type,sec,type_nodes,type_edges,sec_nodes,sec_edges,rankdir,render,fixed_edge_width,layout,fixed_node_pos,...) {
 	UseMethod("process_map")
 }
 
@@ -56,10 +56,10 @@ process_map.eventlog <- function(eventlog,
 								 rankdir = "LR",
 								 render = T,
 								 fixed_edge_width = F,
+								 layout = layout_pm(),
 								 fixed_node_pos = NULL,
-								 layout_edge_weight = FALSE,
-								 layout_edge_cutoff = 0.0,
 								 ...) {
+
 
 	min_order <- NULL
 	ACTIVITY_CLASSIFIER_ <- NULL
@@ -85,8 +85,17 @@ process_map.eventlog <- function(eventlog,
 	weight <- NULL
 	constraint <- NULL
 
+	if(!is.null(fixed_node_pos)) {
+		warning("Argument fixed_node_pos deprecated, use layout argument instead.")
+		layout <- layout_pm(fixed_positions = fixed_node_pos)
+	}
+
+
+
+
 	if (any(is.na(eventlog %>% pull(!!timestamp_(eventlog))))) {
 		warning("Some of the timestamps in the supplied event log are missing (NA values). This may result in a invalid process map!")
+
 	}
 
 
@@ -238,15 +247,15 @@ process_map.eventlog <- function(eventlog,
 	}
 
 	# This is to improve the DOT layout by using the frequency information
-	if (layout_edge_weight) {
+	if (layout$edge_weight) {
 		edges %>% mutate(weight = as.integer(((n - min(n)) / max(n)) * 100)) -> edges
 	} else {
 		edges %>% mutate(weight = 1) -> edges
 	}
 
 	# This is to improve the DOT layout by simply ignoring very infrequent edges in the layout
-	if (layout_edge_cutoff > 0) {
-		edges %>% mutate(constraint = if_else(((n - min(n)) / max(n)) < layout_edge_cutoff, FALSE, TRUE)) -> edges
+	if (layout$edge_cutoff > 0) {
+		edges %>% mutate(constraint = if_else(((n - min(n)) / max(n)) < layout$edge_cutoff, FALSE, TRUE)) -> edges
 	} else {
 		edges %>% mutate(constraint = TRUE) -> edges
 	}
@@ -268,9 +277,9 @@ process_map.eventlog <- function(eventlog,
 				   fontname = "Arial",
 				   fontsize = 10) -> nodes_df
 
-	if (is.data.frame(fixed_node_pos)) {
+	if (is.data.frame(layout$fixed_positions)) {
 		nodes %>%
-			left_join(fixed_node_pos, by = c("ACTIVITY_CLASSIFIER_" = "act")) -> nodes
+			left_join(layout$fixed_positions, by = c("ACTIVITY_CLASSIFIER_" = "act")) -> nodes
 		nodes_df %>% mutate(x = nodes$x, y = nodes$y) -> nodes_df
 	}
 
@@ -289,7 +298,7 @@ process_map.eventlog <- function(eventlog,
 
 	create_graph(nodes_df, edges_df) %>%
 		add_global_graph_attrs(attr = "rankdir", value = rankdir,attr_type = "graph") %>%
-		add_global_graph_attrs(attr = "layout", value = if_else(is.data.frame(fixed_node_pos), "neato", "dot"), attr_type = "graph") %>%
+		add_global_graph_attrs(attr = "layout", value = if_else(is.data.frame(layout$fixed_positions), "neato", "dot"), attr_type = "graph") %>%
 		colorize_node_attrs(node_attr_from = "color_level",
 							node_attr_to = "fillcolor",
 							palette = attr(type_nodes, "color"),
@@ -341,9 +350,8 @@ process_map.grouped_eventlog <- function(eventlog,
 								 rankdir = "LR",
 								 render = T,
 								 fixed_edge_width = F,
+								 layout = layout_pm(),
 								 fixed_node_pos = NULL,
-								 layout_edge_weight = FALSE,
-								 layout_edge_cutoff = 0.0,
 								 ...) {
 	m <- mapping(eventlog)
 
@@ -362,9 +370,8 @@ process_map.grouped_eventlog <- function(eventlog,
 									 rankdir = rankdir,
 									 render = F,
 									 fixed_edge_width = fixed_edge_width,
+									 layout = layout,
 									 fixed_node_pos = fixed_node_pos,
-								 	 layout_edge_weight = layout_edge_weight,
-								 	 layout_edge_cutoff = layout_edge_cutoff,
 									 ...)) -> grouped_map
 
 	if (render) {
