@@ -19,9 +19,9 @@
 #' @param render Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.
 
 #' @param fixed_edge_width If TRUE, don't vary the width of edges.
-#' @param fixed_node_pos When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that his can only be used with the 'neato' layout engine.
-#' @param layout_edge_weight When `TRUE` then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'.
-#' @param layout_edge_cutoff Edges that appear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.
+#' @param layout List of parameters influencing the (automatic) layout of the process map. Use \code{\link{layout_pm}} to create a suitable parameter list.
+#'
+#' @param fixed_node_pos Deprecated, please use the 'layout' parameter instead.
 #' @param ... Deprecated arguments
 #'
 #'
@@ -255,7 +255,16 @@ process_map.eventlog <- function(eventlog,
 
 	# This is to improve the DOT layout by simply ignoring very infrequent edges in the layout
 	if (layout$edge_cutoff > 0) {
-		edges %>% mutate(constraint = if_else(((n - min(n)) / max(n)) < layout$edge_cutoff, FALSE, TRUE)) -> edges
+		edges %>%
+			mutate(constraint = if_else(((n - min(n)) / max(n)) < layout$edge_cutoff, FALSE, TRUE)) %>%
+			# at least one output edge per activity should be used in the layout
+			group_by(from_id) %>%
+			mutate(constraint = n == max(n) | constraint) %>%
+			ungroup() %>%
+			# same with input edges
+			group_by(to_id) %>%
+			mutate(constraint = n == max(n) | constraint) %>%
+			ungroup() -> edges
 	} else {
 		edges %>% mutate(constraint = TRUE) -> edges
 	}
