@@ -3,9 +3,9 @@
 
 #' Configure layout parameters for process map
 #'
-#' @param fixed_positions When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that his can only be used with the 'neato' layout engine.
-#' @param edge_weight When `TRUE` then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'.
-#' @param edge_cutoff Edges that appear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high.
+#' @param fixed_positions When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that using this option switches to the 'neato' layout engine.
+#' @param edge_weight When `TRUE` then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'. Note that this has no effect when using the 'fixed_positions' parameters.
+#' @param edge_cutoff Edges that appear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high. Note that this has no effect when using the 'fixed_positions' parameters.
 #'
 #' @export
 #'
