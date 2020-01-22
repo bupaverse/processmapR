@@ -2,12 +2,11 @@
 #' @description Create a dotted chart to view all events in a glance
 #' @param eventlog Eventlog object
 #' @param x Value for plot on x-axis: absolute time or relative time (since start, since start of week, since start of day)
-#' @param sort Ordering of the cases on y-axis: start, end or duration
+#' @param sort Ordering of the cases on y-axis: start, end or duration, start_week, start_day
 #' @param color Optional, variable to use for coloring dots. Default is the activity identifier. Use NA for no colors.
 #' @param units Time units to use on x-axis in case of relative time.
 #' @param plotly Return plotly object
 #' @param add_end_events Whether to add dots for the complete lifecycle event with a different shape.
-#' @param ... Deprecated arguments
 #' @importFrom tidyr spread
 #' @export dotted_chart
 #'
@@ -146,24 +145,41 @@ col_vector <- function() {
 	unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
 }
 
-#' @describeIn dotted_chart Dotted chart for event log
 #' @export
 
 
 dotted_chart.eventlog <- function(eventlog,
 								  x = c("absolute","relative","relative_week","relative_day"),
-								  sort = c("start","end","duration", "start_week","start_day"),
+								  sort = NULL,
 								  color = NULL,
-								  units = c("weeks","days","hours","mins","secs"),
+								  units = NULL,
 								  add_end_events = F,
 								  ...) {
 
 	x <- match.arg(x)
-	units <- match.arg(units)
-	sort <- match.arg(sort)
-	sort <- deprecated_y_arg(sort, ...)
 	mapping <- mapping(eventlog)
-	y <- sort
+
+	if(is.null(sort)) {
+		y <-	switch(x,
+					"absolute" = "start",
+					"relative" =  "duration",
+					"relative_week" = "start_week",
+					"relative_day" = "start_day")
+	} else {
+		y <-	match.arg(sort, choices = c("start","end","duration", "start_week","start_day"))
+	}
+
+	if(is.null(units)) {
+		units <-	switch(x,
+						"absolute" = "weeks",
+						"relative" =  "weeks",
+						"relative_week" = "secs",
+						"relative_day" = "secs")
+	} else {
+		units <-	match.arg(units, choices = c("weeks","days","hours","mins","secs"))
+	}
+
+
 
 
 	eventlog %>%
@@ -176,22 +192,39 @@ dotted_chart.eventlog <- function(eventlog,
 
 dotted_chart.grouped_eventlog <- function(eventlog,
 										  x = c("absolute","relative","relative_week","relative_day"),
-										  sort = c("start","end","duration", "start_week","start_day"),
+										  sort = NULL,
 										  color = NULL,
-										  units = c("weeks","days","hours","mins","secs"),
-										  add_end_events = F,
-										  ...) {
+										  units = NULL,
+										  add_end_events = F) {
 
 
 
 	groups <- groups(eventlog)
 
+
 	x <- match.arg(x)
-	units <- match.arg(units)
-	sort <- match.arg(sort)
-	sort <- deprecated_y_arg(sort, ...)
 	mapping <- mapping(eventlog)
-	y <- sort
+
+	if(is.null(sort)) {
+		y <-	switch(x,
+					"absolute" = "start",
+					"relative" =  "duration",
+					"relative_week" = "start_week",
+					"relative_day" = "start_day")
+	} else {
+		y <-	match.arg(sort, choices = c("start","end","duration", "start_week","start_day"))
+	}
+
+	if(is.null(units)) {
+		units <-	switch(x,
+						"absolute" = "weeks",
+						"relative" =  "weeks",
+						"relative_week" = "secs",
+						"relative_day" = "secs")
+	} else {
+		units <-	match.arg(units, choices = c("weeks","days","hours","mins","secs"))
+	}
+	mapping <- mapping(eventlog)
 
 	eventlog %>%
 		dotted_chart_data(color, units) %>%
