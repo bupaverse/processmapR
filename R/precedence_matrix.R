@@ -37,66 +37,26 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 	}
 
 	type <- match.arg(type)
-	log <- eventlog
-	aid <- NULL
-	case_classifier <- NULL
-	event_classifier <- NULL
-	timestamp_classifier <- NULL
+
 	antecedent <- NULL
 	consequent <- NULL
 	ts <- NULL
 	min_order <- NULL
 
-	log %>%
-		as.data.frame() %>%
-		group_by(!!case_id_(eventlog), !!activity_id_(eventlog), !!activity_instance_id_(eventlog)) %>%
-		summarize(ts = min(!!timestamp_(eventlog)), min_order = min(.order))  %>%
-		group_by(!!case_id_(eventlog)) %>%
-		arrange(ts, min_order) %>%
-		mutate(antecedent = as.character(!!activity_id_(eventlog)),
-				  consequent = lead(as.character(!!activity_id_(eventlog)), default = "End")) -> temp
 
-	temp %>%
-		arrange(ts, min_order) %>%
-		slice(1:1) %>%
-		mutate(consequent = antecedent,
-			   antecedent = "Start") %>%
-		bind_rows(temp) %>%
-		ungroup() %>%
-		select(antecedent, consequent) %>%
-		na.omit() %>%
-		count(antecedent, consequent) %>%
-		ungroup() -> log
+	if (type == "relative-case") {
 
-	n_consequents <- length(unique(log$consequent))
+		# This is the slow case
 
-	log %>%
-		mutate(antecedent = fct_relevel(antecedent, "Start"),
-			   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> log
+		eventlog %>%
+			as.data.frame() %>%
+			group_by(!!case_id_(eventlog), !!activity_id_(eventlog), !!activity_instance_id_(eventlog)) %>%
+			summarize(ts = min(!!timestamp_(eventlog)), min_order = min(.order))  %>%
+			group_by(!!case_id_(eventlog)) %>%
+			arrange(ts, min_order) %>%
+			mutate(antecedent = as.character(!!activity_id_(eventlog)),
+				   consequent = lead(as.character(!!activity_id_(eventlog)), default = "End")) -> temp
 
-	if(type == "absolute") {
-		;
-	}
-	else if (type == "relative") {
-		log %>%
-			mutate(rel_n = n/sum(n)) -> log
-
-	}
-	else if (type == "relative-antecedent") {
-		log %>%
-			group_by(antecedent) %>%
-			mutate(rel_antecedent = n/sum(n)) %>%
-			ungroup() -> log
-
-	}
-	else if(type == "relative-consequent") {
-		log %>%
-			group_by(consequent) %>%
-			mutate(rel_consequent = n/sum(n)) %>%
-			ungroup() -> log
-
-	}
-	else if (type == "relative-case") {
 		temp %>%
 			arrange(ts, min_order) %>%
 			slice(1:1) %>%
@@ -109,19 +69,98 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 			group_by(antecedent, consequent) %>%
 			summarize(n_cases = n_distinct(!!case_id_(eventlog))) %>%
 			mutate(rel_n_cases = n_cases/n_cases(eventlog)) %>%
-			ungroup() -> log
+			ungroup() -> m
 
-		n_consequents <- length(unique(log$consequent))
+		n_consequents <- length(unique(m$consequent))
 
-		log %>%
+		m %>%
 			mutate(antecedent = fct_relevel(antecedent, "Start"),
-				   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> log
+				   consequent = fct_relevel(consequent, "End", after = n_consequents - 1)) -> m
 
+
+	} else {
+
+		# Use Rcpp for the rest
+
+		m <- precedence_matrix_absolute(eventlog)
+
+		if (type == "absolute") {
+			# nothing
+		} else if (type == "relative") {
+			m %>%
+				mutate(rel_n = n / sum(n)) -> m
+		}
+		else if (type == "relative-antecedent") {
+			m %>%
+				group_by(antecedent) %>%
+				mutate(rel_antecedent = n / sum(n)) %>%
+				ungroup() -> m
+		}
+		else if (type == "relative-consequent") {
+			m %>%
+				group_by(consequent) %>%
+				mutate(rel_consequent = n / sum(n)) %>%
+				ungroup() -> m
+		} else {
+			stop(paste0("Unknown type ", type))
+		}
 	}
-	class(log) <- c("process_matrix", class(log))
+
+	class(m) <- c("process_matrix", class(m))
 	attr(type, "perspective") <- "frequency"
-	attr(log, "matrix_type") <- type
+	attr(m, "matrix_type") <- type
+
+	return(m)
+}
 
 
-	return(log)
+#' Precedence Matrix
+#'
+#' Construct a precedence matrix, showing how activities are followed by each other.
+#' This function computes the precedence matrix directly in C++ for efficiency.
+#' Only the type `absolute` of (\code{\link[processmapR]{precedence_matrix}}) is supported.
+#'
+#' @param eventlog The event log object to be used.
+#' @param lead The distance between activities following/preceding each other.
+#'
+#' @examples
+#' library(eventdataR)
+#' data(traffic_fines)
+#' m <- precedence_matrix_absolute(traffic_fines)
+#' print(m)
+#' as.matrix(m)
+#'
+#' @export precedence_matrix_absolute
+precedence_matrix_absolute <- function(eventlog, lead = 1) {
+  stopifnot("eventlog" %in% class(eventlog))
+  stopifnot(lead > 0)
+
+  eventlog <- reduce_simple_eventlog(eventlog)
+  precedence_matrix_absolute_impl(eventlog, lead)
+}
+
+precedence_matrix_absolute_impl <- function(simplelog, lead = 1) {
+  mat <- as_tibble(count_precedence(simplelog$case_id,
+                                    simplelog$activity_id,
+                                    lead))
+
+  class(mat) <- c("process_matrix", class(mat))
+  type <- "absolute"
+  attr(type, "perspective") <- "frequency"
+  attr(mat, "matrix_type") <- type
+  return(mat)
+}
+
+reduce_simple_eventlog <- function(eventlog) {
+  .order <- NULL
+
+  eventlog %>%
+      as.data.frame() %>%
+      droplevels() %>%
+      arrange(!!case_id_(eventlog), !!timestamp_(eventlog), .order) %>%
+      # relies on dplyr taking the first distinct value
+      distinct(!!case_id_(eventlog), !!activity_id_(eventlog), !!activity_instance_id_(eventlog)) %>%
+      rename(case_id = !!case_id_(eventlog),
+             activity_id = !!activity_id_(eventlog),
+             activity_instance_id = !!activity_instance_id_(eventlog))
 }

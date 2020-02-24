@@ -4,8 +4,10 @@
 \alias{resource_matrix}
 \title{Resource Matrix}
 \usage{
-resource_matrix(eventlog, type = c("absolute", "relative",
-  "relative_antecedent", "relative_consequent"))
+resource_matrix(
+  eventlog,
+  type = c("absolute", "relative", "relative_antecedent", "relative_consequent")
+)
 }
 \arguments{
 \item{eventlog}{The event log object to be used}
