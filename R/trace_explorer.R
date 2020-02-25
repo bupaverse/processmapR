@@ -3,7 +3,7 @@
 #' @title Trace explorer
 #' @description Explore traces, ordered by relative trace frequency
 #' @param eventlog Eventlog object
-#' @param type Frequent or infrequenct traces to explore
+#' @param type Frequent traces first, or infrequent traces first?
 #' @param coverage The percentage coverage of the trace to explore. Default is 20\% most (in)frequent
 #' @param n_traces Instead of setting coverage, you can set an exact number of traces. Should be an integer larger than 0.
 #' @param raw_data Retrun raw data
@@ -31,7 +31,8 @@ trace_explorer <- function(eventlog,
 
 
 	if(is.null(coverage) & is.null(n_traces)) {
-		coverage <- 0.2
+		coverage <- ifelse(type == "frequent",0.2, 0.05)
+		warning(glue::glue("No coverage or number of traces set. Defaulting to {coverage} for {type} traces."))
 	} else if(!is.null(coverage) & !is.null(n_traces)) {
 		stop("coverage and n_traces cannot be set at the same time. Use one and set the other to NULL")
 	} else if(is.null(coverage)) {
@@ -59,19 +60,20 @@ trace_explorer <- function(eventlog,
 	eventlog %>% case_list %>%
 		rename_("case_classifier" = case_id(eventlog)) -> cases
 
+	# sort descending or ascending?
+	sort_factor <- ifelse(type == "frequent", -1, 1)
+
 	eventlog %>% trace_list %>%
 		mutate(rank_trace = row_number(-absolute_frequency)) %>%
-		arrange(-relative_frequency) %>%
+		arrange(sort_factor*relative_frequency) %>%
 		mutate(cum_freq = cumsum(relative_frequency)) %>%
 		mutate(cum_freq_lag = lag(cum_freq, default = 0)) -> traces
 
 	x <- nrow(traces)
 
 
-	if(type == "frequent" & !is.null(coverage))
+	if(!is.null(coverage))
 		traces <- traces %>% filter(cum_freq_lag < coverage)
-	else if(type == "infrequent" & !is.null(coverage))
-		traces <- traces %>% filter(cum_freq_lag > (1-coverage))
 	else if(type == "frequent")
 		traces <- traces %>% arrange(-relative_frequency) %>% slice(1:n_traces)
 	else

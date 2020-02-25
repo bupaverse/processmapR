@@ -23,7 +23,7 @@ plotly_trace_explorer(eventlog, coverage = NULL, n_traces = NULL,
 
 \item{n_traces}{Instead of setting coverage, you can set an exact number of traces. Should be an integer larger than 0.}
 
-\item{type}{Frequent or infrequenct traces to explore}
+\item{type}{Frequent traces first, or infrequent traces first?}
 
 \item{coverage_labels}{Change the labels to be shown on the right of the process variants. These can be relative frequency (default), absolute, or cumulative.}
 
