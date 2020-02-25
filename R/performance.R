@@ -75,7 +75,8 @@ performance <- function(FUN = mean,
 				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
 				   tooltip = paste0(ACTIVITY_CLASSIFIER_, "\n", round(label, 2), " ",attr(type, "units_label")),
-				   label = if_end(ACTIVITY_CLASSIFIER_, ACTIVITY_CLASSIFIER_, tooltip))
+				   label = if_end(ACTIVITY_CLASSIFIER_, recode(ACTIVITY_CLASSIFIER_, ARTIFICIAL_START = "Start",ARTIFICIAL_END = "End"),
+				   			   tooltip))
 	}
 
 	attr(FUN, "create_edges") <- function(precedence, type, extra_data) {

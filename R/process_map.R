@@ -166,12 +166,12 @@ process_map.eventlog <- function(eventlog,
 
 	points_temp %>%
 		slice(1) %>%
-		mutate(ACTIVITY_CLASSIFIER_ = "Start",
+		mutate(ACTIVITY_CLASSIFIER_ = "ARTIFICIAL_START",
 			   end_time = start_time,
 			   min_order = -Inf) -> end_points_start
 	points_temp %>%
 		slice(n()) %>%
-		mutate(ACTIVITY_CLASSIFIER_ = "End",
+		mutate(ACTIVITY_CLASSIFIER_ = "ARTIFICIAL_END",
 			   start_time = end_time,
 			   min_order = Inf) -> end_points_end
 
@@ -193,7 +193,7 @@ process_map.eventlog <- function(eventlog,
 
 	data.table::setDT(base_log, key = c("start_time", "min_order"))
 	base_log[, ACTIVITY_CLASSIFIER_ := ordered(ACTIVITY_CLASSIFIER_,
-											   levels = c("Start", as.character(sort(activity_labels(eventlog))), "End"))
+											   levels = c("ARTIFICIAL_START", as.character(sort(activity_labels(eventlog))), "ARTIFICIAL_END"))
 	      	][, `:=`(next_act = data.table::shift(ACTIVITY_CLASSIFIER_, 1, type = "lead"),
 	      			 next_start_time = data.table::shift(start_time, 1, type = "lead"),
 	      			 next_end_time = data.table::shift(end_time, 1, type = "lead")),
