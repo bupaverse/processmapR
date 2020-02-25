@@ -1,0 +1,19 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+dist: xenial
+language: R
+sudo: required
+addons:
+  apt:
+    packages:
+      - libnode-dev
+      - valgrind
+r:
+  - oldrel
+  - release
+  - devel
+r_packages:
+ - DiagrammeRsvg
+cache: packages
+latex: false
+r_check_args: "--as-cran --use-valgrind"
