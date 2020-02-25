@@ -4,8 +4,13 @@
 \alias{custom}
 \title{Custom map profile}
 \usage{
-custom(FUN = mean, attribute, units = "", color_scale = "PuBu",
-  color_edges = "dodgerblue4")
+custom(
+  FUN = mean,
+  attribute,
+  units = "",
+  color_scale = "PuBu",
+  color_edges = "dodgerblue4"
+)
 }
 \arguments{
 \item{FUN}{A summary function to be called on the provided event attribute, e.g. mean, median, min, max. na.rm = T by default.}

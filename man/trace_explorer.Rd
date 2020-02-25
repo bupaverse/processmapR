@@ -5,16 +5,30 @@
 \alias{plotly_trace_explorer}
 \title{Trace explorer}
 \usage{
-trace_explorer(eventlog, coverage = NULL, n_traces = NULL,
-  type = c("frequent", "infrequent"), coverage_labels = c("relative",
-  "absolute", "cumulative"), .abbreviate = T, show_labels = T,
-  label_size = 3, scale_fill = scale_fill_discrete(h = c(0, 360) + 15,
-  l = 40), raw_data = F)
+trace_explorer(
+  eventlog,
+  coverage = NULL,
+  n_traces = NULL,
+  type = c("frequent", "infrequent"),
+  coverage_labels = c("relative", "absolute", "cumulative"),
+  .abbreviate = T,
+  show_labels = T,
+  label_size = 3,
+  scale_fill = scale_fill_discrete(h = c(0, 360) + 15, l = 40),
+  raw_data = F
+)
 
-plotly_trace_explorer(eventlog, coverage = NULL, n_traces = NULL,
-  type = c("frequent", "infrequent"), .abbreviate = T,
-  show_labels = T, label_size = 5, scale_fill = scale_fill_discrete(h
-  = c(0, 360) + 15, l = 40), raw_data = F)
+plotly_trace_explorer(
+  eventlog,
+  coverage = NULL,
+  n_traces = NULL,
+  type = c("frequent", "infrequent"),
+  .abbreviate = T,
+  show_labels = T,
+  label_size = 5,
+  scale_fill = scale_fill_discrete(h = c(0, 360) + 15, l = 40),
+  raw_data = F
+)
 }
 \arguments{
 \item{eventlog}{Eventlog object}

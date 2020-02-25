@@ -6,21 +6,53 @@
 \alias{process_map.grouped_eventlog}
 \title{Process Map}
 \usage{
-process_map(eventlog, type, sec, type_nodes, type_edges, sec_nodes,
-  sec_edges, rankdir, render, fixed_edge_width, layout, fixed_node_pos,
-  ...)
+process_map(
+  eventlog,
+  type,
+  sec,
+  type_nodes,
+  type_edges,
+  sec_nodes,
+  sec_edges,
+  rankdir,
+  render,
+  fixed_edge_width,
+  layout,
+  fixed_node_pos,
+  ...
+)
 
-\method{process_map}{eventlog}(eventlog, type = frequency("absolute"),
-  sec = NULL, type_nodes = type, type_edges = type,
-  sec_nodes = sec, sec_edges = sec, rankdir = "LR", render = T,
-  fixed_edge_width = F, layout = layout_pm(), fixed_node_pos = NULL,
-  ...)
+\method{process_map}{eventlog}(
+  eventlog,
+  type = frequency("absolute"),
+  sec = NULL,
+  type_nodes = type,
+  type_edges = type,
+  sec_nodes = sec,
+  sec_edges = sec,
+  rankdir = "LR",
+  render = T,
+  fixed_edge_width = F,
+  layout = layout_pm(),
+  fixed_node_pos = NULL,
+  ...
+)
 
-\method{process_map}{grouped_eventlog}(eventlog,
-  type = frequency("absolute"), sec = NULL, type_nodes = type,
-  type_edges = type, sec_nodes = sec, sec_edges = sec,
-  rankdir = "LR", render = T, fixed_edge_width = F,
-  layout = layout_pm(), fixed_node_pos = NULL, ...)
+\method{process_map}{grouped_eventlog}(
+  eventlog,
+  type = frequency("absolute"),
+  sec = NULL,
+  type_nodes = type,
+  type_edges = type,
+  sec_nodes = sec,
+  sec_edges = sec,
+  rankdir = "LR",
+  render = T,
+  fixed_edge_width = F,
+  layout = layout_pm(),
+  fixed_node_pos = NULL,
+  ...
+)
 }
 \arguments{
 \item{eventlog}{The event log object for which to create a process map}
