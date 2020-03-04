@@ -4,8 +4,7 @@
 \alias{layout_pm}
 \title{Configure layout parameters for process map}
 \usage{
-layout_pm(fixed_positions = NULL, edge_weight = FALSE,
-  edge_cutoff = 0)
+layout_pm(fixed_positions = NULL, edge_weight = FALSE, edge_cutoff = 0)
 }
 \arguments{
 \item{fixed_positions}{When specified as a data.frame with three columns 'act', 'x', and 'y' the position of nodes is fixed. Note that using this option switches to the 'neato' layout engine.}

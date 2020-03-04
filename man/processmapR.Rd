@@ -3,7 +3,6 @@
 \docType{package}
 \name{processmapR}
 \alias{processmapR}
-\alias{processmapR-package}
 \title{processmapR - Process Maps in R}
 \description{
 This package provides several useful techniques process visualization.

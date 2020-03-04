@@ -9,6 +9,8 @@ Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhassel
  person("Thijs","Beuving", email = "thijs.beuving@kpn.com", role = c("ctb")))
 Description: Visualize event logs using directed graphs, i.e. process maps. Part of the 'bupaR' framework.
 License: MIT + file LICENSE
+LinkingTo: Rcpp, BH
+SystemRequirements: C++11
 Imports:
     dplyr, bupaR (>= 0.4.0), 
     edeaR (>= 0.8.0), 
@@ -28,12 +30,12 @@ Imports:
     rlang, 
     scales,
     tidyr,
-    htmltools
+    htmltools,
+    Rcpp
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 URL: https://www.bupar.net, https://github.com/bupaverse/processmapr
 BugReports: https://github.com/bupaverse/processmapr/issues
-
