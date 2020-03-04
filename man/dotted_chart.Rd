@@ -10,14 +10,10 @@
 \usage{
 dotted_chart(eventlog, x, sort, color, units, add_end_events = F, ...)
 
-\method{dotted_chart}{grouped_eventlog}(
-  eventlog,
-  x = c("absolute", "relative", "relative_week", "relative_day"),
-  sort = NULL,
-  color = NULL,
-  units = NULL,
-  add_end_events = F
-)
+\method{dotted_chart}{grouped_eventlog}(eventlog, x = c("absolute",
+  "relative", "relative_week", "relative_day"), sort = NULL,
+  color = NULL, units = NULL, add_end_events = F, ...)
+
 
 idotted_chart(eventlog, plotly = FALSE)
 
@@ -44,6 +40,8 @@ plotly_dotted_chart(
 \item{units}{Time units to use on x-axis in case of relative time.}
 
 \item{add_end_events}{Whether to add dots for the complete lifecycle event with a different shape.}
+
+\item{...}{Deprecated arguments}
 
 \item{plotly}{Return plotly object}
 }

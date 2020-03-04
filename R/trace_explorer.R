@@ -9,9 +9,10 @@
 #' @param raw_data Retrun raw data
 #' @param .abbreviate If TRUE, abbreviate activity labels
 #' @param show_labels If False, activity labels are not shown.
+#' @param label_size Font size of labels
 #' @param scale_fill Set color scale
 #' @param coverage_labels Change the labels to be shown on the right of the process variants. These can be relative frequency (default), absolute, or cumulative.
-#'
+#' @importFrom stats reorder
 #'
 #' @export trace_explorer
 #'
