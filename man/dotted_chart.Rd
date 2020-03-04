@@ -10,10 +10,15 @@
 \usage{
 dotted_chart(eventlog, x, sort, color, units, add_end_events = F, ...)
 
-\method{dotted_chart}{grouped_eventlog}(eventlog, x = c("absolute",
-  "relative", "relative_week", "relative_day"), sort = NULL,
-  color = NULL, units = NULL, add_end_events = F, ...)
-
+\method{dotted_chart}{grouped_eventlog}(
+  eventlog,
+  x = c("absolute", "relative", "relative_week", "relative_day"),
+  sort = NULL,
+  color = NULL,
+  units = NULL,
+  add_end_events = F,
+  ...
+)
 
 idotted_chart(eventlog, plotly = FALSE)
 
