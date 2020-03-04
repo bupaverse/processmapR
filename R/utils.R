@@ -29,8 +29,8 @@ summary_statistics <- function(vector) {
 }
 
 if_end <- function(node, true, false) {
-	ifelse(node %in% c("Start","End"), true, false)
+	ifelse(node %in% c("ARTIFICIAL_START","ARTIFICIAL_END"), true, false)
 }
 if_start <- function(node, true, false) {
-	ifelse(node %in% c("Start"), true, false)
+	ifelse(node %in% c("ARTIFICIAL_START"), true, false)
 }
