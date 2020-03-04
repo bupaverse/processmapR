@@ -46,6 +46,7 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 									 type == "absolute-case" ~ n_distinct_cases,
 									 type == "relative-case" ~ 100*n_distinct_cases/n_cases)) %>%
 			mutate(color_level = label,
+				   value = label,
 				   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
 				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),

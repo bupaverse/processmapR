@@ -319,6 +319,15 @@ process_map.eventlog <- function(eventlog,
 			   aid = ACTIVITY_INSTANCE_CLASSIFIER_,
 			   act = ACTIVITY_CLASSIFIER_) -> base_precedence
 
+	#metadata
+	edges %>%
+		rename(from = ACTIVITY_CLASSIFIER_,
+			   to = next_act) %>%
+		select(from, to, from_id, to_id, value = label_numeric) -> edges
+	nodes %>%
+		rename(node = ACTIVITY_CLASSIFIER_) %>%
+		select(node, from_id, value) -> nodes
+
 	if(render == T) {
 
 		# Since DiagrammeR does not support the necessary GraphViz attributes,
@@ -336,10 +345,14 @@ process_map.eventlog <- function(eventlog,
 			stringr::str_replace_all("decorate", "constraint") -> graph$x$diagram
 
 		attr(graph, "base_precedence") <- base_precedence
+		attr(graph, "edges") <- edges
+		attr(graph, "nodes") <- nodes
 
 		graph %>% return()
 	} else  {
 		attr(graph, "base_precedence") <- base_precedence
+		attr(graph, "edges") <- edges
+		attr(graph, "nodes") <- nodes
 		graph %>% return()
 	}
 

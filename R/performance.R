@@ -71,6 +71,7 @@ performance <- function(FUN = mean,
 			na.omit() %>%
 			ungroup() %>%
 			mutate(color_level = label,
+				   value = label,
 				   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
 				   fontcolor = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),  ifelse(label <= (min(label) + (5/8)*diff(range(label))), "black","white")),
 				   color = if_end(ACTIVITY_CLASSIFIER_, if_start(ACTIVITY_CLASSIFIER_, "chartreuse4","brown4"),"grey"),
