@@ -31,6 +31,8 @@ plotly_trace_explorer(eventlog, coverage = NULL, n_traces = NULL,
 
 \item{show_labels}{If False, activity labels are not shown.}
 
+\item{label_size}{Font size of labels}
+
 \item{scale_fill}{Set color scale}
 
 \item{raw_data}{Retrun raw data}

@@ -7,6 +7,7 @@
 #' @param units Time units to use on x-axis in case of relative time.
 #' @param plotly Return plotly object
 #' @param add_end_events Whether to add dots for the complete lifecycle event with a different shape.
+#' @param ... Deprecated arguments
 #' @importFrom tidyr spread
 #' @export dotted_chart
 #'
@@ -195,7 +196,8 @@ dotted_chart.grouped_eventlog <- function(eventlog,
 										  sort = NULL,
 										  color = NULL,
 										  units = NULL,
-										  add_end_events = F) {
+										  add_end_events = F,
+										  ...) {
 
 
 

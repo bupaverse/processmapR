@@ -3,7 +3,7 @@
 \name{get_activities}
 \alias{get_activities}
 \alias{get_flows}
-\title{Get values for nodes and flows from process map}
+\title{Get data values for activities and flows from process map}
 \usage{
 get_activities(process_map)
 
@@ -13,5 +13,5 @@ get_flows(process_map)
 \item{process_map}{An object created using process_map function. Can both be a rendered or not rendered object.}
 }
 \description{
-Get values for nodes and flows from process map
+Get data values for activities and flows from process map
 }

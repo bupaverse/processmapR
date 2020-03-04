@@ -60,7 +60,10 @@ process_map.eventlog <- function(eventlog,
 								 fixed_node_pos = NULL,
 								 ...) {
 
-
+	from <- NULL
+	to <- NULL
+	label_numeric <- NULL
+	node <- NULL
 	min_order <- NULL
 	ACTIVITY_CLASSIFIER_ <- NULL
 	ACTIVITY_INSTANCE_CLASSIFIER_ <- NULL
