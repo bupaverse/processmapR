@@ -231,7 +231,7 @@ process_map.eventlog <- function(eventlog,
 		nodes %>%
 			full_join(nodes_secondary, by = c("ACTIVITY_CLASSIFIER_", "from_id")) %>%
 			mutate(label = if_end(ACTIVITY_CLASSIFIER_,
-								  ACTIVITY_CLASSIFIER_,
+								  label,
 								  str_replace(paste0(label, "\n","(", map(sec_label, ~str_split(.x, "\n")[[1]][2]), ")"), "\n\\(\\)",""))) -> nodes
 	}
 
