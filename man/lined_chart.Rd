@@ -7,7 +7,16 @@
 \alias{plotly_lined_chart}
 \title{Lined chart}
 \usage{
-lined_chart(eventlog, color, plotly, ...)
+lined_chart(
+  eventlog,
+  x = c("absolute", "relative"),
+  sort = NULL,
+  color,
+  units,
+  line_width = 2,
+  plotly,
+  ...
+)
 
 ilined_chart(eventlog, plotly = FALSE)
 
