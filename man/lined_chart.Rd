@@ -27,7 +27,15 @@ plotly_lined_chart(eventlog, color = NULL, ...)
 \arguments{
 \item{eventlog}{Eventlog object}
 
+\item{x}{Value for plot on x-axis: absolute time or relative time (since start, since start of week, since start of day)}
+
+\item{sort}{Ordering of the cases on y-axis: start, end or duration, start_week, start_day}
+
 \item{color}{Optional. Should be a case attribute! No coloring applied by default.}
+
+\item{units}{Time units to use on x-axis in case of relative time.}
+
+\item{line_width}{The width of lines}
 
 \item{plotly}{Return plotly object}
 

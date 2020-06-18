@@ -3,6 +3,8 @@
 #' @param eventlog Eventlog object
 #' @param color Optional. Should be a case attribute! No coloring applied by default.
 #' @param plotly Return plotly object
+#' @inheritParams dotted_chart
+#' @param line_width The width of lines
 #' @param ... Deprecated arguments
 #' @export lined_chart
 #'
@@ -144,8 +146,12 @@ lined_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units, 
 
 
 lined_chart.grouped_eventlog <- function(eventlog,
-										  color = NULL,
-										  ...) {
+										 x = c("absolute","relative"),
+										 sort = NULL,
+										 color = NULL,
+										 units = c("weeks","days","hours","mins","secs"),
+										 line_width = 2,
+										 plotly = FALSE, ...) {
 
 
 	groups <- groups(eventlog)
