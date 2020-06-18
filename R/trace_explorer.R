@@ -59,7 +59,7 @@ trace_explorer <- function(eventlog,
 	rank_event <- NULL
 
 	eventlog %>% case_list %>%
-		rename_("case_classifier" = case_id(eventlog)) -> cases
+		rename("case_classifier" := !!case_id_(eventlog)) -> cases
 
 	# sort descending or ascending?
 	sort_factor <- ifelse(type == "frequent", -1, 1)
@@ -92,10 +92,10 @@ trace_explorer <- function(eventlog,
 
 
 	eventlog %>%
-		rename_("case_classifier" = case_id(eventlog),
-				"aid" = activity_instance_id(eventlog),
-				"event_classifier" = activity_id(eventlog),
-				"timestamp_classifier" = timestamp(eventlog)) %>%
+		rename("case_classifier" := !!case_id_(eventlog),
+				"aid" := !!activity_instance_id_(eventlog),
+				"event_classifier" := !!activity_id_(eventlog),
+				"timestamp_classifier" := !!timestamp_(eventlog)) %>%
 		as.data.frame %>%
 		arrange(timestamp_classifier, .order) %>%
 		# distinct keeps first entry (=minimum)
@@ -181,20 +181,22 @@ plotly_trace_explorer <- function(eventlog,
 								  coverage = NULL,
 								  n_traces = NULL,
 								  type = c("frequent","infrequent"),
+								  coverage_labels = c("relative","absolute","cumulative"),
 								  .abbreviate = T,
 								  show_labels = T,
-								  label_size = 5,
+								  label_size = 3,
 								  scale_fill = scale_fill_discrete(h = c(0,360) + 15, l = 40),
 								  raw_data = F) {
 
 	trace_explorer(eventlog,
-				   coverage,
-				   n_traces,
-				   type,
-				   .abbreviate,
-				   show_labels,
-				   label_size,
-				   scale_fill,
-				   raw_data) %>%
+				   coverage = coverage,
+				   coverage_labels = coverage_labels,
+				   n_traces = n_traces,
+				   type = type,
+				   .abbreviate = .abbreviate,
+				   show_labels = show_labels,
+				   label_size = label_size,
+				   scale_fill = scale_fill,
+				   raw_data = raw_data) %>%
 		ggplotly
 }

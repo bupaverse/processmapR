@@ -23,9 +23,10 @@ plotly_trace_explorer(
   coverage = NULL,
   n_traces = NULL,
   type = c("frequent", "infrequent"),
+  coverage_labels = c("relative", "absolute", "cumulative"),
   .abbreviate = T,
   show_labels = T,
-  label_size = 5,
+  label_size = 3,
   scale_fill = scale_fill_discrete(h = c(0, 360) + 15, l = 40),
   raw_data = F
 )
@@ -49,7 +50,7 @@ plotly_trace_explorer(
 
 \item{scale_fill}{Set color scale}
 
-\item{raw_data}{Retrun raw data}
+\item{raw_data}{Return raw data}
 }
 \description{
 Explore traces, ordered by relative trace frequency
