@@ -4,6 +4,7 @@
 #' @param x Value for plot on x-axis: absolute time or relative time (since start, since start of week, since start of day)
 #' @param sort Ordering of the cases on y-axis: start, end or duration, start_week, start_day
 #' @param color Optional, variable to use for coloring dots. Default is the activity identifier. Use NA for no colors.
+#' @param color_vector Optional, color vector used for coloring dots
 #' @param units Time units to use on x-axis in case of relative time.
 #' @param plotly Return plotly object
 #' @param add_end_events Whether to add dots for the complete lifecycle event with a different shape.
@@ -13,7 +14,7 @@
 #'
 
 
-dotted_chart <- function(eventlog, x, sort, color, units, add_end_events = F, ...) {
+dotted_chart <- function(eventlog, x, sort, color, color_vector, units, add_end_events = F, ...) {
 	UseMethod("dotted_chart")
 }
 
@@ -141,9 +142,17 @@ dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units,
 	p
 }
 
-col_vector <- function() {
-	qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
-	unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+col_vector_generator <- function(color_vector = NULL) {
+
+	if (is.null(color_vector))
+	{
+		qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+		unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+	}
+	else
+	{
+		color_vector
+	}
 }
 
 #' @export
@@ -153,6 +162,7 @@ dotted_chart.eventlog <- function(eventlog,
 								  x = c("absolute","relative","relative_week","relative_day"),
 								  sort = NULL,
 								  color = NULL,
+								  color_vector = NULL,
 								  units = NULL,
 								  add_end_events = F,
 								  ...) {
@@ -180,12 +190,9 @@ dotted_chart.eventlog <- function(eventlog,
 		units <-	match.arg(units, choices = c("weeks","days","hours","mins","secs"))
 	}
 
-
-
-
 	eventlog %>%
 		dotted_chart_data(color, units) %>%
-		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color), units, add_end_events = add_end_events)
+		dotted_chart_plot(mapping, x, y, col_vector_generator(color_vector), ifelse(is.null(color), activity_id(eventlog), color), units, add_end_events = add_end_events)
 }
 
 #' @describeIn dotted_chart Dotted chart for grouped event log
@@ -195,6 +202,7 @@ dotted_chart.grouped_eventlog <- function(eventlog,
 										  x = c("absolute","relative","relative_week","relative_day"),
 										  sort = NULL,
 										  color = NULL,
+										  color_vector = NULL,
 										  units = NULL,
 										  add_end_events = F,
 										  ...) {
@@ -217,6 +225,7 @@ dotted_chart.grouped_eventlog <- function(eventlog,
 		y <-	match.arg(sort, choices = c("start","end","duration", "start_week","start_day"))
 	}
 
+
 	if(is.null(units)) {
 		units <-	switch(x,
 						"absolute" = "weeks",
@@ -230,7 +239,7 @@ dotted_chart.grouped_eventlog <- function(eventlog,
 
 	eventlog %>%
 		dotted_chart_data(color, units) %>%
-		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color), units, add_end_events = add_end_events) +
+		dotted_chart_plot(mapping, x, y, col_vector_generator(color_vector), ifelse(is.null(color), activity_id(eventlog), color), units, add_end_events = add_end_events) +
 		facet_grid(as.formula(paste(c(paste(groups, collapse = "+"), "~." ), collapse = "")), scales = "free_y", space = "free")
 
 }
