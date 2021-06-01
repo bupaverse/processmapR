@@ -64,6 +64,7 @@ performance <- function(FUN = mean,
 		ACTIVITY_CLASSIFIER_ <- NULL
 		label_numeric <- NULL
 		consequent <- NULL
+
 		precedence %>%
 			mutate(duration = as.double(end_time-start_time, units = attr(type, "units"))*attr(type, "scale_time")) %>%
 			group_by(ACTIVITY_CLASSIFIER_, from_id) %>%

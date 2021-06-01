@@ -232,9 +232,10 @@ process_map.eventlog <- function(eventlog,
 			full_join(nodes_secondary, by = c("ACTIVITY_CLASSIFIER_", "from_id")) %>%
 			mutate(label = if_end(ACTIVITY_CLASSIFIER_,
 								  label,
-								  str_replace(paste0(label, "\n","(", map(sec_label, ~str_split(.x, "\n")[[1]][2]), ")"), "\n\\(\\)",""))) -> nodes
+								  str_replace(paste0(label, "\n","(", map(sec_label, ~str_split(.x, "\n")[[1]][2]), ")"), "\n\\(\\)",""))) %>%
+			mutate(label = if_end(ACTIVITY_CLASSIFIER_, recode(ACTIVITY_CLASSIFIER_, ARTIFICIAL_START = "Start",ARTIFICIAL_END = "End"),
+								  label)) -> nodes
 	}
-
 	if(!is.null(sec_edges)) {
 		edges_secondary <- attr(sec_edges, "create_edges")(base_precedence, sec_edges, extra_data) %>%
 			select(from_id, to_id, label) %>%
@@ -298,10 +299,32 @@ process_map.eventlog <- function(eventlog,
 	min_level <- min(nodes_df$color_level)
 	max_level <- max(nodes_df$color_level[nodes_df$color_level < Inf])
 
+	# start_id <- nodes %>% filter(ACTIVITY_CLASSIFIER_ == "ARTIFICIAL_START") %>% pull(from_id)
+	# end_id <- nodes %>% filter(ACTIVITY_CLASSIFIER_ == "ARTIFICIAL_END") %>% pull(from_id)
+	#
+	# other_ids <- nodes %>% filter(!(from_id %in% c(start_id, end_id))) %>% pull(from_id)
+	#
+	# bind_rows(
+	# 	tibble(from_id = start_id, to_id = other_ids),
+	# 	tibble(from_id = other_ids, to_id = end_id)
+	# ) %>%
+	# 	mutate(style = "invis") %>%
+	# 	mutate(penwidth = 0) -> extra_edges
+	#
+	#
+	# extra_edges %>%
+	# 	anti_join(edges, by = c("from_id", "to_id")) -> extra_edges
+	#
+	# bind_rows(edges, extra_edges) -> edges
+
+
+
+
 	create_edge_df(from = edges$from_id,
 				   to = edges$to_id,
 				   label = edges$label,
 				   penwidth = edges$penwidth,
+				   # style = edges$style,
 				   color = attr(type_edges, "color_edges"),
 				   fontname = "Arial",
 				   fontsize = 10,
