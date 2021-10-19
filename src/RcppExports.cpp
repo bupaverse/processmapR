@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // count_precedence
 DataFrame count_precedence(CharacterVector cases, IntegerVector activities, int lead);
 RcppExport SEXP _processmapR_count_precedence(SEXP casesSEXP, SEXP activitiesSEXP, SEXP leadSEXP) {

@@ -4,10 +4,10 @@
 #' @param quoted is expr a quoted expression (with quote())?
 #' This is useful if you want to save an expression in a variable.
 #' @name renderProcessMap
-#' @importFrom DiagrammeR renderGrViz
 #' @export
 
 renderProcessMap <- function(expr, env = parent.frame(), quoted = FALSE) {
+	if (!quoted) expr <- substitute(expr)
 
-	DiagrammeR::renderGrViz(expr = expr, env, quoted)
+	DiagrammeR::renderGrViz(expr, env, quoted = TRUE)
 }
