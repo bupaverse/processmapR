@@ -75,14 +75,22 @@ test_that("test timeFormat CET", {
 
 #### dotted_chart_data ####
 
-test_that("test dotted_chart_data columns", {
+test_that("test dotted_chart_data dimensions, columns, and content", {
   load("./testdata/patients.rda")
 
   chart_data <- dotted_chart_data(patients, NULL, "mins")
 
-  expect_equal(dim(chart_data), c(5, 18))
+  expect_equal(dim(chart_data), c(9, 18))
   expect_equal(colnames(chart_data), c("patient", "activity", "activity_instance", "color", "start", "end", "start_week",
                                        "end_week", "start_day", "end_day", "start_case", "end_case", "dur", "start_case_week",
                                        "start_case_day", "start_relative", "end_relative", "start_case_rank"))
+
+  # John Doe is rank 1, Jane Doe is rank 2
+  expect_equal(chart_data[chart_data["patient"] == "John Doe",]["start_case_rank"][[1]], c(1, 1, 1, 1, 1))
+  expect_equal(chart_data[chart_data["patient"] == "Jane Doe",]["start_case_rank"][[1]], c(2, 2, 2, 2))
+
+  # Start and end points should be correct
+  expect_equal(sum(chart_data["start_relative"]), 3599.1833)
+  expect_equal(sum(chart_data["end_relative"]), 3781.1333)
 })
 
