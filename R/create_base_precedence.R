@@ -60,7 +60,7 @@ create_base_precedence <- function(eventlog, type_nodes, type_edges) {
 									   ATTREdge = first(get(attributeEdge))),
 								by = list(ACTIVITY_CLASSIFIER_, ACTIVITY_INSTANCE_CLASSIFIER_, CASE_CLASSIFIER_)]
 
-		base_log <- tbl_df(base_log) %>%
+		base_log <- as_tibble(base_log) %>%
 			rename(!!sym(attributeNode) := "ATTRNode") %>%
 			rename(!!sym(attributeEdge) := "ATTREdge")
 
@@ -82,7 +82,7 @@ create_base_precedence <- function(eventlog, type_nodes, type_edges) {
 										  ACTIVITY_INSTANCE_CLASSIFIER_,
 										  CASE_CLASSIFIER_)]
 
-		base_log <- tbl_df(base_log) %>%
+		base_log <- as_tibble(base_log) %>%
 			rename(!!sym(attribute) := "ATTR")
 
 	} else if (perspective_edges == "custom") {
@@ -102,7 +102,7 @@ create_base_precedence <- function(eventlog, type_nodes, type_edges) {
 								by = list(ACTIVITY_CLASSIFIER_,
 										  ACTIVITY_INSTANCE_CLASSIFIER_,
 										  CASE_CLASSIFIER_)]
-		base_log <- tbl_df(base_log) %>%
+		base_log <- as_tibble(base_log) %>%
 			rename(!!sym(attribute) := "ATTR")
 
 	} else {
@@ -111,7 +111,7 @@ create_base_precedence <- function(eventlog, type_nodes, type_edges) {
 		base_log <- grouped_log[, list('start_time' = min(TIMESTAMP_CLASSIFIER_), 'end_time' = max(TIMESTAMP_CLASSIFIER_), 'min_order' = min(.order)),
 					by = list(ACTIVITY_CLASSIFIER_, ACTIVITY_INSTANCE_CLASSIFIER_, CASE_CLASSIFIER_)]
 
-		base_log <- tbl_df(base_log)
+		base_log <- as_tibble(base_log)
 	}
 
 	#create end points for graph
