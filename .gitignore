@@ -17,6 +17,9 @@
 # RStudio files
 .Rproj.user/
 
+# IntelliJ files
+.idea/
+
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
@@ -31,3 +34,6 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+# lintr config file
+.lintr

@@ -17,25 +17,25 @@ dotted_chart <- function(eventlog, x, sort, color, units, add_end_events = F, ..
 	UseMethod("dotted_chart")
 }
 
-#Utility functions for week/day caluclations
+# Utility functions for week/day caluclations
 timeSinceStartOfWeek <- function(time) {
 	midnight <- trunc(time, "days")
-	weekDay <- as.integer(format(time, "%w"))
-	weekDay <- ifelse(weekDay, weekDay-1, 6) # Let week start with Monday
-	msSinceMidnight <- difftime(time, midnight, units="secs")
-	as.difftime(msSinceMidnight + weekDay*24*60*60, units = "secs")
+	weekDay <- as.integer(format(time, "%u")) - 1 # Week starts with Monday = 0
+	secSinceMidnight <- timeSinceStartOfDay(time)
+	as.difftime(secSinceMidnight + weekDay * 24 * 60 * 60, units = "secs")
 }
+
 timeSinceStartOfDay <- function(time) {
 	midnight <- trunc(time, "days")
-	difftime(time, midnight, units="secs")
+	difftime(time, midnight, units = "secs")
 }
-# time formatter for the week and day options
 
+# Time formatter for the week and day options
 timeFormat <- function(time){
-	substr(format(as.hms(as.double(time, units = "secs") %% (24 * 60 * 60))),0,5)
+	format(time, "%H:%M")
 }
 
-# compute data for dotted_chart
+# Compute data for dotted_chart
 dotted_chart_data <- function(eventlog, color, units) {
 	start_case_rank <- NULL
 	start <- NULL
@@ -56,7 +56,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 
 	eventlog %>%
 		as.data.frame() %>%
-		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
+		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, .add = TRUE) %>%
 		summarize(start = min(!!timestamp_(eventlog)),
 				  end = max(!!timestamp_(eventlog))) %>%
 		group_by(!!case_id_(eventlog)) -> grouped_activity_log
@@ -84,7 +84,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 			   start_case_day = timeSinceStartOfDay(start_case)) %>%
 		mutate(start_relative = as.double(start - start_case, units = units),
 			   end_relative = as.double(end - start_case, units = units)) %>%
-		full_join(eventlog_rank_start_cases)
+		full_join(eventlog_rank_start_cases, by = case_id(eventlog))
 }
 
 configure_x_aes <- function(x) {

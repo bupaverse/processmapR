@@ -34,7 +34,12 @@ Imports:
     Rcpp
 Encoding: UTF-8
 RoxygenNote: 7.1.2
-Suggests: knitr, rmarkdown, eventdataR
+Suggests: 
+    knitr,
+    rmarkdown,
+    eventdataR,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://www.bupar.net, https://github.com/bupaverse/processmapr
 BugReports: https://github.com/bupaverse/processmapr/issues
+Config/testthat/edition: 3
