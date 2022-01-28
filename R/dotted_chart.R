@@ -9,6 +9,9 @@
 #' @param add_end_events Whether to add dots for the complete lifecycle event with a different shape.
 #' @param ... Deprecated arguments
 #' @importFrom tidyr spread
+#' @importFrom data.table dcast.data.table
+#' @importFrom data.table setorder
+#' @importFrom data.table setnames
 #' @export dotted_chart
 #'
 
@@ -70,7 +73,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 	grouped_activity_log %>%
 		setorder(start) %>%
 		.[, rank := paste0("ACTIVITY_RANKED_AS_", 1:.N), by = case] %>%
-		.[, .(case, rank, start)] %>% dcast.data.table(case ~ rank) %>%
+		.[, .(case, rank, start)] %>% dcast.data.table(case ~ rank,value.var = "start") %>%
 		arrange_if(str_detect(names(.), "ACTIVITY_RANKED_AS_")) -> output
 	output[, .(case, start_case_rank = 1:.N)][, .(case, start_case_rank)] -> eventlog_rank_start_cases
 
@@ -85,11 +88,11 @@ dotted_chart_data <- function(eventlog, color, units) {
 		                       start_relative := as.double(start - start_case, units = units)][,
 		                       end_relative := as.double(end - start_case, units = units)]
 
-	grouped_activity_log %>% full_join(eventlog_rank_start_cases) %>% .[, !"rank"] -> result
+	grouped_activity_log %>% full_join(eventlog_rank_start_cases, by = "case") %>% .[, !"rank"] -> result
 	setnames(result,c("case", "activity", "time", "activity_instance_id"),c(case_id(eventlog),activity_id(eventlog),timestamp(eventlog),activity_instance_id(eventlog)),skip_absent = TRUE)
 
 	return(as.data.frame(result))
-
+}
 
 configure_x_aes <- function(x) {
 	case_when(x == "absolute" ~ c("start","end"),
@@ -133,7 +136,7 @@ dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units,
 		p + geom_point(aes(x = !!sym(x_aes[[2]]), color = color, shape = "complete", ), ) +
 			scale_shape_manual(name = "Lifecycle", values = c(1,16)) -> p
 	} else {
-		p + scale_shape_discrete(guide=FALSE) -> p
+		p + scale_shape_discrete(guide= "none") -> p
 	}
 
 	if(x == "relative_week" && units == "secs") {
@@ -189,7 +192,8 @@ dotted_chart.eventlog <- function(eventlog,
 
 	eventlog %>%
 		dotted_chart_data(color, units) %>%
-		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color), units, add_end_events = add_end_events)
+		dotted_chart_plot(mapping, x, y, col_vector(), ifelse(is.null(color), activity_id(eventlog), color),
+						  units, add_end_events = add_end_events)
 }
 
 #' @describeIn dotted_chart Dotted chart for grouped event log
