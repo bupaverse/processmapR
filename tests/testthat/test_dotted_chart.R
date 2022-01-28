@@ -1,6 +1,27 @@
 # Unit tests for dotted_chart.R
 
 
+#### dotted chart ####
+
+test_that("test dotted_chart without error", {
+	load("./testdata/patients.rda")
+
+	expect_error(
+		dotted_chart(patients),
+		NA
+	)
+})
+
+test_that("test dotted_chart without warning", {
+	load("./testdata/patients.rda")
+
+	expect_warning(
+		dotted_chart(patients),
+		NA
+	)
+})
+
+
 #### timeSinceStartOfDay ####
 
 test_that("test timeSinceStartOfDay UTC", {
@@ -86,8 +107,8 @@ test_that("test dotted_chart_data dimensions, columns, and content", {
                                        "start_case_day", "start_relative", "end_relative", "start_case_rank"))
 
   # John Doe is rank 1, Jane Doe is rank 2
-  expect_equal(chart_data[chart_data["patient"] == "John Doe",]["start_case_rank"][[1]], c(1, 1, 1, 1, 1))
-  expect_equal(chart_data[chart_data["patient"] == "Jane Doe",]["start_case_rank"][[1]], c(2, 2, 2, 2))
+  expect_equal(chart_data[chart_data[["patient"]] == "John Doe",]["start_case_rank"][[1]], c(1, 1, 1, 1, 1))
+  expect_equal(chart_data[chart_data[["patient"]] == "Jane Doe",]["start_case_rank"][[1]], c(2, 2, 2, 2))
 
   # Start and end points should be correct
   expect_equal(sum(chart_data["start_relative"]), 3599.1833)
