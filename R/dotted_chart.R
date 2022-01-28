@@ -56,7 +56,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 
 	eventlog %>%
 		as.data.frame() %>%
-		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
+		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, .add = TRUE) %>%
 		summarize(start = min(!!timestamp_(eventlog)),
 				  end = max(!!timestamp_(eventlog))) %>%
 		group_by(!!case_id_(eventlog)) -> grouped_activity_log
@@ -84,7 +84,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 			   start_case_day = timeSinceStartOfDay(start_case)) %>%
 		mutate(start_relative = as.double(start - start_case, units = units),
 			   end_relative = as.double(end - start_case, units = units)) %>%
-		full_join(eventlog_rank_start_cases)
+		full_join(eventlog_rank_start_cases, by = case_id(eventlog))
 }
 
 configure_x_aes <- function(x) {
