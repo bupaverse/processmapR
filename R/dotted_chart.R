@@ -17,25 +17,25 @@ dotted_chart <- function(eventlog, x, sort, color, units, add_end_events = F, ..
 	UseMethod("dotted_chart")
 }
 
-#Utility functions for week/day caluclations
+# Utility functions for week/day caluclations
 timeSinceStartOfWeek <- function(time) {
 	midnight <- trunc(time, "days")
-	weekDay <- as.integer(format(time, "%w"))
-	weekDay <- ifelse(weekDay, weekDay-1, 6) # Let week start with Monday
-	msSinceMidnight <- difftime(time, midnight, units="secs")
-	as.difftime(msSinceMidnight + weekDay*24*60*60, units = "secs")
+	weekDay <- as.integer(format(time, "%u")) - 1 # Week starts with Monday = 0
+	secSinceMidnight <- timeSinceStartOfDay(time)
+	as.difftime(secSinceMidnight + weekDay * 24 * 60 * 60, units = "secs")
 }
+
 timeSinceStartOfDay <- function(time) {
 	midnight <- trunc(time, "days")
-	difftime(time, midnight, units="secs")
+	difftime(time, midnight, units = "secs")
 }
-# time formatter for the week and day options
 
+# Time formatter for the week and day options
 timeFormat <- function(time){
-	substr(format(as.hms(as.double(time, units = "secs") %% (24 * 60 * 60))),0,5)
+	format(time, "%H:%M")
 }
 
-# compute data for dotted_chart
+# Compute data for dotted_chart
 dotted_chart_data <- function(eventlog, color, units) {
 	start_case_rank <- NULL
 	start <- NULL
@@ -55,6 +55,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 	}
 
 	eventlog %>%
+
 		rename(
 			"time" = timestamp_(eventlog),
 			"case" = case_id_(eventlog),
@@ -88,7 +89,7 @@ dotted_chart_data <- function(eventlog, color, units) {
 	setnames(result,c("case", "activity", "time", "activity_instance_id"),c(case_id(eventlog),activity_id(eventlog),timestamp(eventlog),activity_instance_id(eventlog)),skip_absent = TRUE)
 
 	return(as.data.frame(result))
-}
+
 
 configure_x_aes <- function(x) {
 	case_when(x == "absolute" ~ c("start","end"),
