@@ -43,10 +43,10 @@ dotted_chart_data <- function(eventlog, color, units) {
 	start_case <- NULL
 	end_case <- NULL
 
-	if(is.null(color)) {
+	if (is.null(color)) {
 		eventlog %>%
 			mutate(color = !!activity_id_(eventlog)) -> eventlog
-	} else if(is.na(color)) {
+	} else if (is.na(color)) {
 		eventlog %>%
 			mutate(color = "undefined") -> eventlog
 	} else {
@@ -55,36 +55,39 @@ dotted_chart_data <- function(eventlog, color, units) {
 	}
 
 	eventlog %>%
-		as.data.frame() %>%
-		group_by(!!case_id_(eventlog),!!activity_id_(eventlog),!!activity_instance_id_(eventlog), color, add = T) %>%
-		summarize(start = min(!!timestamp_(eventlog)),
-				  end = max(!!timestamp_(eventlog))) %>%
-		group_by(!!case_id_(eventlog)) -> grouped_activity_log
+		rename(
+			"time" = timestamp_(eventlog),
+			"case" = case_id_(eventlog),
+			"activity" = activity_id_(eventlog),
+			"activity_instance_id" = activity_instance_id_(eventlog)
+		) %>%
+		as.data.table %>%
+		.[, .(start = min(time), end = max(time)), .(case, activity, activity_instance_id, color)] %>%
+		.[, .SD, by = case] -> grouped_activity_log
 
 
 	grouped_activity_log %>%
-		arrange(start) %>%
-		mutate(rank = paste0("ACTIVITY_RANKED_AS_", 1:n())) %>%
-		ungroup() %>%
-		select(!!case_id_(eventlog), rank, start) %>%
-		spread(rank, start) %>%
-		arrange_if(str_detect(names(.), "ACTIVITY_RANKED_AS_")) %>%
-		mutate(start_case_rank = 1:n()) %>%
-		select(!!case_id_(eventlog), start_case_rank) -> eventlog_rank_start_cases
+		setorder(start) %>%
+		.[, rank := paste0("ACTIVITY_RANKED_AS_", 1:.N), by = case] %>%
+		.[, .(case, rank, start)] %>% dcast.data.table(case ~ rank) %>%
+		arrange_if(str_detect(names(.), "ACTIVITY_RANKED_AS_")) -> output
+	output[, .(case, start_case_rank = 1:.N)][, .(case, start_case_rank)] -> eventlog_rank_start_cases
 
-	grouped_activity_log %>%
-		mutate(start_week = as.double(timeSinceStartOfWeek(start), units = units),
-			   end_week = as.double(timeSinceStartOfWeek(start), units = units)) %>%
-		mutate(start_day = as.double(timeSinceStartOfDay(start), units = units),
-			   end_day = as.double(timeSinceStartOfDay(end), units = units)) %>%
-		mutate(start_case = min(start),
-			   end_case = max(end),
-			   dur = as.double(end_case - start_case, units = units)) %>%
-		mutate(start_case_week = timeSinceStartOfWeek(start_case),
-			   start_case_day = timeSinceStartOfDay(start_case)) %>%
-		mutate(start_relative = as.double(start - start_case, units = units),
-			   end_relative = as.double(end - start_case, units = units)) %>%
-		full_join(eventlog_rank_start_cases)
+	grouped_activity_log <- grouped_activity_log[, start_week := as.double(timeSinceStartOfWeek(start), units = units)][,
+		                       end_week := as.double(timeSinceStartOfWeek(start), units = units)][,
+		                       start_day := as.double(timeSinceStartOfDay(start), units = units)][,
+		                       end_day := as.double(timeSinceStartOfDay(end), units = units)][,
+		                       start_case := min(start), by =case][, end_case := max(end), by = case][,
+		                       dur := as.double(end_case - start_case, units = units)][,
+		                       start_case_week := timeSinceStartOfWeek(start_case)][,
+		                       start_case_day := timeSinceStartOfDay(start_case)][,
+		                       start_relative := as.double(start - start_case, units = units)][,
+		                       end_relative := as.double(end - start_case, units = units)]
+
+	grouped_activity_log %>% full_join(eventlog_rank_start_cases) %>% .[, !"rank"] -> result
+	setnames(result,c("case", "activity", "time", "activity_instance_id"),c(case_id(eventlog),activity_id(eventlog),timestamp(eventlog),activity_instance_id(eventlog)),skip_absent = TRUE)
+
+	return(as.data.frame(result))
 }
 
 configure_x_aes <- function(x) {
