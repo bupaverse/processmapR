@@ -6,7 +6,8 @@ Date: 2020-06-18
 Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhasselt.be", role = c("aut","cre")),
  person("Benoît","Depaire",email = "benoit.depaire@uhasselt.be", role = c("ctb")),
  person("Felix","Mannhardt",email = "Felix.Mannhardt@sintef.no", role = c("ctb")),
- person("Thijs","Beuving", email = "thijs.beuving@kpn.com", role = c("ctb")))
+ person("Thijs","Beuving", email = "thijs.beuving@kpn.com", role = c("ctb")),
+ person("urvikalia", role = c("ctb")))
 Description: Visualize event logs using directed graphs, i.e. process maps. Part of the 'bupaR' framework.
 License: MIT + file LICENSE
 LinkingTo: Rcpp, BH
@@ -33,9 +34,13 @@ Imports:
     htmltools,
     Rcpp
 Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.1.1
-Suggests: knitr, rmarkdown, eventdataR
+RoxygenNote: 7.1.2
+Suggests: 
+    knitr,
+    rmarkdown,
+    eventdataR,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://www.bupar.net, https://github.com/bupaverse/processmapr
 BugReports: https://github.com/bupaverse/processmapr/issues
+Config/testthat/edition: 3
