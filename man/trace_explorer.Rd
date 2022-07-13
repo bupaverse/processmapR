@@ -2,11 +2,13 @@
 % Please edit documentation in R/trace_explorer.R
 \name{trace_explorer}
 \alias{trace_explorer}
+\alias{trace_explorer.eventlog}
+\alias{trace_explorer.activitylog}
 \alias{plotly_trace_explorer}
 \title{Trace explorer}
 \usage{
 trace_explorer(
-  eventlog,
+  log,
   coverage = NULL,
   n_traces = NULL,
   type = c("frequent", "infrequent"),
@@ -14,8 +16,37 @@ trace_explorer(
   .abbreviate = T,
   show_labels = T,
   label_size = 3,
-  scale_fill = scale_fill_discrete(h = c(0, 360) + 15, l = 40),
-  raw_data = F
+  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
+  raw_data = F,
+  eventlog = deprecated()
+)
+
+\method{trace_explorer}{eventlog}(
+  log,
+  coverage = NULL,
+  n_traces = NULL,
+  type = c("frequent", "infrequent"),
+  coverage_labels = c("relative", "absolute", "cumulative"),
+  .abbreviate = T,
+  show_labels = T,
+  label_size = 3,
+  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
+  raw_data = F,
+  eventlog = deprecated()
+)
+
+\method{trace_explorer}{activitylog}(
+  log,
+  coverage = NULL,
+  n_traces = NULL,
+  type = c("frequent", "infrequent"),
+  coverage_labels = c("relative", "absolute", "cumulative"),
+  .abbreviate = T,
+  show_labels = T,
+  label_size = 3,
+  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
+  raw_data = F,
+  eventlog = deprecated()
 )
 
 plotly_trace_explorer(
@@ -27,12 +58,12 @@ plotly_trace_explorer(
   .abbreviate = T,
   show_labels = T,
   label_size = 3,
-  scale_fill = scale_fill_discrete(h = c(0, 360) + 15, l = 40),
+  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
   raw_data = F
 )
 }
 \arguments{
-\item{eventlog}{Eventlog object}
+\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
 
 \item{coverage}{The percentage coverage of the trace to explore. Default is 20\% most (in)frequent}
 
@@ -51,7 +82,16 @@ plotly_trace_explorer(
 \item{scale_fill}{Set color scale}
 
 \item{raw_data}{Return raw data}
+
+\item{eventlog}{Deprecated. Use log instead.}
 }
 \description{
 Explore traces, ordered by relative trace frequency
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{eventlog}: Trace explorer eventlog
+
+\item \code{activitylog}: Trace explorer activity log
+}}
+

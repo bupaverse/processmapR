@@ -3,18 +3,23 @@
 \name{process_matrix}
 \alias{process_matrix}
 \alias{process_matrix.eventlog}
+\alias{process_matrix.activitylog}
 \title{Create process matrix}
 \usage{
-process_matrix(eventlog, type, ...)
+process_matrix(log, type, ..., eventlog = deprecated())
 
-\method{process_matrix}{eventlog}(eventlog, type = frequency(), ...)
+\method{process_matrix}{eventlog}(log, type = frequency(), ..., eventlog = deprecated())
+
+\method{process_matrix}{activitylog}(log, type = frequency(), ..., eventlog = deprecated())
 }
 \arguments{
-\item{eventlog}{The event log object for which to create a process matrix}
+\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
 
 \item{type}{A process matrix type, which can be created with the functions frequency, performance and custom. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time. The third one allows custom attributes to be used.}
 
 \item{...}{Other arguments}
+
+\item{eventlog}{Deprecated. Use log instead.}
 }
 \description{
 Create process matrix
@@ -22,5 +27,7 @@ Create process matrix
 \section{Methods (by class)}{
 \itemize{
 \item \code{eventlog}: Process matrix for event log
+
+\item \code{activitylog}: Process matrix for activity log
 }}
 

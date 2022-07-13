@@ -1,7 +1,12 @@
 
 #' @title Precendence Matrix
 #'
-#' @description  Construct a precendence matrix, showing how activities are followed by each other.
+#' @description
+#'
+#' Construct a precendence matrix, showing how activities are followed by each other.
+#'
+#' `r lifecycle::badge("deprecated")`
+#'  This function is deprecated and replaced by the \code{\link{process_matrix}} function, which shared the same usage with \code{\link{process_map}}
 #'
 #' @param eventlog The event log object to be used
 #' @param type The type of precedence matrix, which can be absolulte, relative, relative-antecedent or relative-consequent. Absolute will return
@@ -15,11 +20,13 @@
 #' data(patients)
 #' precedence_matrix(patients)
 #' }
-#'
+#' @keywords internal
 #' @export precedence_matrix
 
 precedence_matrix <- function(eventlog, type = c("absolute","relative","relative-antecedent","relative-consequent", "relative-case")) {
 	stopifnot("eventlog" %in% class(eventlog))
+
+	lifecycle::deprecate_warn("0.4.0", "precedence_matrix()","process_matrix()")
 
 	type <- match.arg(type)
 
@@ -123,14 +130,7 @@ precedence_matrix <- function(eventlog, type = c("absolute","relative","relative
 #' @param eventlog The event log object to be used.
 #' @param lead The distance between activities following/preceding each other.
 #'
-#' @examples
-#' library(eventdataR)
-#' data(traffic_fines)
-#' m <- precedence_matrix_absolute(traffic_fines)
-#' print(m)
-#' as.matrix(m)
-#'
-#' @export precedence_matrix_absolute
+#' @keywords interval
 precedence_matrix_absolute <- function(eventlog, lead = 1) {
   stopifnot("eventlog" %in% class(eventlog))
   stopifnot(lead > 0)

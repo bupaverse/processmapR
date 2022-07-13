@@ -2,22 +2,49 @@
 % Please edit documentation in R/resource_map.R
 \name{resource_map}
 \alias{resource_map}
+\alias{resource_map.eventlog}
+\alias{resource_map.activitylog}
 \title{Resource Map}
 \usage{
-resource_map(eventlog, type = frequency("absolute"), render = T, ...)
+resource_map(log, type, render, ..., eventlog = deprecated())
+
+\method{resource_map}{eventlog}(
+  log,
+  type = frequency("absolute"),
+  render = T,
+  ...,
+  eventlog = deprecated()
+)
+
+\method{resource_map}{activitylog}(
+  log,
+  type = frequency("absolute"),
+  render = T,
+  ...,
+  eventlog = deprecated()
+)
 }
 \arguments{
-\item{eventlog}{The event log object for which to create a resource map}
+\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
 
 \item{type}{A process map type, which can be created with the functions frequency and performance. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time.}
 
 \item{render}{Whether the map should be rendered immediately (default), or rather an object of type dgr_graph should be returned.}
 
 \item{...}{Deprecated arguments}
+
+\item{eventlog}{Deprecated. Use log instead.}
 }
 \description{
 A function for creating a resource map of an event log based on handover of work.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{eventlog}: Create resource map for eventlog
+
+\item \code{activitylog}: Create resource map for activity log
+}}
+
 \examples{
 \dontrun{
 library(eventdataR)
