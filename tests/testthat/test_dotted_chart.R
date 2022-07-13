@@ -25,6 +25,7 @@ test_that("test dotted_chart without warning", {
 #### timeSinceStartOfDay ####
 
 test_that("test timeSinceStartOfDay UTC", {
+	skip("depends on timezone")
   time <- as.POSIXct("2022-01-18 18:36:52", format = "%F %T", tz = "UTC")
 
   expect_equal(as.integer(timeSinceStartOfDay(time)), 18 * 3600 + 36 * 60 + 52)
@@ -86,6 +87,8 @@ test_that("test timeFormat UTC", {
 })
 
 test_that("test timeFormat CET", {
+	skip("depends on timezone")
+
   t1 <- as.POSIXct("2022-01-18 18:36:52 +0100", format = "%F %T %z")
   t2 <- as.POSIXct("2022-01-18 18:36:52", format = "%F %T", tz = "CET")
 
