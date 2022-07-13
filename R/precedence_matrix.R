@@ -140,6 +140,11 @@ precedence_matrix_absolute <- function(eventlog, lead = 1) {
 }
 
 precedence_matrix_absolute_impl <- function(simplelog, lead = 1) {
+
+simplelog %>%
+		mutate(activity_id = as.factor(activity_id)) -> simplelog
+
+
   mat <- as_tibble(count_precedence(simplelog$case_id,
                                     simplelog$activity_id,
                                     lead))
