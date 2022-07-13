@@ -20,6 +20,9 @@ Relative-consequent will do the reverse.}
 }
 \description{
 Construct a precendence matrix, showing how activities are followed by each other.
+
+`r lifecycle::badge("deprecated")`
+ This function is deprecated and replaced by the \code{\link{process_matrix}} function, which shared the same usage with \code{\link{process_map}}
 }
 \examples{
 \dontrun{
@@ -27,5 +30,5 @@ library(eventdataR)
 data(patients)
 precedence_matrix(patients)
 }
-
 }
+\keyword{internal}

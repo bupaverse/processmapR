@@ -3,3 +3,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^\.travis\.yml$
+\.fsrc$
+\.o$
+\.so$

@@ -9,7 +9,6 @@
 #' @import bupaR
 #' @import edeaR
 #' @import ggplot2
-#' @import ggthemes
 #' @import DiagrammeR
 #' @import stringr
 #' @import shiny
@@ -21,8 +20,6 @@
 #' @importFrom data.table :=
 #' @importFrom data.table as.data.table
 #' @importFrom purrr set_names
-#' @importFrom RColorBrewer brewer.pal.info
-#' @importFrom RColorBrewer brewer.pal
 #' @importFrom stats median
 #' @importFrom stats na.omit
 #' @importFrom stats quantile
@@ -36,6 +33,7 @@
 #' @importFrom plotly ggplotly
 #' @importFrom plotly renderPlotly
 #' @importFrom plotly plotlyOutput
+#' @importFrom lifecycle deprecated
 
 utils::globalVariables(c(".", ".order"))
 
