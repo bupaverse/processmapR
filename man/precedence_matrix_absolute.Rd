@@ -16,11 +16,4 @@ Construct a precedence matrix, showing how activities are followed by each other
 This function computes the precedence matrix directly in C++ for efficiency.
 Only the type `absolute` of (\code{\link[processmapR]{precedence_matrix}}) is supported.
 }
-\examples{
-library(eventdataR)
-data(traffic_fines)
-m <- precedence_matrix_absolute(traffic_fines)
-print(m)
-as.matrix(m)
-
-}
+\keyword{interval}

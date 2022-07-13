@@ -4,26 +4,28 @@
 \alias{process_map}
 \alias{process_map.eventlog}
 \alias{process_map.grouped_eventlog}
+\alias{process_map.activitylog}
 \title{Process Map}
 \usage{
 process_map(
-  eventlog,
-  type,
-  sec,
-  type_nodes,
-  type_edges,
-  sec_nodes,
-  sec_edges,
-  rankdir,
-  render,
-  fixed_edge_width,
-  layout,
-  fixed_node_pos,
+  log,
+  type = frequency("absolute"),
+  sec = NULL,
+  type_nodes = type,
+  type_edges = type,
+  sec_nodes = sec,
+  sec_edges = sec,
+  rankdir = "LR",
+  render = T,
+  fixed_edge_width = F,
+  layout = layout_pm(),
+  fixed_node_pos = NULL,
+  eventlog = deprecated(),
   ...
 )
 
 \method{process_map}{eventlog}(
-  eventlog,
+  log,
   type = frequency("absolute"),
   sec = NULL,
   type_nodes = type,
@@ -35,11 +37,12 @@ process_map(
   fixed_edge_width = F,
   layout = layout_pm(),
   fixed_node_pos = NULL,
+  eventlog = deprecated(),
   ...
 )
 
 \method{process_map}{grouped_eventlog}(
-  eventlog,
+  log,
   type = frequency("absolute"),
   sec = NULL,
   type_nodes = type,
@@ -51,11 +54,29 @@ process_map(
   fixed_edge_width = F,
   layout = layout_pm(),
   fixed_node_pos = NULL,
+  eventlog = deprecated(),
+  ...
+)
+
+\method{process_map}{activitylog}(
+  log,
+  type = frequency("absolute"),
+  sec = NULL,
+  type_nodes = type,
+  type_edges = type,
+  sec_nodes = sec,
+  sec_edges = sec,
+  rankdir = "LR",
+  render = T,
+  fixed_edge_width = F,
+  layout = layout_pm(),
+  fixed_node_pos = NULL,
+  eventlog = deprecated(),
   ...
 )
 }
 \arguments{
-\item{eventlog}{The event log object for which to create a process map}
+\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
 
 \item{type}{A process map type, which can be created with the functions frequency, performance and custom. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time. The third one allows custom attributes to be used.}
 
@@ -79,6 +100,8 @@ process_map(
 
 \item{fixed_node_pos}{Deprecated, please use the 'layout' parameter instead.}
 
+\item{eventlog}{Deprecated. Use log instead.}
+
 \item{...}{Deprecated arguments}
 }
 \description{
@@ -89,6 +112,8 @@ A function for creating a process map of an event log.
 \item \code{eventlog}: Process map for event log
 
 \item \code{grouped_eventlog}: Process map for event log
+
+\item \code{activitylog}: Process map for activitylog
 }}
 
 \examples{

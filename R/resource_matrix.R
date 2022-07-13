@@ -3,11 +3,11 @@
 #'
 #' @description  Construct a resource matrix, showing how work is handed over
 #'
-#' @param eventlog The event log object to be used
 #' @param type The type of resource matrix, which can be absolulte, relative, relative_antecedent or relative_consequent. Absolute will return
 #' a matrix with absolute frequencies, relative will return global relative frequencies for all antecedent-consequent pairs.
 #' Relative_antecedent will return relative frequencies within each antecendent, i.e. showing the relative proportion of consequents within each antecedent. Relative_consequent will do the reverse.
-#'
+#' @inheritParams dotted_chart
+
 #' @examples
 #' \dontrun{
 #' library(eventdataR)
@@ -15,15 +15,30 @@
 #' precedence_matrix(patients)
 #' }
 #'
-#' @export resource_matrix
+#' @export
 
-resource_matrix <- function(eventlog, type = c("absolute","relative","relative_antecedent","relative_consequent")) {
+resource_matrix <- function(log, type, eventlog = deprecated()) {
+	UseMethod("resource_matrix")
+}
 
-	stopifnot("eventlog" %in% class(eventlog))
+#' @describeIn resource_matrix Resource matrix of event log
+#' @export
+
+resource_matrix.eventlog <- function(log, type = c("absolute","relative","relative-antecedent","relative-consequent"), eventlog = deprecated()) {
+
+
+
+	if(lifecycle::is_present(eventlog)) {
+		lifecycle::deprecate_warn("0.4.0",
+								  "resource_matrix(eventlog)",
+								  "resource_matrix(log)")
+		log <- eventlog
+	}
+
 	min_order <- NULL
 
 	type <- match.arg(type)
-	log <- eventlog
+	log
 	ts <- NULL
 	timestamp_classifier <- NULL
 	antecedent <- NULL
@@ -33,10 +48,10 @@ resource_matrix <- function(eventlog, type = c("absolute","relative","relative_a
 	case_classifier <- NULL
 
 
-	colnames(log)[colnames(log) == resource_id(eventlog)] <- "resource_classifier"
-	colnames(log)[colnames(log) == case_id(eventlog)] <- "case_classifier"
-	colnames(log)[colnames(log) == timestamp(eventlog)] <- "timestamp_classifier"
-	colnames(log)[colnames(log) == activity_instance_id(eventlog)] <- "aid"
+	colnames(log)[colnames(log) == resource_id(log)] <- "resource_classifier"
+	colnames(log)[colnames(log) == case_id(log)] <- "case_classifier"
+	colnames(log)[colnames(log) == timestamp(log)] <- "timestamp_classifier"
+	colnames(log)[colnames(log) == activity_instance_id(log)] <- "aid"
 
 
 
@@ -54,33 +69,52 @@ resource_matrix <- function(eventlog, type = c("absolute","relative","relative_a
 		ungroup() -> log
 
 	if(type == "absolute") {
-		class(log) <- c("precedence_matrix", class(log))
+		class(log) <- c("process_matrix", class(log))
 		attr(log, "matrix_type") <- "absolute"
 	}
 	else if (type == "relative") {
 		log %>%
 			mutate(rel_n = n/sum(n)) -> log
-		class(log) <- c("precedence_matrix", class(log))
+		class(log) <- c("process_matrix", class(log))
 		attr(log, "matrix_type") <- "relative"
 	}
-	else if (type == "relative_antecedent") {
+	else if (type == "relative-antecedent") {
 		log %>%
 			group_by(antecedent) %>%
 			mutate(rel_antecedent = n/sum(n)) %>%
 			ungroup() -> log
-		class(log) <- c("precedence_matrix", class(log))
-		attr(log, "matrix_type") <- "relative_antecedent"
+		class(log) <- c("process_matrix", class(log))
+		attr(log, "matrix_type") <- "relative-antecedent"
 	}
-	else if(type == "relative_consequent") {
+	else if(type == "relative-consequent") {
 		log %>%
 			group_by(consequent) %>%
 			mutate(rel_consequent = n/sum(n)) %>%
 			ungroup() -> log
-		class(log) <- c("precedence_matrix", class(log))
-		attr(log, "matrix_type") <- "relative_consequent"
+		class(log) <- c("process_matrix", class(log))
+		attr(log, "matrix_type") <- "relative-consequent"
 	} else {
-		stop("Argument type should be one of: absolute, relative, relative_antecedent, relative_consequent")
+		stop("Argument type should be one of: absolute, relative, relative-antecedent, relative-consequent")
 	}
+	attr(type, "perspective") <- "frequency"
+	attr(log, "matrix_type") <- type
 
 	return(log)
 }
+
+#' @describeIn resource_matrix Resource matrix of activity log
+#' @export
+#'
+resource_matrix.activitylog <- function(log, type = c("absolute","relative","relative-antecedent","relative-consequent"), eventlog = deprecated()) {
+	if(lifecycle::is_present(eventlog)) {
+		lifecycle::deprecate_warn("0.4.0",
+								  "resource_matrix(eventlog)",
+								  "resource_matrix(log)")
+		log <- eventlog
+	}
+
+	log %>% bupaR::to_eventlog() %>% resource_matrix(type)
+
+}
+
+

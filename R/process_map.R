@@ -1,9 +1,6 @@
 
 #' @title Process Map
-#'
-#'
 #' @description A function for creating a process map of an event log.
-#' @param eventlog The event log object for which to create a process map
 #' @param type A process map type, which can be created with the functions frequency, performance and custom. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time. The third one allows custom attributes to be used.
 
 #' @param sec A secondary process map type. Values are shown between brackets.
@@ -24,7 +21,8 @@
 #' @param fixed_node_pos Deprecated, please use the 'layout' parameter instead.
 #' @param ... Deprecated arguments
 #'
-#'
+#' @inheritParams dotted_chart
+
 #' @examples
 #' \dontrun{
 #' library(eventdataR)
@@ -38,7 +36,20 @@
 #' @export process_map
 
 
-process_map <- function(eventlog,type,sec,type_nodes,type_edges,sec_nodes,sec_edges,rankdir,render,fixed_edge_width,layout,fixed_node_pos,...) {
+process_map <- function(log,
+						type = frequency("absolute"),
+						sec = NULL,
+						type_nodes = type,
+						type_edges = type,
+						sec_nodes = sec,
+						sec_edges = sec,
+						rankdir = "LR",
+						render = T,
+						fixed_edge_width = F,
+						layout = layout_pm(),
+						fixed_node_pos = NULL,
+						eventlog = deprecated(),
+						...)  {
 	UseMethod("process_map")
 }
 
@@ -46,7 +57,7 @@ process_map <- function(eventlog,type,sec,type_nodes,type_edges,sec_nodes,sec_ed
 #' @export
 
 
-process_map.eventlog <- function(eventlog,
+process_map.eventlog <- function(log,
 								 type = frequency("absolute"),
 								 sec = NULL,
 								 type_nodes = type,
@@ -58,7 +69,10 @@ process_map.eventlog <- function(eventlog,
 								 fixed_edge_width = F,
 								 layout = layout_pm(),
 								 fixed_node_pos = NULL,
+								 eventlog = deprecated(),
 								 ...) {
+
+	eventlog <- lifecycle_warning_eventlog(log, eventlog)
 
 	from <- NULL
 	to <- NULL
@@ -92,9 +106,6 @@ process_map.eventlog <- function(eventlog,
 		warning("Argument fixed_node_pos deprecated, use layout argument instead.")
 		layout <- layout_pm(fixed_positions = fixed_node_pos)
 	}
-
-
-
 
 	if (any(is.na(eventlog %>% pull(!!timestamp_(eventlog))))) {
 		warning("Some of the timestamps in the supplied event log are missing (NA values). This may result in a invalid process map!")
@@ -388,7 +399,7 @@ process_map.eventlog <- function(eventlog,
 #' @export
 
 
-process_map.grouped_eventlog <- function(eventlog,
+process_map.grouped_eventlog <- function(log,
 								 type = frequency("absolute"),
 								 sec = NULL,
 								 type_nodes = type,
@@ -400,7 +411,10 @@ process_map.grouped_eventlog <- function(eventlog,
 								 fixed_edge_width = F,
 								 layout = layout_pm(),
 								 fixed_node_pos = NULL,
+								 eventlog = deprecated(),
 								 ...) {
+	log <- lifecycle_warning_eventlog(log, eventlog)
+
 	m <- mapping(eventlog)
 
 	eventlog %>%
@@ -437,5 +451,30 @@ process_map.grouped_eventlog <- function(eventlog,
 	} else {
 		grouped_map
 	}
+
+}
+
+#' @describeIn process_map Process map for activitylog
+#' @export
+
+process_map.activitylog <- function(log,
+										 type = frequency("absolute"),
+										 sec = NULL,
+										 type_nodes = type,
+										 type_edges = type,
+										 sec_nodes = sec,
+										 sec_edges = sec,
+										 rankdir = "LR",
+										 render = T,
+										 fixed_edge_width = F,
+										 layout = layout_pm(),
+										 fixed_node_pos = NULL,
+										 eventlog = deprecated(),
+										 ...) {
+	log <- lifecycle_warning_eventlog(log, eventlog)
+
+	process_map.eventlog(to_eventlog(log), type, sec, type_nodes, type_edges, sec_nodes, sec_edges, rankdir,
+						 render, fixed_edge_width, layout, fixed_node_pos)
+
 
 }

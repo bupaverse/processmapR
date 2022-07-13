@@ -34,3 +34,20 @@ if_end <- function(node, true, false) {
 if_start <- function(node, true, false) {
 	ifelse(node %in% c("ARTIFICIAL_START"), true, false)
 }
+
+# Warning: The `eventlog` argument of `func()` is deprecated as of processmapR 0.4.0.
+# Please use the `log` argument instead.
+# WARNING: Works only on exported functions!
+lifecycle_warning_eventlog <- function (log, eventlog = deprecated()) {
+
+	cl <- sys.call(-1L)
+	func <- get(as.character(cl[[1L]]), mode = "function", envir = sys.frame(-2L))
+	func_name <- match.call(definition = func, call = cl)[[1L]]
+
+	if(lifecycle::is_present(eventlog)) {
+		lifecycle::deprecate_warn("0.4.0", paste0(func_name, "(eventlog)"), paste0(func_name, "(log)"))
+		return(eventlog)
+	}
+
+	return(log)
+}

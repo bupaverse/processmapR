@@ -2,23 +2,43 @@
 % Please edit documentation in R/resource_matrix.R
 \name{resource_matrix}
 \alias{resource_matrix}
+\alias{resource_matrix.eventlog}
+\alias{resource_matrix.activitylog}
 \title{Resource Matrix}
 \usage{
-resource_matrix(
-  eventlog,
-  type = c("absolute", "relative", "relative_antecedent", "relative_consequent")
+resource_matrix(log, type, eventlog = deprecated())
+
+\method{resource_matrix}{eventlog}(
+  log,
+  type = c("absolute", "relative", "relative-antecedent", "relative-consequent"),
+  eventlog = deprecated()
+)
+
+\method{resource_matrix}{activitylog}(
+  log,
+  type = c("absolute", "relative", "relative-antecedent", "relative-consequent"),
+  eventlog = deprecated()
 )
 }
 \arguments{
-\item{eventlog}{The event log object to be used}
+\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
 
 \item{type}{The type of resource matrix, which can be absolulte, relative, relative_antecedent or relative_consequent. Absolute will return
 a matrix with absolute frequencies, relative will return global relative frequencies for all antecedent-consequent pairs.
 Relative_antecedent will return relative frequencies within each antecendent, i.e. showing the relative proportion of consequents within each antecedent. Relative_consequent will do the reverse.}
+
+\item{eventlog}{Deprecated. Use log instead.}
 }
 \description{
 Construct a resource matrix, showing how work is handed over
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{eventlog}: Resource matrix of event log
+
+\item \code{activitylog}: Resource matrix of activity log
+}}
+
 \examples{
 \dontrun{
 library(eventdataR)

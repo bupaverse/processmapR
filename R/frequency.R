@@ -7,7 +7,7 @@
 #' @export frequency
 
 
-frequency <- function(value = c("absolute", "relative", "absolute-case", "relative-case"), color_scale = "PuBu", color_edges = "dodgerblue4") {
+frequency <- function(value = c("absolute", "relative", "absolute-case", "relative-case", "relative-antecedent","relative-consequent"), color_scale = "PuBu", color_edges = "dodgerblue4") {
 
 	value <- str_replace(value, "_", "-")
 	value <- match.arg(value)
@@ -44,7 +44,9 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 			mutate(label = case_when(type == "relative" ~ 100*n/n_activity_instances,
 									 type == "absolute" ~ n,
 									 type == "absolute-case" ~ n_distinct_cases,
-									 type == "relative-case" ~ 100*n_distinct_cases/n_cases)) %>%
+									 type == "relative-case" ~ 100*n_distinct_cases/n_cases,
+									 type == "relative-antecedent" ~ 100*n/n_activity_instances,
+									 type == "relative-consequent" ~ 100*n/n_activity_instances)) %>%
 			mutate(color_level = label,
 				   value = label,
 				   shape = if_end(ACTIVITY_CLASSIFIER_,"circle","rectangle"),
@@ -71,6 +73,9 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 		n_cases <- extra_data$n_cases
 		n_activity_instances <- extra_data$n_activity_instances
 		penwidth <- NULL
+
+		if(!(type %in% c("relative-antecedent","relative-consequent"))) {
+
 		precedence %>%
 			ungroup() %>%
 			group_by(ACTIVITY_CLASSIFIER_, from_id, next_act, to_id) %>%
@@ -88,6 +93,30 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 									 type == "absolute-case"  ~ paste0(label_numeric, ""),
 									 type == "relative"        ~ paste0(round(100*label_numeric,2), "%"),
 									 type == "relative-case"   ~ paste0(round(100*label_numeric,2), "%")))
+		} else if (type == "relative-antecedent") {
+			precedence %>%
+				ungroup() %>%
+				group_by(ACTIVITY_CLASSIFIER_, from_id, next_act, to_id) %>%
+				summarize(n = as.double(n())) %>%
+				na.omit() %>%
+				group_by(ACTIVITY_CLASSIFIER_, from_id) %>%
+				mutate(label_numeric = n/sum(n)) %>%
+				ungroup() %>%
+				mutate(penwidth = rescale(label_numeric, to = c(1,5), from = c(0, max(label_numeric)))) %>%
+				mutate(label = paste0(round(100*label_numeric,2), "%"))
+		} else {
+			precedence %>%
+				ungroup() %>%
+				group_by(ACTIVITY_CLASSIFIER_, from_id, next_act, to_id) %>%
+				summarize(n = as.double(n())) %>%
+				na.omit() %>%
+				group_by(next_act, to_id) %>%
+				mutate(label_numeric = n/sum(n)) %>%
+				ungroup() %>%
+				mutate(penwidth = rescale(label_numeric, to = c(1,5), from = c(0, max(label_numeric)))) %>%
+				mutate(label = paste0(round(100*label_numeric,2), "%"))
+
+		}
 
 	}
 
@@ -123,14 +152,14 @@ frequency <- function(value = c("absolute", "relative", "absolute-case", "relati
 				mutate(rel_n_cases = label_numeric) %>%
 				select(-label_numeric, -n)
 		} else if(type == "relative-consequent") { #heritage precedence matrix
-			edges %>%
-				rename(n = label_numeric) %>%
+			edges%>%
+				select(-label_numeric) %>%
 				group_by(consequent) %>%
 				mutate(rel_consequent = n/sum(n)) %>%
 				ungroup()
 		} else if(type == "relative-antecedent") { #heritage precedence matrix
-			edges %>%
-				rename(n = label_numeric) %>%
+			edges%>%
+				select(-label_numeric) %>%
 				group_by(antecedent) %>%
 				mutate(rel_antecedent = n/sum(n)) %>%
 				ungroup()
