@@ -1,6 +1,7 @@
-pandoc: 1.19.2.1
-pkgdown: 1.1.0
+pandoc: 2.17.1.1
+pkgdown: 2.0.5
 pkgdown_sha: ~
 articles:
   processmapr: processmapr.html
+last_built: 2022-07-25T13:59Z
 
