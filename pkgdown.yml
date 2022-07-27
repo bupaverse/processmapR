@@ -1,0 +1,10 @@
+pandoc: 2.14.2
+pkgdown: 2.0.6
+pkgdown_sha: ~
+articles:
+  processmapr: processmapr.html
+last_built: 2022-07-27T14:16Z
+urls:
+  reference: https://bupaverse.github.io/processmapR/reference
+  article: https://bupaverse.github.io/processmapR/articles
+
