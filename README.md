@@ -1,4 +1,4 @@
-# processmapR <img src="man/figures/logo.png" align="right" height="50" />
+# processmapR <a href="https://bupaverse.github.io/processmapR/"><img src="man/figures/logo.png" align="right" height="50" /></a>
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/processmapR)](https://CRAN.R-project.org/package=processmapR)
