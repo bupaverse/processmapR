@@ -6,3 +6,6 @@
 \.fsrc$
 \.o$
 \.so$
+^codecov\.yml$
+^\.github$
+^pkgdown$

@@ -37,3 +37,4 @@ vignettes/*.pdf
 
 # lintr config file
 .lintr
+docs
