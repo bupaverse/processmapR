@@ -19,6 +19,9 @@
     <loc>https://bupaverse.github.io/processmapR/index.html</loc>
   </url>
   <url>
+    <loc>https://bupaverse.github.io/processmapR/news/index.html</loc>
+  </url>
+  <url>
     <loc>https://bupaverse.github.io/processmapR/reference/custom.html</loc>
   </url>
   <url>
@@ -26,6 +29,9 @@
   </url>
   <url>
     <loc>https://bupaverse.github.io/processmapR/reference/export_graph.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/export_map.html</loc>
   </url>
   <url>
     <loc>https://bupaverse.github.io/processmapR/reference/frequency.html</loc>
@@ -68,6 +74,9 @@
   </url>
   <url>
     <loc>https://bupaverse.github.io/processmapR/reference/renderProcessMap.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/render_map.html</loc>
   </url>
   <url>
     <loc>https://bupaverse.github.io/processmapR/reference/resource_map.html</loc>
