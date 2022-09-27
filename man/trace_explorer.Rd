@@ -90,8 +90,8 @@ Explore traces, ordered by relative trace frequency
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Trace explorer eventlog
+\item \code{trace_explorer(eventlog)}: Trace explorer eventlog
 
-\item \code{activitylog}: Trace explorer activity log
+\item \code{trace_explorer(activitylog)}: Trace explorer activity log
+
 }}
-

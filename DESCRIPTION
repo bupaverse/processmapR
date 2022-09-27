@@ -37,12 +37,14 @@ Imports:
     Rcpp,
     lifecycle
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Suggests: 
     knitr,
     rmarkdown,
     eventdataR,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    rsvg,
+    DiagrammeRsvg
 VignetteBuilder: knitr
 URL: https://bupar.net/, https://github.com/bupaverse/processmapr/
 BugReports: https://github.com/bupaverse/processmapr/issues/

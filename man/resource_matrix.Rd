@@ -34,11 +34,11 @@ Construct a resource matrix, showing how work is handed over
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Resource matrix of event log
+\item \code{resource_matrix(eventlog)}: Resource matrix of event log
 
-\item \code{activitylog}: Resource matrix of activity log
+\item \code{resource_matrix(activitylog)}: Resource matrix of activity log
+
 }}
-
 \examples{
 \dontrun{
 library(eventdataR)

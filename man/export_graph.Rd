@@ -3,7 +3,9 @@
 \docType{import}
 \name{export_graph}
 \alias{export_graph}
-\title{Export a graph to various image formats}
+\title{Export a graph to various image formats
+
+Note: requires installation of packages DiagrammeRsvg and rsvg}
 \arguments{
 \item{graph}{A graph object of class `dgr_graph`.}
 

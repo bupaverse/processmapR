@@ -415,10 +415,10 @@ process_map.grouped_eventlog <- function(log,
 								 ...) {
 	log <- lifecycle_warning_eventlog(log, eventlog)
 
-	m <- mapping(eventlog)
+	m <- mapping(log)
 
-	eventlog %>%
-		do(group_name = paste(select(., group_vars(eventlog)) %>%
+	log %>%
+		do(group_name = paste(select(., group_vars(log)) %>%
 							  	mutate_all(as.character) %>%
 							  	distinct() %>%
 							  	unique(), collapse = ","),

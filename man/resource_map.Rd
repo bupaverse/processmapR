@@ -40,11 +40,11 @@ A function for creating a resource map of an event log based on handover of work
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Create resource map for eventlog
+\item \code{resource_map(eventlog)}: Create resource map for eventlog
 
-\item \code{activitylog}: Create resource map for activity log
+\item \code{resource_map(activitylog)}: Create resource map for activity log
+
 }}
-
 \examples{
 \dontrun{
 library(eventdataR)

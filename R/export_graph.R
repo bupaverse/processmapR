@@ -1,4 +1,7 @@
 #' @title Export a graph to various image formats
+#'
+#' Note: requires installation of packages DiagrammeRsvg and rsvg
+#'
 #' @param graph A graph object of class `dgr_graph`.
 #' @param file_name The name of the exported file (including it's extension).
 #' @param file_type The type of file to be exported. Options for graph files

@@ -109,13 +109,13 @@ A function for creating a process map of an event log.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Process map for event log
+\item \code{process_map(eventlog)}: Process map for event log
 
-\item \code{grouped_eventlog}: Process map for event log
+\item \code{process_map(grouped_eventlog)}: Process map for event log
 
-\item \code{activitylog}: Process map for activitylog
+\item \code{process_map(activitylog)}: Process map for activitylog
+
 }}
-
 \examples{
 \dontrun{
 library(eventdataR)

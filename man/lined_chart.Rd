@@ -101,12 +101,12 @@ Create a lined chart to view all cases at a glance
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Create lined chart for eventlog
+\item \code{lined_chart(eventlog)}: Create lined chart for eventlog
 
-\item \code{activitylog}: Create lined chart for activity log
+\item \code{lined_chart(activitylog)}: Create lined chart for activity log
 
-\item \code{grouped_eventlog}: Create lined chart for grouped eventlog
+\item \code{lined_chart(grouped_eventlog)}: Create lined chart for grouped eventlog
 
-\item \code{grouped_activitylog}: Create lined chart for grouped activitylog
+\item \code{lined_chart(grouped_activitylog)}: Create lined chart for grouped activitylog
+
 }}
-
