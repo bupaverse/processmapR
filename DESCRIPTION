@@ -44,11 +44,12 @@ Suggests:
     eventdataR,
     testthat (>= 3.0.0),
     rsvg,
-    DiagrammeRsvg
+    DiagrammeRsvg,
     covr
 VignetteBuilder: knitr
 URL: https://bupar.net/,
     https://github.com/bupaverse/processmapr/,
     https://bupaverse.github.io/processmapR/
 BugReports: https://github.com/bupaverse/processmapr/issues/
+Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3

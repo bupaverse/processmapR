@@ -1,9 +1,7 @@
-
-
 #' @title Trace explorer
 #' @description Explore traces, ordered by relative trace frequency
 #' @param type Frequent traces first, or infrequent traces first?
-#' @param coverage The percentage coverage of the trace to explore. Default is 20\% most (in)frequent
+#' @param coverage The percentage coverage of the trace to explore. Default is 20% most (in)frequent
 #' @param n_traces Instead of setting coverage, you can set an exact number of traces. Should be an integer larger than 0.
 #' @param raw_data Return raw data
 #' @param .abbreviate If TRUE, abbreviate activity labels

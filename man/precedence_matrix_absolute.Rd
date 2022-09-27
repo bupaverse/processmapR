@@ -14,6 +14,6 @@ precedence_matrix_absolute(eventlog, lead = 1)
 \description{
 Construct a precedence matrix, showing how activities are followed by each other.
 This function computes the precedence matrix directly in C++ for efficiency.
-Only the type `absolute` of (\code{\link[processmapR]{precedence_matrix}}) is supported.
+Only the type \code{absolute} of (\code{\link[processmapR]{precedence_matrix}}) is supported.
 }
 \keyword{interval}
