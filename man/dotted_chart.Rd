@@ -103,12 +103,12 @@ Create a dotted chart to view all events in a glance
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Create dotted chart for eventlog
+\item \code{dotted_chart(eventlog)}: Create dotted chart for eventlog
 
-\item \code{activitylog}: Create dotted chart for activitylog
+\item \code{dotted_chart(activitylog)}: Create dotted chart for activitylog
 
-\item \code{grouped_eventlog}: Create dotted chart for grouped eventlog
+\item \code{dotted_chart(grouped_eventlog)}: Create dotted chart for grouped eventlog
 
-\item \code{grouped_activitylog}: Create dotted chart for grouped activitylog
+\item \code{dotted_chart(grouped_activitylog)}: Create dotted chart for grouped activitylog
+
 }}
-

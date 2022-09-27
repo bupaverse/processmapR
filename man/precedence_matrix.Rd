@@ -21,8 +21,8 @@ Relative-consequent will do the reverse.}
 \description{
 Construct a precendence matrix, showing how activities are followed by each other.
 
-`r lifecycle::badge("deprecated")`
- This function is deprecated and replaced by the \code{\link{process_matrix}} function, which shared the same usage with \code{\link{process_map}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This function is deprecated and replaced by the \code{\link{process_matrix}} function, which shared the same usage with \code{\link{process_map}}
 }
 \examples{
 \dontrun{

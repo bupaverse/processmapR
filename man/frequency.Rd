@@ -15,7 +15,7 @@ frequency(
 \item{value}{The type of frequency value to be used:
 absolute, relative (percentage of activity instances) or relative_case (percentage of cases the activity occurs in).}
 
-\item{color_scale}{Name of color scale to be used for nodes. Defaults to PuBu. See `Rcolorbrewer::brewer.pal.info()` for all options.}
+\item{color_scale}{Name of color scale to be used for nodes. Defaults to PuBu. See \code{Rcolorbrewer::brewer.pal.info()} for all options.}
 
 \item{color_edges}{The color used for edges. Defaults to dodgerblue4.}
 }

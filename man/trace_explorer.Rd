@@ -5,7 +5,7 @@
 \alias{trace_explorer.eventlog}
 \alias{trace_explorer.activitylog}
 \alias{plotly_trace_explorer}
-\title{Trace explorer}
+\title{Trace Explorer}
 \usage{
 trace_explorer(
   log,
@@ -13,12 +13,13 @@ trace_explorer(
   n_traces = NULL,
   type = c("frequent", "infrequent"),
   coverage_labels = c("relative", "absolute", "cumulative"),
-  .abbreviate = T,
-  show_labels = T,
+  abbreviate = TRUE,
+  show_labels = TRUE,
   label_size = 3,
-  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
-  raw_data = F,
-  eventlog = deprecated()
+  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  raw_data = FALSE,
+  eventlog = deprecated(),
+  .abbreviate = deprecated()
 )
 
 \method{trace_explorer}{eventlog}(
@@ -27,12 +28,13 @@ trace_explorer(
   n_traces = NULL,
   type = c("frequent", "infrequent"),
   coverage_labels = c("relative", "absolute", "cumulative"),
-  .abbreviate = T,
-  show_labels = T,
+  abbreviate = TRUE,
+  show_labels = TRUE,
   label_size = 3,
-  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
-  raw_data = F,
-  eventlog = deprecated()
+  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  raw_data = FALSE,
+  eventlog = deprecated(),
+  .abbreviate = deprecated()
 )
 
 \method{trace_explorer}{activitylog}(
@@ -41,57 +43,63 @@ trace_explorer(
   n_traces = NULL,
   type = c("frequent", "infrequent"),
   coverage_labels = c("relative", "absolute", "cumulative"),
-  .abbreviate = T,
-  show_labels = T,
+  abbreviate = TRUE,
+  show_labels = TRUE,
   label_size = 3,
-  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
-  raw_data = F,
-  eventlog = deprecated()
+  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  raw_data = FALSE,
+  eventlog = deprecated(),
+  .abbreviate = deprecated()
 )
 
 plotly_trace_explorer(
-  eventlog,
+  log,
   coverage = NULL,
   n_traces = NULL,
   type = c("frequent", "infrequent"),
   coverage_labels = c("relative", "absolute", "cumulative"),
-  .abbreviate = T,
-  show_labels = T,
+  abbreviate = TRUE,
+  show_labels = TRUE,
   label_size = 3,
-  scale_fill = processmapR:::scale_fill_discrete_bupaR(),
-  raw_data = F
+  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  raw_data = FALSE,
+  eventlog = deprecated(),
+  .abbreviate = deprecated()
 )
 }
 \arguments{
 \item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
 
-\item{coverage}{The percentage coverage of the trace to explore. Default is 20\% most (in)frequent}
+\item{coverage}{\code{\link{numeric}} (default \code{0.2}): The percentage coverage of the trace to explore. Defaults to \code{0.2} (\code{0.05}) most (in)frequent.}
 
-\item{n_traces}{Instead of setting coverage, you can set an exact number of traces. Should be an integer larger than 0.}
+\item{n_traces}{\code{\link{integer}}: Instead of setting \code{coverage}, an exact number of traces can be set. Should be an \code{\link{integer}} larger than \code{0}.}
 
-\item{type}{Frequent traces first, or infrequent traces first?}
+\item{type}{\code{\link{character}} (default \code{"frequent"}): \code{"frequent"} traces first, or \code{"infrequent"} traces first?}
 
-\item{coverage_labels}{Change the labels to be shown on the right of the process variants. These can be relative frequency (default), absolute, or cumulative.}
+\item{coverage_labels}{\code{\link{character}} (default \code{"relative"}): Change the labels to be shown on the right of the process variants.
+These can be \code{"relative"} frequency (default), \code{"absolute"}, or \code{"cumulative"}.}
 
-\item{.abbreviate}{If TRUE, abbreviate activity labels}
+\item{abbreviate}{\code{\link{logical}} (default \code{TRUE}): If \code{TRUE}, abbreviate activity labels.}
 
-\item{show_labels}{If False, activity labels are not shown.}
+\item{show_labels}{\code{\link{logical}} (default \code{TRUE}): If \code{FALSE}, activity labels are not shown.}
 
-\item{label_size}{Font size of labels}
+\item{label_size}{\code{\link{numeric}} (default \code{3}): Font size of labels.}
 
-\item{scale_fill}{Set color scale}
+\item{scale_fill}{Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_fill_discrete_bupaR}}.}
 
-\item{raw_data}{Return raw data}
+\item{raw_data}{\code{\link{logical}} (default \code{FALSE}): Return raw data.}
 
 \item{eventlog}{Deprecated. Use log instead.}
+
+\item{.abbreviate}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{abbreviate} instead.}
 }
 \description{
-Explore traces, ordered by relative trace frequency
+Explore traces, ordered by relative trace frequency.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Trace explorer eventlog
+\item \code{trace_explorer(eventlog)}: Trace explorer for an \code{\link[bupaR:eventlog]{eventlog}}.
 
-\item \code{activitylog}: Trace explorer activity log
+\item \code{trace_explorer(activitylog)}: Trace explorer for an \code{\link[bupaR:activitylog]{activitylog}}.
+
 }}
-

@@ -16,23 +16,14 @@
 #' @import forcats
 #' @importFrom glue glue
 #' @importFrom hms as.hms
-#' @importFrom data.table data.table
-#' @importFrom data.table :=
-#' @importFrom data.table as.data.table
+#' @importFrom data.table data.table as.data.table :=
 #' @importFrom purrr set_names
-#' @importFrom stats median
-#' @importFrom stats na.omit
-#' @importFrom stats quantile
-#' @importFrom stats sd
-#' @importFrom stats as.formula
-#' @importFrom utils head
-#' @importFrom utils setTxtProgressBar
-#' @importFrom utils txtProgressBar
-#' @importFrom utils data
+#' @importFrom stats median na.omit quantile sd as.formula reorder
+#' @importFrom utils head setTxtProgressBar txtProgressBar data
 #' @importFrom scales rescale
-#' @importFrom plotly ggplotly
-#' @importFrom plotly renderPlotly
-#' @importFrom plotly plotlyOutput
+#' @importFrom plotly ggplotly renderPlotly plotlyOutput
+#' @importFrom rlang arg_match is_integerish
+#' @importFrom cli cli_abort cli_warn
 #' @importFrom lifecycle deprecated
 
 utils::globalVariables(c(".", ".order"))

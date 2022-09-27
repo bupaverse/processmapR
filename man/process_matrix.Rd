@@ -26,8 +26,8 @@ Create process matrix
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{eventlog}: Process matrix for event log
+\item \code{process_matrix(eventlog)}: Process matrix for event log
 
-\item \code{activitylog}: Process matrix for activity log
+\item \code{process_matrix(activitylog)}: Process matrix for activity log
+
 }}
-

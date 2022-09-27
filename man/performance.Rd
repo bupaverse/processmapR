@@ -6,8 +6,8 @@
 \usage{
 performance(
   FUN = mean,
-  units = c("mins", "secs", "hours", "days", "weeks", "months", "quarters",
-    "semesters", "years"),
+  units = c("mins", "secs", "hours", "days", "weeks", "months", "quarters", "semesters",
+    "years"),
   flow_time = c("idle_time", "inter_start_time"),
   color_scale = "Reds",
   color_edges = "red4",
@@ -22,7 +22,7 @@ performance(
 \item{flow_time}{The time to depict on the flows: the inter start time is the time between the start timestamp of consecutive activity instances,
 the idle time is the time between the end and start time of consecutive activity instances.}
 
-\item{color_scale}{Name of color scale to be used for nodes. Defaults to Reds. See `Rcolorbrewer::brewer.pal.info()` for all options.}
+\item{color_scale}{Name of color scale to be used for nodes. Defaults to Reds. See \code{Rcolorbrewer::brewer.pal.info()} for all options.}
 
 \item{color_edges}{The color used for edges. Defaults to red4.}
 
