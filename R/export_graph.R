@@ -1,4 +1,5 @@
 #' @title Export a graph to various image formats
+#'
 #' @param graph A graph object of class `dgr_graph`.
 #' @param file_name The name of the exported file (including it's extension).
 #' @param file_type The type of file to be exported. Options for graph files

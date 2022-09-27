@@ -1,4 +1,3 @@
-#' @title Trace Explorer
 #'
 #' @description Explore traces, ordered by relative trace frequency.
 #'
@@ -15,19 +14,6 @@
 #' @param raw_data [`logical`] (default `FALSE`): Return raw data.
 #'
 #' @inheritParams dotted_chart
-#'
-#' @export trace_explorer
-trace_explorer <- function(log,
-                           coverage = NULL,
-                           n_traces = NULL,
-                           type = c("frequent","infrequent"),
-                           coverage_labels = c("relative","absolute","cumulative"),
-                           abbreviate = TRUE,
-                           show_labels = TRUE,
-                           label_size = 3,
-                           scale_fill = bupaR::scale_fill_discrete_bupaR(),
-                           raw_data = FALSE,
-                           eventlog = deprecated(),
                            .abbreviate = deprecated()) {
   UseMethod("trace_explorer")
 }
