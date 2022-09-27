@@ -45,7 +45,10 @@ Suggests:
     testthat (>= 3.0.0),
     rsvg,
     DiagrammeRsvg
+    covr
 VignetteBuilder: knitr
-URL: https://bupar.net/, https://github.com/bupaverse/processmapr/
+URL: https://bupar.net/,
+    https://github.com/bupaverse/processmapr/,
+    https://bupaverse.github.io/processmapR/
 BugReports: https://github.com/bupaverse/processmapr/issues/
 Config/testthat/edition: 3
