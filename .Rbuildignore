@@ -10,3 +10,4 @@
 ^\.github$
 ^pkgdown$
 ^\.idea$
+^README\.Rmd$

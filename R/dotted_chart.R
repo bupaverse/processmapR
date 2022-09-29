@@ -67,7 +67,11 @@ dotted_chart.eventlog <- function(log,
                                   plotly = FALSE,
                                   eventlog = deprecated()) {
 
-  log <- lifecycle_warning_eventlog(log, eventlog)
+  if(lifecycle::is_present(eventlog)) {
+    lifecycle::deprecate_warn("0.4.0", "dotted_chart(eventlog)", "(dotted_chart(log)")
+
+    log <- eventlog
+  }
 
   x <- arg_match(x)
   sort <- arg_match(sort)
@@ -112,7 +116,11 @@ dotted_chart.grouped_eventlog <- function(log,
                                           plotly = FALSE,
                                           eventlog = deprecated()) {
 
-  log <- lifecycle_warning_eventlog(log, eventlog)
+  if(lifecycle::is_present(eventlog)) {
+    lifecycle::deprecate_warn("0.4.0", "dotted_chart(eventlog)", "dotted_chart(log)")
+
+    log <- eventlog
+  }
 
   x <- arg_match(x)
   sort <- arg_match(sort)
