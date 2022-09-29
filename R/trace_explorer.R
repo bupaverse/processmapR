@@ -1,19 +1,47 @@
+#' @title Trace Explorer
 #'
-#' @description Explore traces, ordered by relative trace frequency.
+#' @description
+#' Different activity sequences in the `log` can be visualized with [`trace_explorer()`]. With the `type` argument,
+#' it can be used to explore frequent as well as infrequent traces. The `coverage` argument specificies how much of the
+#' `log` you want to explore. By default it is set at `0.2`, meaning that it will show the most (in)frequency traces
+#' covering 20% of the `log`.
 #'
+#' @param log [`log`][`bupaR::log`]: Object of class [`log`][`bupaR::log`] or derivatives ([`eventlog`][`bupaR::eventlog`]
+#' or [`activitylog`][`bupaR::activitylog`]).
 #' @param coverage [`numeric`] (default `0.2`): The percentage coverage of the trace to explore. Defaults to `0.2` (`0.05`) most (in)frequent.
 #' @param n_traces [`integer`]: Instead of setting `coverage`, an exact number of traces can be set. Should be an [`integer`] larger than `0`.
 #' @param type [`character`] (default `"frequent"`): `"frequent"` traces first, or `"infrequent"` traces first?
 #' @param coverage_labels [`character`] (default `"relative"`): Change the labels to be shown on the right of the process variants.
-#' These can be `"relative"` frequency (default), `"absolute"`, or `"cumulative"`.
+#' These can be `"relative"` frequency (default), `"absolute"`, or `"cumulative"`. Multiple labels can be selected at the same time.
 #' @param .abbreviate `r lifecycle::badge("deprecated")`; please use `abbreviate` instead.
 #' @param abbreviate [`logical`] (default `TRUE`): If `TRUE`, abbreviate activity labels.
 #' @param show_labels [`logical`] (default `TRUE`): If `FALSE`, activity labels are not shown.
 #' @param label_size [`numeric`] (default `3`): Font size of labels.
-#' @param scale_fill Set color scale. Defaults to [`scale_fill_discrete_bupaR`][`bupaR::scale_fill_discrete_bupaR()`].
-#' @param raw_data [`logical`] (default `FALSE`): Return raw data.
+#' @param scale_fill [`ggplot2`] scale function (default [`scale_fill_discrete_bupaR`][`bupaR::scale_fill_discrete_bupaR`]):
+#' Set color scale. Defaults to [`scale_fill_discrete_bupaR`][`bupaR::scale_fill_discrete_bupaR`].
+#' @param raw_data [`logical`] (default `FALSE`): Return raw data instead of graph.
 #'
 #' @inheritParams dotted_chart
+#'
+#' @examples
+#' library(processmapR)
+#' library(eventdataR)
+#'
+#' patients %>%
+#'  trace_explorer(coverage = 0.8)
+#'
+#' @export trace_explorer
+trace_explorer <- function(log,
+                           coverage = NULL,
+                           n_traces = NULL,
+                           type = c("frequent","infrequent"),
+                           coverage_labels = c("relative","absolute","cumulative"),
+                           abbreviate = TRUE,
+                           show_labels = TRUE,
+                           label_size = 3,
+                           scale_fill = bupaR::scale_fill_discrete_bupaR,
+                           raw_data = FALSE,
+                           eventlog = deprecated(),
                            .abbreviate = deprecated()) {
   UseMethod("trace_explorer")
 }
@@ -28,7 +56,7 @@ trace_explorer.eventlog <- function(log,
                                     abbreviate = TRUE,
                                     show_labels = TRUE,
                                     label_size = 3,
-                                    scale_fill = bupaR::scale_fill_discrete_bupaR(),
+                                    scale_fill = bupaR::scale_fill_discrete_bupaR,
                                     raw_data = FALSE,
                                     eventlog = deprecated(),
                                     .abbreviate = deprecated()) {
@@ -80,7 +108,7 @@ trace_explorer.eventlog <- function(log,
     rename("case_classifier" := !!case_id_(log)) -> cases
 
   # sort descending or ascending?
-  sort_factor <- ifelse(type == "frequent", -1, 1)
+  sort_factor <- if (type == "frequent") -1 else 1
 
   log %>% trace_list %>%
     mutate(rank_trace = row_number(-absolute_frequency)) %>%
@@ -105,7 +133,6 @@ trace_explorer.eventlog <- function(log,
   if(x == 0) {
     cli_abort("No traces were selected. Consider increasing the {.arg coverage}.")
   }
-
 
   log %>%
     rename("case_classifier" := !!case_id_(log),
@@ -158,8 +185,7 @@ trace_explorer.eventlog <- function(log,
       facet_grid(facets,scales = "free", space = "free") +
       scale_y_discrete(breaks = NULL) +
       labs(y = "Traces", x = "Activities") +
-      scale_fill  +
-      labs(fill = "Activity") +
+      scale_fill(name = "Activity") +
       theme_light() +
       theme(strip.background = element_rect(color = "white"),
             strip.text.y = element_text(angle = 0),
@@ -186,7 +212,7 @@ trace_explorer.activitylog <- function(log,
                                        abbreviate = TRUE,
                                        show_labels = TRUE,
                                        label_size = 3,
-                                       scale_fill = bupaR::scale_fill_discrete_bupaR(),
+                                       scale_fill = bupaR::scale_fill_discrete_bupaR,
                                        raw_data = FALSE,
                                        eventlog = deprecated(),
                                        .abbreviate = deprecated()) {
@@ -213,7 +239,7 @@ trace_explorer.activitylog <- function(log,
 }
 
 
-#' @rdname trace_explorer
+#' @describeIn trace_explorer [`plotly`] trace explorer for [`log`][`bupaR::log`] objects.
 #' @export plotly_trace_explorer
 plotly_trace_explorer <- function(log,
                                   coverage = NULL,
@@ -223,7 +249,7 @@ plotly_trace_explorer <- function(log,
                                   abbreviate = TRUE,
                                   show_labels = TRUE,
                                   label_size = 3,
-                                  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+                                  scale_fill = bupaR::scale_fill_discrete_bupaR,
                                   raw_data = FALSE,
                                   eventlog = deprecated(),
                                   .abbreviate = deprecated()) {

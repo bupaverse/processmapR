@@ -16,7 +16,7 @@ trace_explorer(
   abbreviate = TRUE,
   show_labels = TRUE,
   label_size = 3,
-  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  scale_fill = bupaR::scale_fill_discrete_bupaR,
   raw_data = FALSE,
   eventlog = deprecated(),
   .abbreviate = deprecated()
@@ -31,7 +31,7 @@ trace_explorer(
   abbreviate = TRUE,
   show_labels = TRUE,
   label_size = 3,
-  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  scale_fill = bupaR::scale_fill_discrete_bupaR,
   raw_data = FALSE,
   eventlog = deprecated(),
   .abbreviate = deprecated()
@@ -46,7 +46,7 @@ trace_explorer(
   abbreviate = TRUE,
   show_labels = TRUE,
   label_size = 3,
-  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  scale_fill = bupaR::scale_fill_discrete_bupaR,
   raw_data = FALSE,
   eventlog = deprecated(),
   .abbreviate = deprecated()
@@ -61,14 +61,15 @@ plotly_trace_explorer(
   abbreviate = TRUE,
   show_labels = TRUE,
   label_size = 3,
-  scale_fill = bupaR::scale_fill_discrete_bupaR(),
+  scale_fill = bupaR::scale_fill_discrete_bupaR,
   raw_data = FALSE,
   eventlog = deprecated(),
   .abbreviate = deprecated()
 )
 }
 \arguments{
-\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
+\item{log}{\code{\link[bupaR:log]{log}}: Object of class \code{\link[bupaR:log]{log}} or derivatives (\code{\link[bupaR:eventlog]{eventlog}}
+or \code{\link[bupaR:activitylog]{activitylog}}).}
 
 \item{coverage}{\code{\link{numeric}} (default \code{0.2}): The percentage coverage of the trace to explore. Defaults to \code{0.2} (\code{0.05}) most (in)frequent.}
 
@@ -77,7 +78,7 @@ plotly_trace_explorer(
 \item{type}{\code{\link{character}} (default \code{"frequent"}): \code{"frequent"} traces first, or \code{"infrequent"} traces first?}
 
 \item{coverage_labels}{\code{\link{character}} (default \code{"relative"}): Change the labels to be shown on the right of the process variants.
-These can be \code{"relative"} frequency (default), \code{"absolute"}, or \code{"cumulative"}.}
+These can be \code{"relative"} frequency (default), \code{"absolute"}, or \code{"cumulative"}. Multiple labels can be selected at the same time.}
 
 \item{abbreviate}{\code{\link{logical}} (default \code{TRUE}): If \code{TRUE}, abbreviate activity labels.}
 
@@ -85,16 +86,20 @@ These can be \code{"relative"} frequency (default), \code{"absolute"}, or \code{
 
 \item{label_size}{\code{\link{numeric}} (default \code{3}): Font size of labels.}
 
-\item{scale_fill}{Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_fill_discrete_bupaR}}.}
+\item{scale_fill}{\code{\link{ggplot2}} scale function (default \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_fill_discrete_bupaR}}):
+Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_fill_discrete_bupaR}}.}
 
-\item{raw_data}{\code{\link{logical}} (default \code{FALSE}): Return raw data.}
+\item{raw_data}{\code{\link{logical}} (default \code{FALSE}): Return raw data instead of graph.}
 
-\item{eventlog}{Deprecated. Use log instead.}
+\item{eventlog}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{log} instead.}
 
 \item{.abbreviate}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{abbreviate} instead.}
 }
 \description{
-Explore traces, ordered by relative trace frequency.
+Different activity sequences in the \code{log} can be visualized with \code{\link[=trace_explorer]{trace_explorer()}}. With the \code{type} argument,
+it can be used to explore frequent as well as infrequent traces. The \code{coverage} argument specificies how much of the
+\code{log} you want to explore. By default it is set at \code{0.2}, meaning that it will show the most (in)frequency traces
+covering 20\% of the \code{log}.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -103,3 +108,16 @@ Explore traces, ordered by relative trace frequency.
 \item \code{trace_explorer(activitylog)}: Trace explorer for an \code{\link[bupaR:activitylog]{activitylog}}.
 
 }}
+\section{Functions}{
+\itemize{
+\item \code{plotly_trace_explorer()}: \code{\link{plotly}} trace explorer for \code{\link[bupaR:log]{log}} objects.
+
+}}
+\examples{
+library(processmapR)
+library(eventdataR)
+
+patients \%>\%
+ trace_explorer(coverage = 0.8)
+
+}

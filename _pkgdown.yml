@@ -2,3 +2,16 @@ url: https://bupaverse.github.io/processmapR/
 template:
   bootstrap: 5
 
+home:
+  links:
+    - text: Getting started
+      href: https://bupar.net/getting_started.html
+
+authors:
+  sidebar:
+    roles: [cre, aut, ctb]
+
+news:
+  one_page: true
+  cran_dates: true
+  releases:

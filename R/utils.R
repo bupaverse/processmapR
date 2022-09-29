@@ -1,5 +1,6 @@
-#' @importFrom rlang sym
-#'
+
+#' @export
+dplyr::`%>%`
 
 case_id_ <- function(eventlog) sym(case_id(eventlog))
 activity_id_ <- function(eventlog) sym(activity_id(eventlog))

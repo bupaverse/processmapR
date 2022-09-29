@@ -78,15 +78,19 @@ iplotly_lined_chart(eventlog)
 plotly_lined_chart(eventlog, color = NULL, ...)
 }
 \arguments{
-\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
+\item{log}{\code{\link[bupaR:log]{log}}: Object of class \code{\link[bupaR:log]{log}} or derivatives (\code{\link[bupaR:grouped_log]{grouped_log}},
+\code{\link[bupaR:eventlog]{eventlog}}, \code{\link[bupaR:activitylog]{activitylog}}, etc.).}
 
-\item{x}{Value for plot on x-axis: absolute time or relative time (since start, since start of week, since start of day)}
+\item{x}{\code{\link{character}} (default \code{"absolute"}): Value to plot on x-axis: \code{"absolute"} time or \code{"relative"} time
+(since start of week: \code{"relative_week"}, since start of day: \code{"relative_day"}).}
 
-\item{sort}{Ordering of the cases on y-axis: start, end or duration, start_week, start_day}
+\item{sort}{\code{\link{character}} (default \code{"auto"}): Ordering of the cases on y-axis: \code{"auto"} (default, see \strong{Details}),
+\code{"start"}, \code{"end"}, \code{"duration"}, \code{"start_week"}, or \code{"start_day"}.}
 
 \item{color}{Optional. Should be a case attribute! No coloring applied by default.}
 
-\item{units}{Time units to use on x-axis in case of relative time.}
+\item{units}{\code{\link{character}} (default \code{"auto"}): Time units to use on the x-axis in case of relative time: \code{"auto"}
+(default, see \strong{Details}), \code{"secs"}, \code{"mins"}, \code{"hours"}, \code{"days"}, or \code{"weeks"}.}
 
 \item{line_width}{The width of lines}
 
