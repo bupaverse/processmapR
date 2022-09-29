@@ -18,6 +18,7 @@
 #' @param add_end_events [`logical`] (default `FALSE`): Whether to add dots for the complete lifecycle event with a different shape.
 #' @param scale_color [`ggplot2`] scale function (default [`scale_color_discrete_bupaR`][`bupaR::scale_color_discrete_bupaR`]):
 #' Set color scale. Defaults to [`scale_color_discrete_bupaR`][`bupaR::scale_color_discrete_bupaR`].
+#' @param plotly [`logical`] (default `FALSE`): Return a [`plotly`] object, instead of a [`ggplot2`].
 #' @param eventlog `r lifecycle::badge("deprecated")`; please use `log` instead.
 #'
 #' @details
@@ -49,6 +50,7 @@ dotted_chart <- function(log,
                          units = c("auto","secs","mins","hours","days","weeks"),
                          add_end_events = FALSE,
                          scale_color = bupaR::scale_color_discrete_bupaR,
+                         plotly = FALSE,
                          eventlog = deprecated()) {
   UseMethod("dotted_chart")
 }
@@ -62,6 +64,7 @@ dotted_chart.eventlog <- function(log,
                                   units = c("auto","secs","mins","hours","days","weeks"),
                                   add_end_events = FALSE,
                                   scale_color = bupaR::scale_color_discrete_bupaR,
+                                  plotly = FALSE,
                                   eventlog = deprecated()) {
 
   log <- lifecycle_warning_eventlog(log, eventlog)
@@ -75,7 +78,9 @@ dotted_chart.eventlog <- function(log,
 
   log %>%
     dotted_chart_data(color, units) %>%
-    dotted_chart_plot(mapping, x, sort, scale_color, color, units, add_end_events)
+    dotted_chart_plot(mapping, x, sort, scale_color, color, units, add_end_events) -> p
+
+  return_plotly(p, plotly)
 }
 
 #' @describeIn dotted_chart Create dotted chart for an [`activitylog`][`bupaR::activitylog`].
@@ -87,11 +92,12 @@ dotted_chart.activitylog <- function(log,
                                      units = c("auto","secs","mins","hours","days","weeks"),
                                      add_end_events = FALSE,
                                      scale_color = bupaR::scale_color_discrete_bupaR,
+                                     plotly = FALSE,
                                      eventlog = deprecated()) {
 
   log <- lifecycle_warning_eventlog(log, eventlog)
 
-  dotted_chart.eventlog(to_eventlog(log), x, sort, color, units, add_end_events, scale_color)
+  dotted_chart.eventlog(to_eventlog(log), x, sort, color, units, add_end_events, scale_color, plotly)
 }
 
 #' @describeIn dotted_chart Create dotted chart for a [`grouped_eventlog`][`bupaR::grouped_eventlog`].
@@ -103,6 +109,7 @@ dotted_chart.grouped_eventlog <- function(log,
                                           units = c("auto","secs","mins","hours","days","weeks"),
                                           add_end_events = FALSE,
                                           scale_color = bupaR::scale_color_discrete_bupaR,
+                                          plotly = FALSE,
                                           eventlog = deprecated()) {
 
   log <- lifecycle_warning_eventlog(log, eventlog)
@@ -116,12 +123,13 @@ dotted_chart.grouped_eventlog <- function(log,
 
   log %>%
     bupaR:::apply_grouped_fun(dotted_chart_data, color, units, .keep_groups = TRUE) %>%
-    dotted_chart_plot(mapping, x, sort, scale_color, color, units, add_end_events)
+    dotted_chart_plot(mapping, x, sort, scale_color, color, units, add_end_events) -> p
+
+  return_plotly(p, plotly)
 }
 
 #' @describeIn dotted_chart Create dotted chart for a [`grouped_activitylog`][`bupaR::grouped_activitylog`].
 #' @export
-
 dotted_chart.grouped_activitylog <- function(log,
                                              x = c("absolute","relative","relative_week","relative_day"),
                                              sort = c("auto","start","end","duration","start_week","start_day"),
@@ -129,16 +137,15 @@ dotted_chart.grouped_activitylog <- function(log,
                                              units = c("auto","secs","mins","hours","days","weeks"),
                                              add_end_events = FALSE,
                                              scale_color = bupaR::scale_color_discrete_bupaR,
+                                             plotly = FALSE,
                                              eventlog = deprecated()) {
 
   log <- lifecycle_warning_eventlog(log, eventlog)
 
   log %>%
     to_eventlog() %>%
-    dotted_chart.grouped_eventlog(x, sort, color, units, add_end_events, scale_color)
+    dotted_chart.grouped_eventlog(x, sort, color, units, add_end_events, scale_color, plotly)
 }
-
-
 
 
 #Check args and override values. Not the way you're supposed to do it, but it's straightforward and convenient!

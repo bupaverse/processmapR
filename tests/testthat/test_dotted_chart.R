@@ -177,6 +177,27 @@ test_that("test dotted_chart on eventlog with param `add_end_events`", {
 	)
 })
 
+test_that("test dotted_chart on eventlog with param `plotly`", {
+
+	load("./testdata/patients.rda")
+
+	expect_error(
+		chart <- patients %>%
+			dotted_chart(plotly = FALSE),
+		NA
+	)
+
+	expect_s3_class(chart, "ggplot")
+
+	expect_error(
+		chart <- patients %>%
+			dotted_chart(plotly = TRUE),
+		NA
+	)
+
+	expect_s3_class(chart, "plotly")
+})
+
 test_that("test dotted_chart on grouped_eventlog with default params", {
 
 	load("./testdata/patients_grouped_resource.rda")

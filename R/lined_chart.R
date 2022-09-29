@@ -7,7 +7,6 @@
 #' @param x [`character`] (default `"absolute"`): Value to plot on x-axis: `"absolute"` time or `"relative"` time.
 #' @param sort [`character`] (default `"auto"`): Ordering of the cases on y-axis: `"auto"` (default, see **Details**),
 #' `"start"`, `"end"`, or `"duration"`.
-#' @param plotly [`logical`] (default `FALSE`): Return a [`plotly`] object, instead of a [`ggplot2`].
 #' @param line_width [`numeric`] (default `2`): The width of lines.
 #'
 #' @inheritParams dotted_chart
@@ -88,7 +87,7 @@ lined_chart.activitylog <- function(log,
   lined_chart.eventlog(to_eventlog(log), x, sort, color, units, line_width, plotly, scale_color)
 }
 
-#' @describeIn  lined_chart Create lined chart for a [`grouped_eventlog`][`bupaR:grouped_eventlog`].
+#' @describeIn  lined_chart Create lined chart for a [`grouped_eventlog`][`bupaR::grouped_eventlog`].
 #' @export
 lined_chart.grouped_eventlog <- function(log,
                                          x = c("absolute","relative"),

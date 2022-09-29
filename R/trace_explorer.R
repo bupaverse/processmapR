@@ -41,6 +41,7 @@ trace_explorer <- function(log,
                            label_size = 3,
                            scale_fill = bupaR::scale_fill_discrete_bupaR,
                            raw_data = FALSE,
+                           plotly = FALSE,
                            eventlog = deprecated(),
                            .abbreviate = deprecated()) {
   UseMethod("trace_explorer")
@@ -58,6 +59,7 @@ trace_explorer.eventlog <- function(log,
                                     label_size = 3,
                                     scale_fill = bupaR::scale_fill_discrete_bupaR,
                                     raw_data = FALSE,
+                                    plotly = FALSE,
                                     eventlog = deprecated(),
                                     .abbreviate = deprecated()) {
 
@@ -177,7 +179,7 @@ trace_explorer.eventlog <- function(log,
   }
 
   if(raw_data)
-    temp
+    return(temp)
   else {
     temp %>%
       ggplot(aes(rank_event, as.factor(trace_id))) +
@@ -195,11 +197,10 @@ trace_explorer.eventlog <- function(log,
       p + geom_text(aes(label = abbreviate_labels(abbreviate, event_classifier)),
                     color = "white",
                     fontface = "bold",
-                    size = label_size)
-    else
-      p
+                    size = label_size) -> p
   }
 
+  return_plotly(p, plotly)
 }
 
 #' @describeIn trace_explorer Trace explorer for an [`activitylog`][`bupaR::activitylog`].
@@ -214,6 +215,7 @@ trace_explorer.activitylog <- function(log,
                                        label_size = 3,
                                        scale_fill = bupaR::scale_fill_discrete_bupaR,
                                        raw_data = FALSE,
+                                       plotly = FALSE,
                                        eventlog = deprecated(),
                                        .abbreviate = deprecated()) {
 
@@ -235,11 +237,13 @@ trace_explorer.activitylog <- function(log,
                    show_labels = show_labels,
                    label_size = label_size,
                    scale_fill = scale_fill,
-                   raw_data = raw_data)
+                   raw_data = raw_data,
+                   plotly = plotly)
 }
 
 
-#' @describeIn trace_explorer [`plotly`] trace explorer for [`log`][`bupaR::log`] objects.
+#' @keywords internal
+#' @rdname deprecated
 #' @export plotly_trace_explorer
 plotly_trace_explorer <- function(log,
                                   coverage = NULL,
@@ -251,8 +255,13 @@ plotly_trace_explorer <- function(log,
                                   label_size = 3,
                                   scale_fill = bupaR::scale_fill_discrete_bupaR,
                                   raw_data = FALSE,
+                                  plotly = TRUE,
                                   eventlog = deprecated(),
                                   .abbreviate = deprecated()) {
+
+  lifecycle::deprecate_warn(when = "0.5.2",
+                            what = "plotly_trace_explorer()",
+                            details = "Please use `trace_explorer(..., plotly = TRUE)` instead.")
 
   abbreviate <- lifecycle_warning_abbreviate(abbreviate, .abbreviate)
 
@@ -272,8 +281,8 @@ plotly_trace_explorer <- function(log,
                  show_labels = show_labels,
                  label_size = label_size,
                  scale_fill = scale_fill,
-                 raw_data = raw_data) %>%
-    ggplotly()
+                 raw_data = raw_data,
+                 plotly = TRUE)
 }
 
 

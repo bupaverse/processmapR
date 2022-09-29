@@ -71,7 +71,8 @@ iplotly_dotted_chart <- function(eventlog) {
   idotted_chart(eventlog, plotly = TRUE)
 }
 
-#' @describeIn dotted_chart [`plotly`] dotted chart for [`log`][`bupaR::log`] objects.
+#' @keywords internal
+#' @rdname deprecated
 #' @export plotly_dotted_chart
 plotly_dotted_chart <- function(log,
                                 x = c("absolute","relative","relative_week","relative_day"),
@@ -82,9 +83,12 @@ plotly_dotted_chart <- function(log,
                                 scale_color = bupaR::scale_color_discrete_bupaR,
                                 eventlog = deprecated()) {
 
+  lifecycle::deprecate_warn(when = "0.5.2",
+                            what = "plotly_dotted_chart()",
+                            details = "Please use `dotted_chart(..., plotly = TRUE)` instead.")
+
   log <- lifecycle_warning_eventlog(log, eventlog)
 
   log %>%
-    dotted_chart(x, sort, color, units, add_end_events, scale_color) %>%
-    ggplotly()
+    dotted_chart(x, sort, color, units, add_end_events, scale_color, TRUE)
 }

@@ -63,7 +63,8 @@ iplotly_lined_chart <- function(eventlog) {
 }
 
 
-#' @describeIn lined_chart [`plotly`] lined chart for [`log`][`bupaR::log`] objects.
+#' @keywords internal
+#' @rdname deprecated
 #' @export plotly_lined_chart
 plotly_lined_chart <- function(log,
 															 x = c("absolute","relative"),
@@ -81,5 +82,5 @@ plotly_lined_chart <- function(log,
 
 	log <- lifecycle_warning_eventlog(log, eventlog)
 
-	lined_chart(log, x, sort, color, units, line_width, plotly, scale_color)
+	lined_chart(log, x, sort, color, units, line_width, TRUE, scale_color)
 }

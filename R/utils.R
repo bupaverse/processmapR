@@ -36,6 +36,7 @@ if_start <- function(node, true, false) {
 	ifelse(node %in% c("ARTIFICIAL_START"), true, false)
 }
 
+# Return a plotly instead of ggplot2 if plotly == TRUE
 return_plotly <- function(p, plotly) {
 	if (plotly) {
 		return(ggplotly(p))

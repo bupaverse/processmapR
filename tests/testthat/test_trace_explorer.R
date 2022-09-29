@@ -219,6 +219,27 @@ test_that("test trace_explorer on eventlog with param `raw_data`", {
   expect_s3_class(raw_data, "tbl_df")
 })
 
+test_that("test trace_explorer on eventlog with param `plotly`", {
+
+  load("./testdata/patients.rda")
+
+  expect_error(
+    chart <- patients %>%
+      trace_explorer(coverage = 0.2, plotly = FALSE),
+    NA
+  )
+
+  expect_s3_class(chart, "ggplot")
+
+  expect_error(
+    chart <- patients %>%
+      trace_explorer(coverage = 0.2, plotly = TRUE),
+    NA
+  )
+
+  expect_s3_class(chart, "plotly")
+})
+
 
 #### activitylog ####
 

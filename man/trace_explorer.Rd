@@ -4,7 +4,6 @@
 \alias{trace_explorer}
 \alias{trace_explorer.eventlog}
 \alias{trace_explorer.activitylog}
-\alias{plotly_trace_explorer}
 \title{Trace Explorer}
 \usage{
 trace_explorer(
@@ -18,6 +17,7 @@ trace_explorer(
   label_size = 3,
   scale_fill = bupaR::scale_fill_discrete_bupaR,
   raw_data = FALSE,
+  plotly = FALSE,
   eventlog = deprecated(),
   .abbreviate = deprecated()
 )
@@ -33,6 +33,7 @@ trace_explorer(
   label_size = 3,
   scale_fill = bupaR::scale_fill_discrete_bupaR,
   raw_data = FALSE,
+  plotly = FALSE,
   eventlog = deprecated(),
   .abbreviate = deprecated()
 )
@@ -48,21 +49,7 @@ trace_explorer(
   label_size = 3,
   scale_fill = bupaR::scale_fill_discrete_bupaR,
   raw_data = FALSE,
-  eventlog = deprecated(),
-  .abbreviate = deprecated()
-)
-
-plotly_trace_explorer(
-  log,
-  coverage = NULL,
-  n_traces = NULL,
-  type = c("frequent", "infrequent"),
-  coverage_labels = c("relative", "absolute", "cumulative"),
-  abbreviate = TRUE,
-  show_labels = TRUE,
-  label_size = 3,
-  scale_fill = bupaR::scale_fill_discrete_bupaR,
-  raw_data = FALSE,
+  plotly = FALSE,
   eventlog = deprecated(),
   .abbreviate = deprecated()
 )
@@ -91,6 +78,8 @@ Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_
 
 \item{raw_data}{\code{\link{logical}} (default \code{FALSE}): Return raw data instead of graph.}
 
+\item{plotly}{\code{\link{logical}} (default \code{FALSE}): Return a \code{\link{plotly}} object, instead of a \code{\link{ggplot2}}.}
+
 \item{eventlog}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{log} instead.}
 
 \item{.abbreviate}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{abbreviate} instead.}
@@ -106,11 +95,6 @@ covering 20\% of the \code{log}.
 \item \code{trace_explorer(eventlog)}: Trace explorer for an \code{\link[bupaR:eventlog]{eventlog}}.
 
 \item \code{trace_explorer(activitylog)}: Trace explorer for an \code{\link[bupaR:activitylog]{activitylog}}.
-
-}}
-\section{Functions}{
-\itemize{
-\item \code{plotly_trace_explorer()}: \code{\link{plotly}} trace explorer for \code{\link[bupaR:log]{log}} objects.
 
 }}
 \examples{
