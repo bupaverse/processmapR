@@ -65,7 +65,7 @@ patients %>%
   process_map()
 ```
 
-<img src="man/figures/README-example1-1.png" align="right" />
+![process map](man/figures/README-example1-1.png)
 
 ``` r
 # Dotted chart

@@ -66,7 +66,7 @@ patients %>%
   rsvg::rsvg_png("man/figures/README-example1-1.png")
 ```
 
-<img src="man/figures/README-example1-1.png" align="right" />
+![process map](man/figures/README-example1-1.png)
 
 ```{r example2}
 # Dotted chart
