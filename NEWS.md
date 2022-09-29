@@ -10,9 +10,10 @@ Defaults to `bupaR::scale_fill_discrete_bupaR`.
 
 ## Bug Fixes
 * Fixed bug when using `process_map()` on a `grouped_log`.
-* Added required dependencies `rsvg` and `DiagrammeRsvg` for `export_map` function. 
+* Added required dependencies `rsvg` and `DiagrammeRsvg` for `export_map` function.
 
 ## Deprecations
+* `idotted_chart()`, `iplotly_dotted_chart()`, `ilined_chart()`, `iplotly_lined_chart()` have been deprecated.
 * Argument `.abbreviate` of `trace_explorer()` has been deprecated in favour of `abbreviate`.
 
 ## Other

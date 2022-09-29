@@ -122,39 +122,40 @@ test_that("test dotted_chart on eventlog with param `units`", {
 
 	load("./testdata/patients.rda")
 
+	# units param is only relavant when x = "relative".
 	expect_error(
 		patients %>%
-			dotted_chart(units = "auto"),
+			dotted_chart(x = "relative", units = "auto"),
 		NA
 	)
 
 	expect_error(
 		patients %>%
-			dotted_chart(units = "secs"),
+			dotted_chart(x = "relative", units = "secs"),
 		NA
 	)
 
 	expect_error(
 		patients %>%
-			dotted_chart(units = "mins"),
+			dotted_chart(x = "relative", units = "mins"),
 		NA
 	)
 
 	expect_error(
 		patients %>%
-			dotted_chart(units = "hours"),
+			dotted_chart(x = "relative", units = "hours"),
 		NA
 	)
 
 	expect_error(
 		patients %>%
-			dotted_chart(units = "days"),
+			dotted_chart(x = "relative", units = "days"),
 		NA
 	)
 
 	expect_error(
 		patients %>%
-			dotted_chart(units = "weeks"),
+			dotted_chart(x = "relative", units = "weeks"),
 		NA
 	)
 })

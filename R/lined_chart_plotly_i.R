@@ -1,8 +1,12 @@
+#' @include lined_chart.R
+NULL
 
-#' @rdname lined_chart
+#' @keywords internal
+#' @rdname deprecated
 #' @export ilined_chart
-
 ilined_chart <- function(eventlog, plotly = FALSE) {
+
+	lifecycle::deprecate_warn("0.5.2", "ilined_chart()")
 
 	ui <- miniPage(
 		gadgetTitleBar("Interactive Lined Chart"),
@@ -48,20 +52,34 @@ ilined_chart <- function(eventlog, plotly = FALSE) {
 
 }
 
-#' @rdname lined_chart
+#' @keywords internal
+#' @rdname deprecated
 #' @export plotly_lined_chart
-
 iplotly_lined_chart <- function(eventlog) {
+
+	lifecycle::deprecate_warn("0.5.2", "iplotly_lined_chart()")
+
 	ilined_chart(eventlog, plotly = TRUE)
 }
 
 
-#' @rdname lined_chart
+#' @describeIn lined_chart [`plotly`] lined chart for [`log`][`bupaR::log`] objects.
 #' @export plotly_lined_chart
+plotly_lined_chart <- function(log,
+															 x = c("absolute","relative"),
+															 sort = c("auto","start","end","duration"),
+															 color = NULL,
+															 units = c("auto","secs","mins","hours","days","weeks"),
+															 line_width = 2,
+															 plotly = TRUE,
+															 scale_color = bupaR::scale_color_discrete_bupaR,
+															 eventlog = deprecated()) {
 
-plotly_lined_chart <- function(eventlog,
-							   color = NULL,
-							   ...) {
-	lined_chart(eventlog, color) %>%
-		ggplotly
+	lifecycle::deprecate_warn(when = "0.5.2",
+														what = "plotly_lined_chart()",
+														details = "Please use `lined_chart(..., plotly = TRUE)` instead.")
+
+	log <- lifecycle_warning_eventlog(log, eventlog)
+
+	lined_chart(log, x, sort, color, units, line_width, plotly, scale_color)
 }

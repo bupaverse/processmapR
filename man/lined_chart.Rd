@@ -6,111 +6,147 @@
 \alias{lined_chart.activitylog}
 \alias{lined_chart.grouped_eventlog}
 \alias{lined_chart.grouped_activitylog}
-\alias{ilined_chart}
-\alias{iplotly_lined_chart}
 \alias{plotly_lined_chart}
-\title{Lined chart}
+\title{Lined Chart}
 \usage{
 lined_chart(
   log,
   x = c("absolute", "relative"),
-  sort = NULL,
-  color,
-  units,
+  sort = c("auto", "start", "end", "duration"),
+  color = NULL,
+  units = c("auto", "secs", "mins", "hours", "days", "weeks"),
   line_width = 2,
-  plotly,
-  eventlog = deprecated(),
-  ...
+  plotly = FALSE,
+  scale_color = bupaR::scale_color_discrete_bupaR,
+  eventlog = deprecated()
 )
 
 \method{lined_chart}{eventlog}(
   log,
   x = c("absolute", "relative"),
-  sort = NULL,
+  sort = c("auto", "start", "end", "duration"),
   color = NULL,
-  units = c("weeks", "days", "hours", "mins", "secs"),
+  units = c("auto", "secs", "mins", "hours", "days", "weeks"),
   line_width = 2,
   plotly = FALSE,
-  eventlog = deprecated(),
-  ...
+  scale_color = bupaR::scale_color_discrete_bupaR,
+  eventlog = deprecated()
 )
 
 \method{lined_chart}{activitylog}(
   log,
   x = c("absolute", "relative"),
-  sort = NULL,
+  sort = c("auto", "start", "end", "duration"),
   color = NULL,
-  units = c("weeks", "days", "hours", "mins", "secs"),
+  units = c("auto", "secs", "mins", "hours", "days", "weeks"),
   line_width = 2,
   plotly = FALSE,
-  eventlog = deprecated(),
-  ...
+  scale_color = bupaR::scale_color_discrete_bupaR,
+  eventlog = deprecated()
 )
 
 \method{lined_chart}{grouped_eventlog}(
   log,
   x = c("absolute", "relative"),
-  sort = NULL,
+  sort = c("auto", "start", "end", "duration"),
   color = NULL,
-  units = c("weeks", "days", "hours", "mins", "secs"),
+  units = c("auto", "secs", "mins", "hours", "days", "weeks"),
   line_width = 2,
   plotly = FALSE,
-  eventlog = deprecated(),
-  ...
+  scale_color = bupaR::scale_color_discrete_bupaR,
+  eventlog = deprecated()
 )
 
 \method{lined_chart}{grouped_activitylog}(
   log,
   x = c("absolute", "relative"),
-  sort = NULL,
+  sort = c("auto", "start", "end", "duration"),
   color = NULL,
-  units = c("weeks", "days", "hours", "mins", "secs"),
+  units = c("auto", "secs", "mins", "hours", "days", "weeks"),
   line_width = 2,
   plotly = FALSE,
-  eventlog = deprecated(),
-  ...
+  scale_color = bupaR::scale_color_discrete_bupaR,
+  eventlog = deprecated()
 )
 
-ilined_chart(eventlog, plotly = FALSE)
-
-iplotly_lined_chart(eventlog)
-
-plotly_lined_chart(eventlog, color = NULL, ...)
+plotly_lined_chart(
+  log,
+  x = c("absolute", "relative"),
+  sort = c("auto", "start", "end", "duration"),
+  color = NULL,
+  units = c("auto", "secs", "mins", "hours", "days", "weeks"),
+  line_width = 2,
+  plotly = FALSE,
+  scale_color = bupaR::scale_color_discrete_bupaR,
+  eventlog = deprecated()
+)
 }
 \arguments{
 \item{log}{\code{\link[bupaR:log]{log}}: Object of class \code{\link[bupaR:log]{log}} or derivatives (\code{\link[bupaR:grouped_log]{grouped_log}},
 \code{\link[bupaR:eventlog]{eventlog}}, \code{\link[bupaR:activitylog]{activitylog}}, etc.).}
 
-\item{x}{\code{\link{character}} (default \code{"absolute"}): Value to plot on x-axis: \code{"absolute"} time or \code{"relative"} time
-(since start of week: \code{"relative_week"}, since start of day: \code{"relative_day"}).}
+\item{x}{\code{\link{character}} (default \code{"absolute"}): Value to plot on x-axis: \code{"absolute"} time or \code{"relative"} time.}
 
 \item{sort}{\code{\link{character}} (default \code{"auto"}): Ordering of the cases on y-axis: \code{"auto"} (default, see \strong{Details}),
-\code{"start"}, \code{"end"}, \code{"duration"}, \code{"start_week"}, or \code{"start_day"}.}
+\code{"start"}, \code{"end"}, or \code{"duration"}.}
 
-\item{color}{Optional. Should be a case attribute! No coloring applied by default.}
+\item{color}{\code{\link{character}} (default \code{\link{NULL}}): Attribute to use for coloring the activity instances (dots).
+This attribute should be present in \code{log}. Default (\code{\link{NULL}}) is the activity identifier (\code{\link[bupaR:activity_id]{activity_id()}}).
+Use \code{\link{NA}} for no colors.}
 
 \item{units}{\code{\link{character}} (default \code{"auto"}): Time units to use on the x-axis in case of relative time: \code{"auto"}
 (default, see \strong{Details}), \code{"secs"}, \code{"mins"}, \code{"hours"}, \code{"days"}, or \code{"weeks"}.}
 
-\item{line_width}{The width of lines}
+\item{line_width}{\code{\link{numeric}} (default \code{2}): The width of lines.}
 
-\item{plotly}{Return plotly object}
+\item{plotly}{\code{\link{logical}} (default \code{FALSE}): Return a \code{\link{plotly}} object, instead of a \code{\link{ggplot2}}.}
 
-\item{eventlog}{Eventlog object}
+\item{scale_color}{\code{\link{ggplot2}} scale function (default \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_color_discrete_bupaR}}):
+Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_color_discrete_bupaR}}.}
 
-\item{...}{Deprecated arguments}
+\item{eventlog}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{log} instead.}
 }
 \description{
-Create a lined chart to view all cases at a glance
+A lined chart is a graph in which each activity instance is displayed with a line. The x-axis refers to the time aspect,
+while the y-axis refers to cases.
+}
+\details{
+When setting \code{sort} to \code{"auto"}, the ordering of cases is done automatically, based on the specified value of \code{x}:
+\itemize{
+\item \code{x = "absolute"}: \code{sort = "start"},
+\item \code{x = "relative"}: \code{sort = "duration"}.
+}
+
+When setting \code{units} to \code{"auto"}, the time units on the x-axis is done automatically, based on the specified value of \code{x}:
+\itemize{
+\item \code{x = "absolute"}: \code{units = "weeks"},
+\item \code{x = "relative"}: \code{units = "weeks"}.
+}
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{lined_chart(eventlog)}: Create lined chart for eventlog
+\item \code{lined_chart(eventlog)}: Create lined chart for an \code{\link[bupaR:eventlog]{eventlog}}.
 
-\item \code{lined_chart(activitylog)}: Create lined chart for activity log
+\item \code{lined_chart(activitylog)}: Create lined chart for an \code{\link[bupaR:activitylog]{activitylog}}.
 
-\item \code{lined_chart(grouped_eventlog)}: Create lined chart for grouped eventlog
+\item \code{lined_chart(grouped_eventlog)}: Create lined chart for a \code{\link[=bupaR:grouped_eventlog]{grouped_eventlog}}.
 
-\item \code{lined_chart(grouped_activitylog)}: Create lined chart for grouped activitylog
+\item \code{lined_chart(grouped_activitylog)}: Create lined chart for a \code{\link[bupaR:grouped_activitylog]{grouped_activitylog}}.
 
 }}
+\section{Functions}{
+\itemize{
+\item \code{plotly_lined_chart()}: \code{\link{plotly}} lined chart for \code{\link[bupaR:log]{log}} objects.
+
+}}
+\examples{
+library(processmapR)
+library(eventdataR)
+
+patients \%>\%
+ lined_chart(x = "absolute", color = "employee")
+
+}
+\seealso{
+\code{\link[=dotted_chart]{dotted_chart()}}
+}

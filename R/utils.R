@@ -36,6 +36,14 @@ if_start <- function(node, true, false) {
 	ifelse(node %in% c("ARTIFICIAL_START"), true, false)
 }
 
+return_plotly <- function(p, plotly) {
+	if (plotly) {
+		return(ggplotly(p))
+	} else {
+		return(p)
+	}
+}
+
 # Warning: The `eventlog` argument of `func()` is deprecated as of processmapR 0.4.0.
 # Please use the `log` argument instead.
 # WARNING: Works only on exported functions!
