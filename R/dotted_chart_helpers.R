@@ -22,8 +22,6 @@ dotted_chart_data <- function(eventlog, color, units) {
 	time <- NULL
 	case <- NULL
 	activity <- NULL
-	.SD <- NULL
-	.N <- NULL
 	start_week <- NULL
 	end_week <- NULL
 	start_day <- NULL
@@ -109,7 +107,7 @@ configure_x_labs <- function(x, units) {
 			  x == "absolute" ~ "Time")
 }
 
-dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units, add_end_events) {
+dotted_chart_plot <- function(data, mapping, x, y, scale_color, col_label, units, add_end_events) {
 
 	color <- NULL
 	groups <- groups(data)
@@ -117,27 +115,41 @@ dotted_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units,
 	y_aes <- configure_y_aes(y)
 	x_labs <- configure_x_labs(x, units)
 
+
+	if(length(unique(data$color)) > 26) {
+		scale_color <- ggplot2::scale_color_discrete
+	}
+
 	data %>%
-		ggplot(aes_string(x = x_aes[[1]], y = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
+		ggplot(aes_string(x = x_aes[[1L]], y = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
 		scale_y_discrete(breaks = NULL) +
 		labs(x = x_labs,y = "Cases") +
 		theme_light() -> p
 
-	p + geom_point(aes(color = color, shape = "start")) +
-		scale_color_manual(name = col_label, values = col_vector) -> p
+	if (is.na(col_label)) {
+		p + geom_point(aes(shape = "start"), color = "black") -> p
+	} else {
+		p + geom_point(aes(color = color, shape = "start")) +
+			scale_color(name = col_label) -> p
+	}
 
 	if (add_end_events) {
-		p + geom_point(aes(x = !!sym(x_aes[[2]]), color = color, shape = "complete", ), ) +
-			scale_shape_manual(name = "Lifecycle", values = c(1,16)) -> p
+		if (is.na(col_label)) {
+			p + geom_point(aes(x = !!sym(x_aes[[2]]), shape = "complete"), color = "black") +
+				scale_shape_manual(name = "Lifecycle", values = c(1,16)) -> p
+		} else {
+			p + geom_point(aes(x = !!sym(x_aes[[2]]), color = color, shape = "complete")) +
+				scale_shape_manual(name = "Lifecycle", values = c(1,16)) -> p
+		}
 	} else {
 		p + scale_shape_discrete(guide= "none") -> p
 	}
 
 	if(x == "relative_week" && units == "secs") {
-		p + scale_x_time(breaks = as.hms(seq(0, 7 * 86400, by = 8 * 3600)), labels = timeFormat) +
+		p + scale_x_time(breaks = as_hms(seq(0, 7 * 86400, by = 8 * 3600)), labels = timeFormat) +
 			geom_vline(xintercept = seq(0, 7 * 86400, by = 86400), colour="black")-> p
 	} else if(x == "relative_day" && units == "secs") {
-		p + scale_x_time(breaks = as.hms(seq(0, 86400, by = 2 * 3600))) -> p
+		p + scale_x_time(breaks = as_hms(seq(0, 86400, by = 2 * 3600))) -> p
 	}
 
 	if(length(groups) > 0)

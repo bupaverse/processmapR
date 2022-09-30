@@ -1,8 +1,8 @@
 Package: processmapR
 Type: Package
 Title: Construct Process Maps Using Event Data
-Version: 0.5.1
-Date: 2022-07-13
+Version: 0.5.2
+Date: 2022-09-30
 Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhasselt.be", role = c("aut","cre")),
  person("Gerard","van Hulzen", email = "gerard.vanhulzen@uhasselt.be", role = c("ctb")),
  person("Benoît","Depaire",email = "benoit.depaire@uhasselt.be", role = c("ctb")),
@@ -17,11 +17,11 @@ Depends:
 	R (>= 3.5.0)
 Imports:
     dplyr, 
-    bupaR (>= 0.4.0), 
-    edeaR (>= 0.8.0), 
+    bupaR (>= 0.5.1),
+    edeaR (>= 0.9.0),
     DiagrammeR (>= 1.0.0), 
     ggplot2, 
-    stringr, 
+    stringr,
     purrr, 
     data.table, 
     shiny, 
@@ -30,7 +30,8 @@ Imports:
     forcats, 
     hms, 
     plotly, 
-    rlang, 
+    rlang (>= 1.0.0),
+    cli (>= 3.2.0),
     scales,
     tidyr,
     htmltools,
@@ -53,3 +54,32 @@ URL: https://bupar.net/,
 BugReports: https://github.com/bupaverse/processmapr/issues/
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
+Collate: 
+    'RcppExports.R'
+    'create_base_precedence.R'
+    'custom.R'
+    'deprecated.R'
+    'dotted_chart.R'
+    'dotted_char_plotly_i.R'
+    'dotted_chart_helpers.R'
+    'export_graph.R'
+    'export_map.R'
+    'frequency.R'
+    'get_meta_data.R'
+    'layout.R'
+    'lined_chart.R'
+    'lined_chart_helpers.R'
+    'lined_chart_plotly_i.R'
+    'performance.R'
+    'precedence_matrix.R'
+    'precedence_matrix.plot.R'
+    'processMapOutput.R'
+    'process_map.R'
+    'process_matrix.R'
+    'processmapR.R'
+    'renderProcessMap.R'
+    'render_map.R'
+    'resource_map.R'
+    'resource_matrix.R'
+    'trace_explorer.R'
+    'utils.R'
