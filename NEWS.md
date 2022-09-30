@@ -1,12 +1,12 @@
 
-# processmapR 0.5.2 (dev)
+# processmapR 0.5.2 
 
 ## Features
 * Functions `render_map()` and `export_map()` added, so using `DiagrammeR` functions is not longer needed.
 * `dotted_chart()` and `lined_chart()` now have an argument `scale_color` to specify the colour scale for the dots.
-Defaults to `bupaR::scale_color_discrete_bupaR`.
+Defaults to `bupaR::scale_color_discrete_bupaR`. Reverts to `ggplot2::scale_color_discrete` when more than 26 activities are present. 
 * `trace_explorer()` now has an argument `scale_fill` to specify the colour scale for the fill.
-Defaults to `bupaR::scale_fill_discrete_bupaR`.
+Defaults to `bupaR::scale_fill_discrete_bupaR`. Reverts to `ggplot2::scale_fill_discrete` when more than 26 activities are present. 
 * `dotted_chart()`, `lined_chart()`, and `trace_explorer()` now have a `plotly` argument to specify
 that a `plotly` object should be returned, instead of a `ggplot` object.
 
