@@ -115,6 +115,11 @@ dotted_chart_plot <- function(data, mapping, x, y, scale_color, col_label, units
 	y_aes <- configure_y_aes(y)
 	x_labs <- configure_x_labs(x, units)
 
+
+	if(length(unique(data$color)) > 26) {
+		scale_color <- ggplot2::scale_color_discrete
+	}
+
 	data %>%
 		ggplot(aes_string(x = x_aes[[1L]], y = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
 		scale_y_discrete(breaks = NULL) +

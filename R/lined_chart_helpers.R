@@ -69,6 +69,12 @@ lined_chart_plot <- function(data, mapping, x, y, scale_color, col_label, units,
 	y_aes <- configure_y_aes_lined(y)
 	x_labs <- configure_x_labs_lined(x, units)
 
+
+
+	if(length(unique(data$color)) > 26) {
+		scale_color <- ggplot2::scale_color_discrete
+	}
+
 	data %>%
 		ggplot(aes_string(x = x_aes[[1]],
 						  				xend = x_aes[[2]],

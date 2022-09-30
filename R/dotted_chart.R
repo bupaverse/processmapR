@@ -17,7 +17,7 @@
 #' (default, see **Details**), `"secs"`, `"mins"`, `"hours"`, `"days"`, or `"weeks"`.
 #' @param add_end_events [`logical`] (default `FALSE`): Whether to add dots for the complete lifecycle event with a different shape.
 #' @param scale_color [`ggplot2`] scale function (default [`scale_color_discrete_bupaR`][`bupaR::scale_color_discrete_bupaR`]):
-#' Set color scale. Defaults to [`scale_color_discrete_bupaR`][`bupaR::scale_color_discrete_bupaR`].
+#' Set color scale. Defaults to [`scale_color_discrete_bupaR`][`bupaR::scale_color_discrete_bupaR`].  Replaced with [`scale_color_discrete`][`ggplot2::scale_color_discrete`] when more than 26 activities are present.
 #' @param plotly [`logical`] (default `FALSE`): Return a [`plotly`] object, instead of a [`ggplot2`].
 #' @param eventlog `r lifecycle::badge("deprecated")`; please use `log` instead.
 #'

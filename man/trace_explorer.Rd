@@ -74,7 +74,7 @@ These can be \code{"relative"} frequency (default), \code{"absolute"}, or \code{
 \item{label_size}{\code{\link{numeric}} (default \code{3}): Font size of labels.}
 
 \item{scale_fill}{\code{\link{ggplot2}} scale function (default \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_fill_discrete_bupaR}}):
-Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_fill_discrete_bupaR}}.}
+Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_fill_discrete_bupaR}}. Replaced with \code{\link[ggplot2:scale_colour_discrete]{scale_fill_discrete}} when more than 26 activities are present.}
 
 \item{raw_data}{\code{\link{logical}} (default \code{FALSE}): Return raw data instead of graph.}
 
