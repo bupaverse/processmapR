@@ -25,6 +25,9 @@
     <loc>https://bupaverse.github.io/processmapR/reference/custom.html</loc>
   </url>
   <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/deprecated.html</loc>
+  </url>
+  <url>
     <loc>https://bupaverse.github.io/processmapR/reference/dotted_chart.html</loc>
   </url>
   <url>
@@ -71,6 +74,9 @@
   </url>
   <url>
     <loc>https://bupaverse.github.io/processmapR/reference/processmapR.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/reexports.html</loc>
   </url>
   <url>
     <loc>https://bupaverse.github.io/processmapR/reference/renderProcessMap.html</loc>
