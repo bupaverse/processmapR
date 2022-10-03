@@ -62,25 +62,35 @@ configure_x_labs_lined <- function(x, units) {
 }
 
 
-lined_chart_plot <- function(data, mapping, x, y, col_vector, col_label, units, line_width) {
+lined_chart_plot <- function(data, mapping, x, y, scale_color, col_label, units, line_width) {
 
 	color <- NULL
 	x_aes <- configure_x_aes_lined(x)
 	y_aes <- configure_y_aes_lined(y)
 	x_labs <- configure_x_labs_lined(x, units)
 
+
+
+	if(length(unique(data$color)) > 26) {
+		scale_color <- ggplot2::scale_color_discrete
+	}
+
 	data %>%
 		ggplot(aes_string(x = x_aes[[1]],
-						  xend = x_aes[[2]],
-						  y = glue("reorder({case_id(mapping)}, desc({y_aes}))"),
-						  yend = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
+						  				xend = x_aes[[2]],
+						  				y = glue("reorder({case_id(mapping)}, desc({y_aes}))"),
+						  				yend = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
 		scale_y_discrete(breaks = NULL) +
 		labs(x = x_labs,y = "Cases") +
 		theme_light() -> p
 
-	p + geom_segment(aes(color = color), lwd = line_width) +
-		scale_color_manual(name = col_label, values = col_vector)
+	if (is.na(col_label)) {
+		p + geom_segment(lwd = line_width, color = "black") -> p
+	} else {
+		p + geom_segment(aes(color = color), lwd = line_width) +
+			scale_color(name = col_label) -> p
+	}
 
-
+	return(p)
 }
 

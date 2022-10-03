@@ -1,0 +1,75 @@
+---
+output: github_document
+always_allow_html: true
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+options(tibble.print_min = 5, tibble.print_max = 5)
+```
+
+# processmapR <a href="https://bupaverse.github.io/processmapR/"><img src="man/figures/logo.png" align="right" height="50" /></a>
+
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/processmapR)](https://CRAN.R-project.org/package=processmapR)
+[![GitHub version](https://img.shields.io/badge/GitHub-0.5.2-blue)](https://github.com/bupaverse/processmapR)
+[![R-CMD-check](https://github.com/bupaverse/processmapR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bupaverse/processmapR/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/bupaverse/processmapR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/bupaverse/processmapR?branch=master)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+<!-- badges: end -->
+
+**processmapR** is a [`R`](https://www.r-project.org/) package for creating process maps. Part of the [bupaR](https://www.bupar.net/) eco-system for business process analysis.
+
+## Installation
+
+You can install **processmapR** from [CRAN](https://cran.r-project.org/) with:
+
+```{r cran-installation, eval = FALSE}
+install.packages("processmapR")
+```
+
+### Development Version
+
+You can install the development version of **processmapR** from [GitHub](https://github.com/) with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("bupaverse/processmapR")
+```
+
+
+## Example
+
+The [bupaR Documentation](https://bupar.net/processmaps.html) website contains more details on creating process maps using **processmapR**.
+
+```{r example1, results = "hide"}
+library(processmapR)
+library(bupaR)
+
+# Process map
+patients %>%
+  process_map()
+```
+
+```{r echo = FALSE}
+patients %>%
+  process_map() %>%
+  DiagrammeRsvg::export_svg() %>%
+  charToRaw() %>%
+  rsvg::rsvg_png("man/figures/README-example1-1.png")
+```
+
+![process map](man/figures/README-example1-1.png)
+
+```{r example2}
+# Dotted chart
+patients %>%
+  dotted_chart(x = "absolute", sort = "start")
+```

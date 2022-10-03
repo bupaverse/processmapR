@@ -1,84 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/articles/index.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/articles/processmapr.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/authors.html</loc>
   </url>
   <url>
-    <loc>/articles/processmapr.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/index.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/reference/custom.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/dotted_chart.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/custom.html</loc>
   </url>
   <url>
-    <loc>/reference/frequency.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/deprecated.html</loc>
   </url>
   <url>
-    <loc>/reference/performance.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/dotted_chart.html</loc>
   </url>
   <url>
-    <loc>/reference/plot.precedence_matrix.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/export_graph.html</loc>
   </url>
   <url>
-    <loc>/reference/precedence_matrix.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/export_map.html</loc>
   </url>
   <url>
-    <loc>/reference/processmapR.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/frequency.html</loc>
   </url>
   <url>
-    <loc>/reference/process_map.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/get_activities.html</loc>
   </url>
   <url>
-    <loc>/reference/resource_map.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/resource_matrix.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/layout_pm.html</loc>
   </url>
   <url>
-    <loc>/reference/trace_explorer.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/lined_chart.html</loc>
   </url>
   <url>
-    <loc>/reference/layout_pm.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/performance.html</loc>
   </url>
   <url>
-    <loc>/reference/precedence_matrix_absolute.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/plot.precedence_matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/process_matrix.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/plot.process_matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/get_activities.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/precedence_matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/plot.process_matrix.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/precedence_matrix_absolute.html</loc>
   </url>
   <url>
-    <loc>/reference/lined_chart.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/processMapOutput.html</loc>
   </url>
   <url>
-    <loc>/reference/export_graph.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/processmapR.html</loc>
   </url>
   <url>
-    <loc>/reference/processMapOutput.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/process_map.html</loc>
   </url>
   <url>
-    <loc>/reference/renderProcessMap.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/process_matrix.html</loc>
   </url>
   <url>
-    <loc>/404.html</loc>
+    <loc>https://bupaverse.github.io/processmapR/reference/reexports.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/renderProcessMap.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/render_map.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/resource_map.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/resource_matrix.html</loc>
+  </url>
+  <url>
+    <loc>https://bupaverse.github.io/processmapR/reference/trace_explorer.html</loc>
   </url>
 </urlset>

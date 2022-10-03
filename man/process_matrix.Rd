@@ -13,13 +13,14 @@ process_matrix(log, type, ..., eventlog = deprecated())
 \method{process_matrix}{activitylog}(log, type = frequency(), ..., eventlog = deprecated())
 }
 \arguments{
-\item{log}{\code{\link[bupaR]{log}}: Object of class \code{\link[bupaR]{log}} or derivatives (\code{\link[bupaR]{grouped_log}}, \code{\link[bupaR]{eventlog}}, \code{\link[bupaR]{activitylog}}, etc.).}
+\item{log}{\code{\link[bupaR:log]{log}}: Object of class \code{\link[bupaR:log]{log}} or derivatives (\code{\link[bupaR:grouped_log]{grouped_log}},
+\code{\link[bupaR:eventlog]{eventlog}}, \code{\link[bupaR:activitylog]{activitylog}}, etc.).}
 
 \item{type}{A process matrix type, which can be created with the functions frequency, performance and custom. The first type focusses on the frequency aspect of a process, while the second one focussed on processing time. The third one allows custom attributes to be used.}
 
 \item{...}{Other arguments}
 
-\item{eventlog}{Deprecated. Use log instead.}
+\item{eventlog}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{log} instead.}
 }
 \description{
 Create process matrix

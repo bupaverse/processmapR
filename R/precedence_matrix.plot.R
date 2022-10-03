@@ -105,10 +105,11 @@ plot.process_matrix <- function(x, ...) {
 		}
 	} else if(perspective == "performance") {
 		x %>%
+			filter(antecedent != "Start", consequent != "End") %>%
 			ggplot(aes(antecedent, consequent)) +
 			geom_raster(aes(fill = flow_time)) +
 			geom_text(aes(label =round(flow_time, 2)), color = "white", fontface = "bold") +
-			scale_fill_continuous_bupaR(name = paste0("Flow time in ", attr(type, "units"))) +
+			scale_fill_continuous_bupaR(name = paste0("Flow time in ", attr(type, "units")), palette = "orange") +
 			theme_light() +
 			coord_flip() +
 			theme(axis.text.x = element_text(angle = 45, hjust = 1),
