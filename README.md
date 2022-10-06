@@ -16,7 +16,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 <!-- badges: end -->
 
 **processmapR** is a [`R`](https://www.r-project.org/) package for
-creating process maps. Part of the [bupaR](https://www.bupar.net/)
+creating process maps. Part of the [bupaR](https://bupar.net/)
 eco-system for business process analysis.
 
 ## Installation
