@@ -179,30 +179,59 @@ trace_explorer.eventlog <- function(log,
   }
 
   if(raw_data)
-    return(temp)
+  	return(temp)
   else {
 
   	if(length(unique(temp$event_classifier)) > 26) {
   		scale_fill <- ggplot2::scale_fill_discrete
   	}
 
-    temp %>%
-      ggplot(aes(rank_event, as.factor(trace_id))) +
-      geom_tile(aes(fill = event_classifier), color = "white") +
-      facet_grid(facets,scales = "free", space = "free") +
-      scale_y_discrete(breaks = NULL) +
-      labs(y = "Traces", x = "Activities") +
-      scale_fill(name = "Activity") +
-      theme_light() +
-      theme(strip.background = element_rect(color = "white"),
-            strip.text.y = element_text(angle = 0),
-            strip.text = element_text(size = 11)) -> p
+  	temp %>%
+  		group_by(trace_id) %>%
+  		mutate(trace_length = max(rank_event)) %>%
+  		ungroup() %>%
+  		ggplot(aes(rank_event, as.factor(trace_id))) +
+  		geom_tile(aes(fill = event_classifier,
+  				  text = paste0("Activity: ", event_classifier, "\n",
+  				  			 "Trace length: ", trace_length, "\n",
+  				  			 "Frequency: ", "\n",
+  				  			 " - relative: ", facets_rel, "\n",
+  				  			 " - absolute: ", facets_abs, "\n",
+  				  			 " - cumulative: ", facets_cum), color = "white"),
+
+  				  color = "white") +
+  		facet_grid(facets, scales = "free", space = "free") + # switch = "y"
+  		scale_y_discrete() +
+  		scale_x_continuous() +
+  		labs(y = "Traces", x = "Activities") +
+    	scale_fill(name = "Activity") +
+    	theme_light() -> p
+
+    if (plotly) {
+    	p +
+    		theme(strip.background = element_blank(),
+    			  axis.text.y = element_blank(),
+    			  axis.ticks.y = element_blank(),
+    			  axis.text.x = element_text(size = 6),
+    			  axis.ticks.x = element_blank(),
+    			  strip.text.y = element_text(angle = 0)) -> p
+    }
+    else{
+    	p +
+    		theme(strip.background = element_rect(color = "white"),
+    			  axis.text.y = element_blank(),
+    			  axis.ticks.y = element_blank(),
+    			  axis.text.x = element_text(size = 6),
+    			  axis.ticks.x = element_blank(),
+    			  strip.text.y = element_text(angle = 0),
+    			  strip.text = element_text(size = 11)) -> p
+    }
 
     if(show_labels)
-      p + geom_text(aes(label = abbreviate_labels(abbreviate, event_classifier)),
-                    color = "white",
-                    fontface = "bold",
-                    size = label_size) -> p
+    	p + geom_text(aes(label = abbreviate_labels(abbreviate, event_classifier)),
+    				  color = "white",
+    				  fontface = "bold",
+    				  size = label_size) -> p
   }
 
   return_plotly(p, plotly)
