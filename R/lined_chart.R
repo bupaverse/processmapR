@@ -134,9 +134,9 @@ lined_chart.grouped_eventlog <- function(log,
     theme_light() -> p
 
   if (is.na(color)) {
-    p + geom_segment(lwd = line_width, color = "black") -> p
+    p + geom_segment(linewidth = line_width, color = "black") -> p
   } else {
-    p + geom_segment(aes(color = factor(!!sym(color))), lwd = line_width) +
+    p + geom_segment(aes(color = factor(!!sym(color))), linewidth = line_width) +
       scale_color(name = color) -> p
   }
 

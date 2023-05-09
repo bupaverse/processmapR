@@ -121,7 +121,9 @@ dotted_chart_plot <- function(data, mapping, x, y, scale_color, col_label, units
 	}
 
 	data %>%
-		ggplot(aes_string(x = x_aes[[1L]], y = glue("reorder({case_id(mapping)}, desc({y_aes}))"))) +
+		mutate(x = !!sym(x_aes[[1L]]),
+			   y = fct_reorder(!!sym(mapping$case_id), !!sym(y_aes))) %>%
+		ggplot(aes(x = x, y = fct_rev(y))) +
 		scale_y_discrete(breaks = NULL) +
 		labs(x = x_labs,y = "Cases") +
 		theme_light() -> p

@@ -25,7 +25,7 @@ options(tibble.print_min = 5, tibble.print_max = 5)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
-**processmapR** is a [`R`](https://www.r-project.org/) package for creating process maps. Part of the [bupaR](https://www.bupar.net/) eco-system for business process analysis.
+**processmapR** is a [`R`](https://www.r-project.org/) package for creating process maps. Part of the [bupaR](https://bupar.net/) eco-system for business process analysis.
 
 ## Installation
 
@@ -47,7 +47,7 @@ devtools::install_github("bupaverse/processmapR")
 
 ## Example
 
-The [bupaR Documentation](https://bupar.net/processmaps.html) website contains more details on creating process maps using **processmapR**.
+The [bupaR Documentation](https://bupaverse.github.io/docs/) website contains more details on creating process maps using **processmapR**.
 
 ```{r example1, results = "hide"}
 library(processmapR)

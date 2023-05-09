@@ -377,9 +377,9 @@ process_map.eventlog <- function(log,
 
 		graph %>% render_graph() -> graph
 
-		graph$x$diagram %>%
-			stringr::str_replace_all("len", "weight") %>%
-			stringr::str_replace_all("decorate", "constraint") -> graph$x$diagram
+		# graph$x$diagram %>%
+		# 	stringr::str_replace_all("len", "weight") %>%
+		# 	stringr::str_replace_all("decorate", "constraint") -> graph$x$diagram
 
 		attr(graph, "base_precedence") <- base_precedence
 		attr(graph, "edges") <- edges

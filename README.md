@@ -40,7 +40,7 @@ devtools::install_github("bupaverse/processmapR")
 
 ## Example
 
-The [bupaR Documentation](https://bupar.net/processmaps.html) website
+The [bupaR Documentation](https://bupaverse.github.io/docs/) website
 contains more details on creating process maps using **processmapR**.
 
 ``` r
@@ -63,6 +63,7 @@ library(bupaR)
 # Process map
 patients %>%
   process_map()
+#> PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
 ```
 
 ![process map](man/figures/README-example1-1.png)
