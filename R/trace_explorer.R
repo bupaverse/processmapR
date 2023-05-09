@@ -137,11 +137,11 @@ trace_explorer.eventlog <- function(log,
   }
 
   log %>%
-    rename("case_classifier" := !!case_id_(log),
+  	as.data.frame %>%
+  	rename("case_classifier" := !!case_id_(log),
            "aid" := !!activity_instance_id_(log),
            "event_classifier" := !!activity_id_(log),
            "timestamp_classifier" := !!timestamp_(log)) %>%
-    as.data.frame %>%
     arrange(timestamp_classifier, .order) %>%
     # distinct keeps first entry (=minimum)
     distinct(case_classifier, event_classifier, aid, .keep_all = TRUE) %>%
