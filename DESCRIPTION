@@ -36,7 +36,8 @@ Imports:
     tidyr,
     htmltools,
     Rcpp,
-    lifecycle
+    lifecycle,
+    htmlwidgets
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 Suggests: 
@@ -83,3 +84,4 @@ Collate:
     'resource_matrix.R'
     'trace_explorer.R'
     'utils.R'
+    'utils_animateR.R'

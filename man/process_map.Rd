@@ -19,7 +19,6 @@ process_map(
   render = T,
   fixed_edge_width = F,
   layout = layout_pm(),
-  fixed_node_pos = NULL,
   eventlog = deprecated(),
   ...
 )
@@ -36,7 +35,6 @@ process_map(
   render = T,
   fixed_edge_width = F,
   layout = layout_pm(),
-  fixed_node_pos = NULL,
   eventlog = deprecated(),
   ...
 )
@@ -53,7 +51,6 @@ process_map(
   render = T,
   fixed_edge_width = F,
   layout = layout_pm(),
-  fixed_node_pos = NULL,
   eventlog = deprecated(),
   ...
 )
@@ -70,7 +67,6 @@ process_map(
   render = T,
   fixed_edge_width = F,
   layout = layout_pm(),
-  fixed_node_pos = NULL,
   eventlog = deprecated(),
   ...
 )
@@ -98,8 +94,6 @@ process_map(
 \item{fixed_edge_width}{If TRUE, don't vary the width of edges.}
 
 \item{layout}{List of parameters influencing the (automatic) layout of the process map. Use \code{\link{layout_pm}} to create a suitable parameter list.}
-
-\item{fixed_node_pos}{Deprecated, please use the 'layout' parameter instead.}
 
 \item{eventlog}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{log} instead.}
 

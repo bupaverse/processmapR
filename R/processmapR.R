@@ -26,6 +26,7 @@
 #' @importFrom rlang arg_match is_integerish sym caller_env
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom lifecycle deprecated
+#' @import htmlwidgets
 
 utils::globalVariables(c(".", ".order"))
 

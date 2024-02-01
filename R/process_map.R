@@ -18,7 +18,6 @@
 #' @param fixed_edge_width If TRUE, don't vary the width of edges.
 #' @param layout List of parameters influencing the (automatic) layout of the process map. Use \code{\link{layout_pm}} to create a suitable parameter list.
 #'
-#' @param fixed_node_pos Deprecated, please use the 'layout' parameter instead.
 #' @param ... Deprecated arguments
 #'
 #' @inheritParams dotted_chart
@@ -47,7 +46,6 @@ process_map <- function(log,
 						render = T,
 						fixed_edge_width = F,
 						layout = layout_pm(),
-						fixed_node_pos = NULL,
 						eventlog = deprecated(),
 						...)  {
 	UseMethod("process_map")
@@ -68,7 +66,6 @@ process_map.eventlog <- function(log,
 								 render = T,
 								 fixed_edge_width = F,
 								 layout = layout_pm(),
-								 fixed_node_pos = NULL,
 								 eventlog = deprecated(),
 								 ...) {
 
@@ -102,17 +99,10 @@ process_map.eventlog <- function(log,
 	weight <- NULL
 	constraint <- NULL
 
-	if(!is.null(fixed_node_pos)) {
-		warning("Argument fixed_node_pos deprecated, use layout argument instead.")
-		layout <- layout_pm(fixed_positions = fixed_node_pos)
-	}
-
 	if (any(is.na(eventlog %>% pull(!!timestamp_(eventlog))))) {
 		warning("Some of the timestamps in the supplied event log are missing (NA values). This may result in a invalid process map!")
 
 	}
-
-
 	#base_precedence <- create_base_precedence(eventlog, type_nodes, type_edges)
 
 	eventlog <- ungroup_eventlog(eventlog)
@@ -208,17 +198,17 @@ process_map.eventlog <- function(log,
 	data.table::setDT(base_log, key = c("start_time", "min_order"))
 	base_log[, ACTIVITY_CLASSIFIER_ := ordered(ACTIVITY_CLASSIFIER_,
 											   levels = c("ARTIFICIAL_START", as.character(sort(activity_labels(eventlog))), "ARTIFICIAL_END"))
-	      	][, `:=`(next_act = data.table::shift(ACTIVITY_CLASSIFIER_, 1, type = "lead"),
-	      			 next_start_time = data.table::shift(start_time, 1, type = "lead"),
-	      			 next_end_time = data.table::shift(end_time, 1, type = "lead")),
-	      	  by = CASE_CLASSIFIER_] %>%
-	 	merge(base_nodes, by.x = c("ACTIVITY_CLASSIFIER_"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
-	 	merge(base_nodes, by.x = c("next_act"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
+	][, `:=`(next_act = data.table::shift(ACTIVITY_CLASSIFIER_, 1, type = "lead"),
+			 next_start_time = data.table::shift(start_time, 1, type = "lead"),
+			 next_end_time = data.table::shift(end_time, 1, type = "lead")),
+	  by = CASE_CLASSIFIER_] %>%
+		merge(base_nodes, by.x = c("ACTIVITY_CLASSIFIER_"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
+		merge(base_nodes, by.x = c("next_act"), by.y = c("ACTIVITY_CLASSIFIER_"), all = TRUE) %>%
 		as.data.frame() %>%
-	 	select(everything(),
-	 		   -n.x, -n.y,
-	 		   from_id = node_id.x,
-	 		   to_id = node_id.y) -> base_precedence
+		select(everything(),
+			   -n.x, -n.y,
+			   from_id = node_id.x,
+			   to_id = node_id.y) -> base_precedence
 
 
 
@@ -261,6 +251,10 @@ process_map.eventlog <- function(log,
 		edges %>% mutate(penwidth = 1) -> edges
 	}
 
+	edges %>%
+		mutate(labeltooltip = paste0(str_replace(ACTIVITY_CLASSIFIER_, "ARTIFICIAL_START",""), " > ",
+							  str_replace(next_act, "ARTIFICIAL_END", ""))) -> edges
+
 	# This is to improve the DOT layout by using the frequency information
 	if (layout$edge_weight) {
 		edges %>% mutate(weight = as.integer(((n - min(n)) / max(n)) * 100)) -> edges
@@ -291,6 +285,7 @@ process_map.eventlog <- function(log,
 	create_node_df(n = nrow(nodes),
 				   label = nodes$label,
 				   shape = nodes$shape,
+				   gradientangle = 0.1,
 				   color_level = nodes$color_level,
 				   style = "rounded,filled",
 				   fontcolor = nodes$fontcolor,
@@ -333,6 +328,8 @@ process_map.eventlog <- function(log,
 
 	create_edge_df(from = edges$from_id,
 				   to = edges$to_id,
+				   labeltooltip = edges$labeltooltip,
+				   edgetooltip = edges$labeltooltip,
 				   label = edges$label,
 				   penwidth = edges$penwidth,
 				   # style = edges$style,
@@ -341,6 +338,10 @@ process_map.eventlog <- function(log,
 				   fontsize = 10,
 				   weight = edges$weight,
 				   constraint = edges$constraint) -> edges_df
+
+
+	edges_df %>%
+		mutate(len = weight,decorate = constraint) -> edges_df
 
 	create_graph(nodes_df, edges_df) %>%
 		add_global_graph_attrs(attr = "rankdir", value = rankdir,attr_type = "graph") %>%
@@ -365,33 +366,15 @@ process_map.eventlog <- function(log,
 		rename(node = ACTIVITY_CLASSIFIER_) %>%
 		select(node, from_id, value) -> nodes
 
+	attr(graph, "base_precedence") <- base_precedence
+	attr(graph, "edges") <- edges
+	attr(graph, "nodes") <- nodes
+
 	if(render == T) {
-
-		# Since DiagrammeR does not support the necessary GraphViz attributes,
-		# we use a workaround to add them tot the DOT code. See the issue logged here:
-		# https://github.com/rich-iannone/DiagrammeR/issues/360
-
-	  	# hack to add 'weight' attribute to the graph
-		graph$edges_df %>%
-			mutate(len = weight, decorate = constraint) -> graph$edges_df
-
-		graph %>% render_graph() -> graph
-
-		# graph$x$diagram %>%
-		# 	stringr::str_replace_all("len", "weight") %>%
-		# 	stringr::str_replace_all("decorate", "constraint") -> graph$x$diagram
-
-		attr(graph, "base_precedence") <- base_precedence
-		attr(graph, "edges") <- edges
-		attr(graph, "nodes") <- nodes
-
-		graph %>% return()
-	} else  {
-		attr(graph, "base_precedence") <- base_precedence
-		attr(graph, "edges") <- edges
-		attr(graph, "nodes") <- nodes
-		graph %>% return()
+		graph %>% render_map() -> graph
 	}
+
+	graph %>% return()
 
 }
 
@@ -400,19 +383,18 @@ process_map.eventlog <- function(log,
 
 
 process_map.grouped_eventlog <- function(log,
-								 type = frequency("absolute"),
-								 sec = NULL,
-								 type_nodes = type,
-								 type_edges = type,
-								 sec_nodes = sec,
-								 sec_edges = sec,
-								 rankdir = "LR",
-								 render = T,
-								 fixed_edge_width = F,
-								 layout = layout_pm(),
-								 fixed_node_pos = NULL,
-								 eventlog = deprecated(),
-								 ...) {
+										 type = frequency("absolute"),
+										 sec = NULL,
+										 type_nodes = type,
+										 type_edges = type,
+										 sec_nodes = sec,
+										 sec_edges = sec,
+										 rankdir = "LR",
+										 render = T,
+										 fixed_edge_width = F,
+										 layout = layout_pm(),
+										 eventlog = deprecated(),
+										 ...) {
 	log <- lifecycle_warning_eventlog(log, eventlog)
 
 	m <- mapping(log)
@@ -423,18 +405,17 @@ process_map.grouped_eventlog <- function(log,
 							  	distinct() %>%
 							  	unique(), collapse = ","),
 		   group_map = process_map(re_map(., m),
-									 type = type,
-									 sec = sec,
-									 type_nodes = type_nodes,
-									 type_edges = type_edges,
-									 sec_nodes = sec_nodes,
-									 sec_edges = sec_edges,
-									 rankdir = rankdir,
-									 render = F,
-									 fixed_edge_width = fixed_edge_width,
-									 layout = layout,
-									 fixed_node_pos = fixed_node_pos,
-									 ...)) -> grouped_map
+		   						type = type,
+		   						sec = sec,
+		   						type_nodes = type_nodes,
+		   						type_edges = type_edges,
+		   						sec_nodes = sec_nodes,
+		   						sec_edges = sec_edges,
+		   						rankdir = rankdir,
+		   						render = F,
+		   						fixed_edge_width = fixed_edge_width,
+		   						layout = layout,
+		   						...)) -> grouped_map
 
 	if (render) {
 		group_tags <-
@@ -458,23 +439,22 @@ process_map.grouped_eventlog <- function(log,
 #' @export
 
 process_map.activitylog <- function(log,
-										 type = frequency("absolute"),
-										 sec = NULL,
-										 type_nodes = type,
-										 type_edges = type,
-										 sec_nodes = sec,
-										 sec_edges = sec,
-										 rankdir = "LR",
-										 render = T,
-										 fixed_edge_width = F,
-										 layout = layout_pm(),
-										 fixed_node_pos = NULL,
-										 eventlog = deprecated(),
-										 ...) {
+									type = frequency("absolute"),
+									sec = NULL,
+									type_nodes = type,
+									type_edges = type,
+									sec_nodes = sec,
+									sec_edges = sec,
+									rankdir = "LR",
+									render = T,
+									fixed_edge_width = F,
+									layout = layout_pm(),
+									eventlog = deprecated(),
+									...) {
 	log <- lifecycle_warning_eventlog(log, eventlog)
 
 	process_map.eventlog(to_eventlog(log), type, sec, type_nodes, type_edges, sec_nodes, sec_edges, rankdir,
-						 render, fixed_edge_width, layout, fixed_node_pos)
+						 render, fixed_edge_width, layout)
 
 
 }
