@@ -222,6 +222,8 @@ process_map.eventlog <- function(log,
 	edges <- attr(type_edges, "create_edges")(base_precedence, type_edges, extra_data)
 
 
+
+
 	# secondary info
 	if(!is.null(sec_nodes)) {
 		nodes_secondary <- attr(sec_nodes, "create_nodes")(base_precedence, sec_nodes, extra_data) %>%
@@ -253,7 +255,7 @@ process_map.eventlog <- function(log,
 
 	edges %>%
 		mutate(labeltooltip = paste0(str_replace(ACTIVITY_CLASSIFIER_, "ARTIFICIAL_START",""), " > ",
-							  str_replace(next_act, "ARTIFICIAL_END", ""))) -> edges
+									 str_replace(next_act, "ARTIFICIAL_END", ""))) -> edges
 
 	# This is to improve the DOT layout by using the frequency information
 	if (layout$edge_weight) {

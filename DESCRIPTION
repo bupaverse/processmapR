@@ -7,8 +7,8 @@ Authors@R: c(person("Gert","Janssenswillen",email = "gert.janssenswillen@uhassel
  person("Benoît","Depaire",email = "benoit.depaire@uhasselt.be", role = c("ctb")),
  person("Felix","Mannhardt",email = "Felix.Mannhardt@sintef.no", role = c("ctb")),
  person("Thijs","Beuving", email = "thijs.beuving@kpn.com", role = c("ctb")),
- person("urvikalia", role = c("ctb"),
- person("Hasselt University", role = c("cph"))))
+ person("urvikalia", role = c("ctb")),
+ person("Hasselt University", role = c("cph")))
 Description: Visualize event logs using directed graphs, i.e. process maps. Part of the 'bupaR' framework.
 License: MIT + file LICENSE
 LinkingTo: Rcpp, BH
