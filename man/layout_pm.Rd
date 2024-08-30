@@ -11,7 +11,7 @@ layout_pm(fixed_positions = NULL, edge_weight = FALSE, edge_cutoff = 0)
 
 \item{edge_weight}{When \code{TRUE} then the frequency with which an edge appears in the process map has influence on the process map layout. Edges with higher frequency get higher priority in the layout algorithm, which increases the visibility of 'process highways'. Note that this has no effect when using the 'fixed_positions' parameters.}
 
-\item{edge_cutoff}{Edges that appear in the process map below this frequency are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high. Note that this has no effect when using the 'fixed_positions' parameters.}
+\item{edge_cutoff}{(\code{\link{numeric}}) Number between 0 and 1. Edges with a relative frequency below the cut off are not considered at all when calculating the layout. This may create very long and complicated edge routings when choosen too high. Note that this has no effect when using the 'fixed_positions' parameters.}
 }
 \description{
 Configure layout parameters for process map

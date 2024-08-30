@@ -17,7 +17,7 @@
 #' @param abbreviate [`logical`] (default `TRUE`): If `TRUE`, abbreviate activity labels.
 #' @param show_labels [`logical`] (default `TRUE`): If `FALSE`, activity labels are not shown.
 #' @param label_size [`numeric`] (default `3`): Font size of labels.
-#' @param scale_fill [`ggplot2`] scale function (default [`scale_fill_discrete_bupaR`][`bupaR::scale_fill_discrete_bupaR`]):
+#' @param scale_fill `ggplot2` scale function (default [`scale_fill_discrete_bupaR`][`bupaR::scale_fill_discrete_bupaR`]):
 #' Set color scale. Defaults to [`scale_fill_discrete_bupaR`][`bupaR::scale_fill_discrete_bupaR`]. Replaced with [`scale_fill_discrete`][`ggplot2::scale_fill_discrete`] when more than 26 activities are present.
 #' @param raw_data [`logical`] (default `FALSE`): Return raw data instead of graph.
 #'
