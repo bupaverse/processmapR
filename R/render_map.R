@@ -101,7 +101,7 @@ render_map <- function(map,
 	))
 
 	htmlwidgets::createWidget(elementId = NULL,
-							  name = "processanimateR",
+							  name = "processmapR",
 							  x = x,
 							  width = NULL, height = NULL,
 							  sizingPolicy = htmlwidgets::sizingPolicy(
@@ -118,5 +118,5 @@ render_map <- function(map,
 							  											  script = c("viz.js",
 							  											  		   "full.render.js"),
 							  											  all_files = FALSE,
-							  											  package = "processanimateR")))
+							  											  package = "processmapR")))
 }

@@ -1,11 +1,11 @@
 /*
-processanimateR 1.0.3
+processmapR 1.0.3
 Copyright (c) 2019 Felix Mannhardt
 Licensed under MIT license
 */
 HTMLWidgets.widget({
 
-  name: "processanimateR",
+  name: "processmapR",
   type: "output",
 
   factory: function(el, width, height) {

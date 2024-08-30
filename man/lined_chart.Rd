@@ -86,9 +86,9 @@ Use \code{\link{NA}} for no colors.}
 
 \item{line_width}{\code{\link{numeric}} (default \code{2}): The width of lines.}
 
-\item{plotly}{\code{\link{logical}} (default \code{FALSE}): Return a \code{\link{plotly}} object, instead of a \code{\link{ggplot2}}.}
+\item{plotly}{\code{\link{logical}} (default \code{FALSE}): Return a \code{plotly} object, instead of a \code{ggplot2}.}
 
-\item{scale_color}{\code{\link{ggplot2}} scale function (default \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_color_discrete_bupaR}}):
+\item{scale_color}{\code{ggplot2} scale function (default \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_color_discrete_bupaR}}):
 Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_color_discrete_bupaR}}.  Replaced with \code{\link[ggplot2:scale_colour_discrete]{scale_color_discrete}} when more than 26 activities are present.}
 
 \item{eventlog}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}; please use \code{log} instead.}

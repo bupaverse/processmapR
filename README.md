@@ -8,7 +8,7 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/processmapR)](https://CRAN.R-project.org/package=processmapR)
 [![GitHub
-version](https://img.shields.io/badge/GitHub-0.5.2-blue)](https://github.com/bupaverse/processmapR)
+version](https://img.shields.io/badge/GitHub-0.5.4-blue)](https://github.com/bupaverse/processmapR)
 [![R-CMD-check](https://github.com/bupaverse/processmapR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bupaverse/processmapR/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/bupaverse/processmapR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/bupaverse/processmapR?branch=master)
 [![Lifecycle:
@@ -66,7 +66,10 @@ patients %>%
 #> PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
 ```
 
-![process map](man/figures/README-example1-1.png)
+<figure>
+<img src="man/figures/README-example1-1.png" alt="process map" />
+<figcaption aria-hidden="true">process map</figcaption>
+</figure>
 
 ``` r
 # Dotted chart
