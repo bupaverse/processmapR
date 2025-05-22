@@ -2,8 +2,8 @@
 #'
 #' @description
 #' Different activity sequences in the `log` can be visualized with [`trace_explorer()`]. With the `type` argument,
-#' it can be used to explore frequent as well as infrequent traces. The `coverage` argument specificies how much of the
-#' `log` you want to explore. By default it is set at `0.2`, meaning that it will show the most (in)frequency traces
+#' it can be used to explore frequent as well as infrequent traces. The `coverage` argument specifies how much of the
+#' `log` you want to explore. By default it is set at `0.2`, meaning that it will show the most (in)frequent traces
 #' covering 20% of the `log`.
 #'
 #' @param log [`log`][`bupaR::log`]: Object of class [`log`][`bupaR::log`] or derivatives ([`eventlog`][`bupaR::eventlog`]
