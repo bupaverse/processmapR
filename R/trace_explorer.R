@@ -89,7 +89,7 @@ trace_explorer.eventlog <- function(log,
                   "x" = "You supplied a {.cls {class(coverage)}}: {.val {coverage}}"))
   } else if(is.null(coverage)) {
     if(n_traces <= 0 || !is_integerish(n_traces, n = 1))
-      cli_abort(c("{.arg n_traces} must be an interger-like {.cls numeric} larger than {.val {0}}.",
+      cli_abort(c("{.arg n_traces} must be an integer-like {.cls numeric} larger than {.val {0}}.",
                   "x" = "You supplied a {.cls {class(n_traces)}}: {.val {n_traces}}"))
   }
 
