@@ -162,22 +162,26 @@ process_map.eventlog <- function(log,
 			as.data.frame() -> base_log
 	}
 
-	#create end points for graph
+	#create end points for graph using data.table slicing
+	dt <- as.data.table(base_log)
+	#set correct ordering within groups
+	data.table::setorder(dt, CASE_CLASSIFIER_, start_time, min_order, na.last=TRUE)
+	#specifying order of columns to reorder end_points_start and end_points_end 
+	colorder <- c('ACTIVITY_CLASSIFIER_', 'ACTIVITY_INSTANCE_CLASSIFIER_', 'CASE_CLASSIFIER_', 'start_time', 'end_time', 'min_order')
+	
+	end_points_start <- dt[, .SD[1], by = CASE_CLASSIFIER_]
+	end_points_start[, min_order := as.numeric(min_order)] #prevents warning when setting value to -Inf
+	end_points_start[, `:=`(ACTIVITY_CLASSIFIER_ = "ARTIFICIAL_START",
+							end_time = start_time,
+							min_order = -Inf)]
+	data.table::setcolorder(end_points_start, colorder)
 
-	base_log %>%
-		group_by(CASE_CLASSIFIER_) %>%
-		arrange(start_time, min_order) -> points_temp
-
-	points_temp %>%
-		slice(1) %>%
-		mutate(ACTIVITY_CLASSIFIER_ = "ARTIFICIAL_START",
-			   end_time = start_time,
-			   min_order = -Inf) -> end_points_start
-	points_temp %>%
-		slice(n()) %>%
-		mutate(ACTIVITY_CLASSIFIER_ = "ARTIFICIAL_END",
-			   start_time = end_time,
-			   min_order = Inf) -> end_points_end
+	end_points_end <- dt[, .SD[.N], by = CASE_CLASSIFIER_]
+	end_points_end[, min_order := as.numeric(min_order)] #prevents warning when setting value to Inf
+	end_points_end[, `:=`(ACTIVITY_CLASSIFIER_ = "ARTIFICIAL_END",
+						  start_time = end_time,
+						  min_order = Inf)]
+	data.table::setcolorder(end_points_end, colorder)
 
 	#add endpoints to base log
 
@@ -185,6 +189,10 @@ process_map.eventlog <- function(log,
 		bind_rows(end_points_start, end_points_end, base_log) %>%
 			ungroup() -> base_log
 	)
+	
+	#converting ACTIVITY_CLASSIFIER_ to character to keep `base_log` identical to the previous dplyr method
+	base_log <- base_log %>%
+				mutate(ACTIVITY_CLASSIFIER_ = as.character(ACTIVITY_CLASSIFIER_))
 
 	#create base nodes list
 
