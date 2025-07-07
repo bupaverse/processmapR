@@ -26,7 +26,7 @@ plot.process_matrix <- function(x, ...) {
 
 			x %>%
 				ggplot(aes(antecedent, consequent)) +
-				geom_raster(aes(fill = n)) +
+				geom_tile(aes(fill = n)) +
 				geom_text(aes(label = n), color = "white", fontface = "bold")  +
 				scale_fill_continuous_bupaR(name = "Absolute Frequency") +
 				coord_flip() +
@@ -39,7 +39,7 @@ plot.process_matrix <- function(x, ...) {
 		} else if(type == "relative") {
 			x %>%
 				ggplot(aes(antecedent, consequent)) +
-				geom_raster(aes(fill = rel_n)) +
+				geom_tile(aes(fill = rel_n)) +
 				geom_text(aes(label = round(rel_n*100, 2)), color = "white", fontface = "bold") +
 				scale_fill_continuous_bupaR(name = "Relative Frequency") +
 				theme_light() +
@@ -107,7 +107,7 @@ plot.process_matrix <- function(x, ...) {
 		x %>%
 			filter(antecedent != "Start", consequent != "End") %>%
 			ggplot(aes(antecedent, consequent)) +
-			geom_raster(aes(fill = flow_time)) +
+			geom_tile(aes(fill = flow_time)) +
 			geom_text(aes(label =round(flow_time, 2)), color = "white", fontface = "bold") +
 			scale_fill_continuous_bupaR(name = paste0("Flow time in ", attr(type, "units")), palette = "orange") +
 			theme_light() +

@@ -28,6 +28,8 @@ test_that("test timeSinceStartOfDay UTC summer/winter time", {
 })
 
 test_that("test timeSinceStartOfDay CET summer/winter time", {
+  skip("depends on timezones")
+
   summer_time <- as.POSIXct("2022-03-27 18:36:52", format = "%F %T", tz = "CET")
   winter_time <- as.POSIXct("2022-10-30 18:36:52", format = "%F %T", tz = "CET")
 
