@@ -2,7 +2,7 @@
 #'
 #' @description This package provides several useful techniques process visualization.
 #'
-#' @docType package
+# @docType package
 #' @name processmapR
 #'
 #' @import dplyr

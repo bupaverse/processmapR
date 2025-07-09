@@ -20,22 +20,22 @@
 
 # test trace_explorer on eventlog with param `n_traces`
 
-    `n_traces` must be an interger-like <numeric> larger than 0.
+    `n_traces` must be an integer-like <numeric> larger than 0.
     x You supplied a <numeric>: -1
 
 ---
 
-    `n_traces` must be an interger-like <numeric> larger than 0.
+    `n_traces` must be an integer-like <numeric> larger than 0.
     x You supplied a <numeric>: 0
 
 ---
 
-    `n_traces` must be an interger-like <numeric> larger than 0.
+    `n_traces` must be an integer-like <numeric> larger than 0.
     x You supplied a <numeric>: 1.5
 
 ---
 
-    `n_traces` must be an interger-like <numeric> larger than 0.
+    `n_traces` must be an integer-like <numeric> larger than 0.
     x You supplied a <character>: "1"
 
 # test trace_explorer on eventlog with param `type`

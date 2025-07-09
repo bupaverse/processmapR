@@ -2,8 +2,8 @@
 #'
 #' @description
 #' Different activity sequences in the `log` can be visualized with [`trace_explorer()`]. With the `type` argument,
-#' it can be used to explore frequent as well as infrequent traces. The `coverage` argument specificies how much of the
-#' `log` you want to explore. By default it is set at `0.2`, meaning that it will show the most (in)frequency traces
+#' it can be used to explore frequent as well as infrequent traces. The `coverage` argument specifies how much of the
+#' `log` you want to explore. By default it is set at `0.2`, meaning that it will show the most (in)frequent traces
 #' covering 20% of the `log`.
 #'
 #' @param log [`log`][`bupaR::log`]: Object of class [`log`][`bupaR::log`] or derivatives ([`eventlog`][`bupaR::eventlog`]
@@ -89,7 +89,7 @@ trace_explorer.eventlog <- function(log,
                   "x" = "You supplied a {.cls {class(coverage)}}: {.val {coverage}}"))
   } else if(is.null(coverage)) {
     if(n_traces <= 0 || !is_integerish(n_traces, n = 1))
-      cli_abort(c("{.arg n_traces} must be an interger-like {.cls numeric} larger than {.val {0}}.",
+      cli_abort(c("{.arg n_traces} must be an integer-like {.cls numeric} larger than {.val {0}}.",
                   "x" = "You supplied a {.cls {class(n_traces)}}: {.val {n_traces}}"))
   }
 
