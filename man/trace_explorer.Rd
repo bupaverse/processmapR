@@ -86,8 +86,8 @@ Set color scale. Defaults to \code{\link[bupaR:scale_fill_discrete_bupaR]{scale_
 }
 \description{
 Different activity sequences in the \code{log} can be visualized with \code{\link[=trace_explorer]{trace_explorer()}}. With the \code{type} argument,
-it can be used to explore frequent as well as infrequent traces. The \code{coverage} argument specificies how much of the
-\code{log} you want to explore. By default it is set at \code{0.2}, meaning that it will show the most (in)frequency traces
+it can be used to explore frequent as well as infrequent traces. The \code{coverage} argument specifies how much of the
+\code{log} you want to explore. By default it is set at \code{0.2}, meaning that it will show the most (in)frequent traces
 covering 20\% of the \code{log}.
 }
 \section{Methods (by class)}{
