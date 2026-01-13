@@ -28,7 +28,7 @@
 #' @importFrom lifecycle deprecated
 #' @import htmlwidgets
 
-utils::globalVariables(c(".", ".order"))
+utils::globalVariables(c(".", ".order", "id"))
 
 #' @useDynLib processmapR, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
